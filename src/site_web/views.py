@@ -16,17 +16,18 @@ def jobs(request):
 def contact(request):
     return render(request, 'site_web/contact.html')
 
+def teams(request):
+    return render(request, 'site_web/teams.html')
 
+def appointment(request):
+    return render(request, 'site_web/appointment.html')
 
 def entreprise_info(request):
     return render(request, 'site_web/entreprise_info.html')
 
 def login(request):
-    # Si l'utilisateur vient de s'inscrire et est redirigé depuis entreprise_registry
-    if request.method == 'GET' and 'from_registry' in request.GET:
-        # Vous pouvez ajouter un message de bienvenue ici
+    if request.method == 'GET' and 'from_registry' in request.GET:   
         return render(request, 'site_web/login.html', {'registration_success': True})
-    
     # Traitement normal de la connexion
     return render(request, 'site_web/login.html')
 

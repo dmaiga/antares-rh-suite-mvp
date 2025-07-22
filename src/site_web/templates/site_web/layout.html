@@ -4,18 +4,24 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Antares RH</title>
+  <title>Antares </title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
     :root {
-      --primary-blue: #0D3B66;
-      --secondary-blue: #2D76B6;
+      /*--primary-blue: #0D3B66;
       --accent-orange: #F46036;
+      */
+      --secondary-blue: #2D76B6;
       --light-gray: #F4F4F9;
       --dark-gray: #333333;
+      --light-blue: #E6F0FA; 
+      --accent-orange: #E04B1A; /* Version plus sombre de l'orange */
+      --primary-blue: #0A2E4E;  /* Version plus sombre du bleu */
     }
     
     body {
@@ -26,38 +32,54 @@
     }
     
     .navbar {
-      background-color: var(--primary-blue);
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      padding: 15px 0;
+      background-color: white; /* Fond blanc pour mieux voir le bleu */
+      box-shadow: 0 2px 15px rgba(13, 59, 102, 0.1);
+      padding: 5px 0;
+      border-bottom: 2px solid var(--light-blue);
     }
     
-    .navbar-brand {
+     .navbar-brand {
       font-weight: 700;
       font-size: 1.5rem;
+      color: var(--primary-blue) !important;
+    }
+    
+    .navbar-logo {
+      height: 70px;
+      width: auto;
     }
     
     .nav-link {
       font-weight: 500;
       padding: 8px 15px;
       transition: all 0.3s ease;
+      color: var(--primary-blue) !important;
     }
     
-    .nav-link:hover {
-      color: var(--accent-orange);
+    .nav-link:hover,
+    .nav-link:focus {
+      color: var(--accent-orange) !important;
     }
     
+     .dropdown-toggle::after {
+      border-top-color: var(--primary-blue);
+    }
+    
+    /* Style amélioré pour le bouton de connexion */
     .btn-orange {
       background-color: var(--accent-orange);
       color: white;
       border: none;
       font-weight: 500;
+      padding: 8px 20px;
+      border-radius: 6px;
       transition: all 0.3s ease;
     }
     
     .btn-orange:hover {
       background-color: #e0552e;
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(244, 96, 54, 0.3);
+      box-shadow: 0 4px 12px rgba(244, 96, 54, 0.3);
     }
     
     footer {
@@ -116,14 +138,50 @@ form input:focus {
     .nav-item.dropdown {
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
+    .navbar-brand {
+        font-size: 1.3rem;
+      }
+      
+      .navbar-logo {
+        height: 35px;
+      }
+      .navbar-collapse {
+        background-color: white;
+        padding: 20px;
+        border-radius: 0 0 10px 10px;
+        box-shadow: 0 10px 20px rgba(13, 59, 102, 0.1);
+      }
+      
+      .nav-item {
+        border-bottom: 1px solid var(--light-blue);
+      }
+      
+      .nav-item:last-child {
+        border-bottom: none;
+      }
+      
+      .navbar-toggler {
+        border-color: var(--primary-blue);
+      }
+      
+      .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2813, 59, 102, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+      }
+    
   }
   </style>
 </head>
 <body>
   <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" >
   <div class="container">
-    <a class="navbar-brand" href="{% url 'home' %}">Antares RH</a>
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <img src="{% static 'site_web/images/hero/logo_antares.png' %}" 
+             alt="Logo Antares " 
+             class="navbar-logo"
+             >
+       
+      </a>
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
@@ -186,13 +244,13 @@ form input:focus {
         Se connecter
     </a>
     <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="{% url 'login' %}?type=candidate">
+        <li><a class="dropdown-item" href="{% url 'site_login' %}?type=candidate">
             <i class="bi bi-person-vcard me-2"></i> Candidat
         </a></li><li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'login' %}?type=company">
+        <li><a class="dropdown-item" href="{% url 'site_login' %}?type=company">
             <i class="bi bi-building me-2"></i>Entreprise
         </a></li><li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'login' %}?type=employee">
+        <li><a class="dropdown-item" href="{% url 'site_login' %}?type=employee">
             <i class="bi bi-person-badge me-2"></i>Salarié
         </a></li>
         
@@ -217,7 +275,7 @@ form input:focus {
         <div class="d-flex flex-column h-100">
           <a href="#" class="mb-3">
             <img src="{% static 'site_web/images/hero/logo_antares.png' %}" 
-                 alt="Logo Antarès RH" 
+                 alt="Logo Antares " 
                  class="img-fluid" style="max-height: 80px;">
           </a>
           <p class="mb-3">Votre partenaire RH pour des solutions humaines innovantes et performantes.</p>
@@ -260,12 +318,12 @@ form input:focus {
         <h5 class="h6 text-uppercase mb-3 border-bottom pb-2" style="border-color: rgba(255,255,255,0.1) !important;">Espaces</h5>
         <ul class="list-unstyled">
           <li class="mb-2">
-            <a href="{% url 'login' %}?type=candidate" class="text-white text-decoration-none d-flex align-items-center link-hover">
+            <a href="{% url 'site_login' %}?type=candidate" class="text-white text-decoration-none d-flex align-items-center link-hover">
               <i class="bi bi-person-vcard me-2" style="color: var(--accent-orange);"></i>Candidat
             </a>
           </li>
           <li class="mb-2">
-            <a href="{% url 'login' %}?type=company" class="text-white text-decoration-none d-flex align-items-center link-hover">
+            <a href="{% url 'site_login' %}?type=company" class="text-white text-decoration-none d-flex align-items-center link-hover">
               <i class="bi bi-building me-2" style="color: var(--accent-orange);"></i>Entreprise
             </a>
           </li>
@@ -321,9 +379,9 @@ form input:focus {
         
         <h5 class="h6 text-uppercase mb-3">Réseaux sociaux</h5>
         <div class="d-flex gap-3">
-          <a href="https://www.facebook.com/profile.php?id=61576260853352" class="social-icon">
-            <i class="bi bi-facebook"></i>
-          </a>
+          <a href="https://facebook.com" class="social-icon" aria-label="Facebook">
+  <i class="bi bi-facebook" aria-hidden="true"></i>
+</a>
           <a href="https://www.linkedin.com/company/antares-rh-mali/" class="social-icon">
             <i class="bi bi-linkedin"></i>
           </a>

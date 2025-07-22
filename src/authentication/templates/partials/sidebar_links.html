@@ -94,6 +94,13 @@
                     Mon Profil
                 </a>
             </li>
+            <li class="nav-item mb-2">
+                <a class="nav-link text-dark {% if request.path == '/home/' %}active-link{% endif %}" 
+                   href="{% url 'home' %}">
+                    <i class="bi bi-globe me-2 text-primary"></i>
+                    Site web
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link text-warning" href="{% url 'logout' %}">
                     <i class="bi bi-box-arrow-right me-2"></i>

@@ -107,26 +107,25 @@
           <!-- Salarié Tab -->
           <div class="tab-pane fade" id="employee" role="tabpanel">
             <h3 class="mb-4 text-center" style="color: var(--primary-blue);">Espace Salarié</h3>
-            <form>
-              <div class="mb-3">
-                <label for="employee-email" class="form-label">Email professionnel</label>
-                <input type="email" class="form-control" id="employee-email" placeholder="prenom.nom@entreprise.com">
-              </div>
-              <div class="mb-3">
-                <label for="employee-password" class="form-label">Mot de passe</label>
-                <input type="password" class="form-control" id="employee-password" placeholder="Votre mot de passe">
-              </div>
-              <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="employee-remember">
-                <label class="form-check-label" for="employee-remember">Se souvenir de moi</label>
-              </div>
-              <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
-                <i class="bi bi-box-arrow-in-right me-2"></i> Se connecter
-              </button>
-              <div class="text-center">
-                <a href="#forgot-password" class="text-muted small">Mot de passe oublié ?</a>
-              </div>
-            </form>
+<form method="POST" action="{% url 'login' %}">
+  {% csrf_token %}
+  <div class="mb-3">
+    <label for="employee-email" class="form-label">username</label>
+    <input type="text" class="form-control" id="employee-email" name="username" placeholder="prenom.nom@entreprise.com">
+  </div>
+  <div class="mb-3">
+    <label for="employee-password" class="form-label">Mot de passe</label>
+    <input type="password" class="form-control" id="employee-password" name="password" placeholder="Votre mot de passe">
+  </div>
+  <div class="mb-3 form-check">
+    <input type="checkbox" class="form-check-input" id="employee-remember">
+    <label class="form-check-label" for="employee-remember">Se souvenir de moi</label>
+  </div>
+  <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+    <i class="bi bi-box-arrow-in-right me-2"></i> Se connecter
+  </button>
+</form>
+
             
             <div class="mt-4 pt-3 border-top text-center">
               <p class="mb-2">Pas encore de compte salarié ?</p>

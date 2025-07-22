@@ -1,0 +1,590 @@
+{% extends 'site_web/layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-3 p-md-4">
+                    <!-- Header with Antares branding -->
+                    <div class="text-center mb-3">
+                        <img src="{% static 'site_web/images/hero/logo_antares.png' %}" alt="Antares " style="height: 50px;" class="mb-2">
+                        <h2 class="h5 fw-bold text-primary-blue">Prendre Rendez-vous</h2>
+                        <p class="text-muted small">Planifiez une consultation avec nos experts en ressources humaines</p>
+                    </div>
+
+                    <!-- Client type selector -->
+                    <div class="d-flex justify-content-center gap-1 mb-3 flex-wrap">
+                        <button class="btn btn-sm {% if request.GET.type != 'candidate' and request.GET.type != 'employee' %}btn-orange{% else %}btn-outline-secondary{% endif %}" 
+                                onclick="setClientType('entreprise')">
+                            <i class="fas fa-building me-1"></i> Entreprise
+                        </button>
+                        <button class="btn btn-sm {% if request.GET.type == 'candidate' %}btn-orange{% else %}btn-outline-secondary{% endif %}" 
+                                onclick="setClientType('candidate')">
+                            <i class="fas fa-user-tie me-1"></i> Candidat
+                        </button>
+                        <button class="btn btn-sm {% if request.GET.type == 'employee' %}btn-orange{% else %}btn-outline-secondary{% endif %}" 
+                                onclick="setClientType('employee')">
+                            <i class="fas fa-id-badge me-1"></i> Salarié
+                        </button>
+                    </div>
+
+                    <!-- Progress steps - Mobile optimized -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 position-relative">
+                        <div class="progress-step completed">
+                            <div class="step-number">1</div>
+                            <small class="step-label d-none d-md-block">Service</small>
+                        </div>
+                        <div class="progress-step active">
+                            <div class="step-number">2</div>
+                            <small class="step-label d-none d-md-block">Date/Heure</small>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-number">3</div>
+                            <small class="step-label d-none d-md-block">Informations</small>
+                        </div>
+                        <div class="progress-step">
+                            <div class="step-number">4</div>
+                            <small class="step-label d-none d-md-block">Confirmation</small>
+                        </div>
+                        <div class="progress-bar position-absolute w-100" style="height: 2px; background-color: #dee2e6; z-index: -1;"></div>
+                    </div>
+
+                    <!-- Step 1: Service Selection -->
+                    <div class="appointment-step active" id="step1">
+                        <div class="mb-3">
+                            <label for="serviceType" class="form-label fw-semibold small">Type de service</label>
+                            <select class="form-select form-select-sm" id="serviceType">
+                                <option selected disabled>Choisissez un service</option>
+                                <option value="recrutement">Recrutement</option>
+                                <option value="formation">Formation RH</option>
+                                <option value="conseil">Conseil en GRH</option>
+                                <option value="externalisation">Externalisation RH</option>
+                                <option value="coaching">Coaching professionnel</option>
+                                <option value="audit">Audit RH</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small">Choisissez un expert</label>
+                            
+                            <div class="expert-list">
+                                <!-- Expert 1 -->
+                                <div class="expert-card selected p-2 mb-1 rounded border" onclick="selectExpert(this, 'sophie')">
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://randomuser.me/api/portraits/women/44.jpg" class="rounded-circle me-2" width="40" height="40" alt="Sophie Diarra">
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold small">Sophie Diarra</h6>
+                                            <small class="text-muted">Spécialiste en recrutement</small>
+                                            <div class="mt-1">
+                                                <small class="text-success"><i class="fas fa-clock me-1"></i> Lundi-Vendredi</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Expert 2 -->
+                                <div class="expert-card p-2 mb-1 rounded border" onclick="selectExpert(this, 'moussa')">
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://randomuser.me/api/portraits/men/32.jpg" class="rounded-circle me-2" width="40" height="40" alt="Moussa Traoré">
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold small">Moussa Traoré</h6>
+                                            <small class="text-muted">Consultant en formation</small>
+                                            <div class="mt-1">
+                                                <small class="text-success"><i class="fas fa-clock me-1"></i> Mardi-Jeudi</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Expert 3 -->
+                                <div class="expert-card p-2 rounded border" onclick="selectExpert(this, 'amina')">
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://randomuser.me/api/portraits/women/68.jpg" class="rounded-circle me-2" width="40" height="40" alt="Amina Keita">
+                                        <div>
+                                            <h6 class="mb-0 fw-semibold small">Amina Keita</h6>
+                                            <small class="text-muted">Experte en externalisation</small>
+                                            <div class="mt-1">
+                                                <small class="text-success"><i class="fas fa-clock me-1"></i> Lundi-Mercredi</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button class="btn btn-orange btn-sm" onclick="nextStep(1, 2)">Suivant</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Date/Time Selection -->
+                    <div class="appointment-step" id="step2">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0 fw-semibold small">Juillet 2023</h5>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary me-1"><i class="fas fa-chevron-left"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="calendar-grid mb-2">
+                                <div class="calendar-header small">Lun</div>
+                                <div class="calendar-header small">Mar</div>
+                                <div class="calendar-header small">Mer</div>
+                                <div class="calendar-header small">Jeu</div>
+                                <div class="calendar-header small">Ven</div>
+                                <div class="calendar-header small">Sam</div>
+                                <div class="calendar-header small">Dim</div>
+
+                                <!-- Calendar days would be dynamically generated -->
+                                <div class="calendar-day disabled small">26</div>
+                                <div class="calendar-day disabled small">27</div>
+                                <div class="calendar-day disabled small">28</div>
+                                <div class="calendar-day disabled small">29</div>
+                                <div class="calendar-day disabled small">30</div>
+                                <div class="calendar-day small">1</div>
+                                <div class="calendar-day small">2</div>
+                                <div class="calendar-day small">3</div>
+                                <div class="calendar-day small">4</div>
+                                <div class="calendar-day small">5</div>
+                                <div class="calendar-day selected small">6</div>
+                                <div class="calendar-day small">7</div>
+                                <div class="calendar-day small">8</div>
+                                <div class="calendar-day small">9</div>
+                                <div class="calendar-day small">10</div>
+                                <div class="calendar-day small">11</div>
+                                <div class="calendar-day small">12</div>
+                                <div class="calendar-day small">13</div>
+                                <div class="calendar-day small">14</div>
+                                <div class="calendar-day small">15</div>
+                                <div class="calendar-day small">16</div>
+                                <div class="calendar-day small">17</div>
+                                <div class="calendar-day small">18</div>
+                                <div class="calendar-day small">19</div>
+                                <div class="calendar-day small">20</div>
+                                <div class="calendar-day small">21</div>
+                                <div class="calendar-day small">22</div>
+                                <div class="calendar-day small">23</div>
+                                <div class="calendar-day small">24</div>
+                                <div class="calendar-day small">25</div>
+                                <div class="calendar-day small">26</div>
+                                <div class="calendar-day small">27</div>
+                                <div class="calendar-day small">28</div>
+                                <div class="calendar-day small">29</div>
+                                <div class="calendar-day small">30</div>
+                                <div class="calendar-day small">31</div>
+                                <div class="calendar-day disabled small">1</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small">Heure de rendez-vous</label>
+                            <div class="time-slots">
+                                <button class="time-slot btn btn-sm btn-outline-secondary unavailable">9:00</button>
+                                <button class="time-slot btn btn-sm btn-outline-secondary">10:00</button>
+                                <button class="time-slot btn btn-sm btn-outline-secondary">11:00</button>
+                                <button class="time-slot btn btn-sm btn-orange selected">14:00</button>
+                                <button class="time-slot btn btn-sm btn-outline-secondary">15:00</button>
+                                <button class="time-slot btn btn-sm btn-outline-secondary">16:00</button>
+                                <button class="time-slot btn btn-sm btn-outline-secondary unavailable">17:00</button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="prevStep(2, 1)">Retour</button>
+                            <button class="btn btn-orange btn-sm" onclick="nextStep(2, 3)">Suivant</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Personal Information -->
+                    <div class="appointment-step" id="step3">
+                        <div class="mb-2">
+                            <label for="fullName" class="form-label fw-semibold small">Nom complet</label>
+                            <input type="text" class="form-control form-control-sm" id="fullName" placeholder="Ex: Fatoumata Diarra">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="companyName" class="form-label fw-semibold small">Entreprise (si applicable)</label>
+                            <input type="text" class="form-control form-control-sm" id="companyName" placeholder="Nom de votre entreprise">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="email" class="form-label fw-semibold small">Adresse email</label>
+                            <input type="email" class="form-control form-control-sm" id="email" placeholder="exemple@domaine.com">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="phone" class="form-label fw-semibold small">Téléphone</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">+223</span>
+                                <input type="tel" class="form-control" id="phone" placeholder="76 12 34 56">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label fw-semibold small">Informations supplémentaires (optionnel)</label>
+                            <textarea class="form-control form-control-sm" id="notes" rows="2" placeholder="Décrivez brièvement votre demande..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="prevStep(3, 2)">Retour</button>
+                            <button class="btn btn-orange btn-sm" onclick="nextStep(3, 4)">Suivant</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Confirmation -->
+                    <div class="appointment-step" id="step4">
+                        <div class="confirmation-card bg-light-blue p-3 rounded mb-3">
+                            <h5 class="fw-semibold mb-2 text-primary-blue small">Récapitulatif du rendez-vous</h5>
+                            
+                            <div class="confirmation-item d-flex justify-content-between py-1 border-bottom small">
+                                <span class="fw-semibold">Type de client:</span>
+                                <span id="conf-client-type">Entreprise</span>
+                            </div>
+                            <div class="confirmation-item d-flex justify-content-between py-1 border-bottom small">
+                                <span class="fw-semibold">Service:</span>
+                                <span id="conf-service">Recrutement</span>
+                            </div>
+                            <div class="confirmation-item d-flex justify-content-between py-1 border-bottom small">
+                                <span class="fw-semibold">Expert:</span>
+                                <span id="conf-expert">Sophie Diarra</span>
+                            </div>
+                            <div class="confirmation-item d-flex justify-content-between py-1 border-bottom small">
+                                <span class="fw-semibold">Date:</span>
+                                <span id="conf-date">Jeudi 6 Juillet 2023</span>
+                            </div>
+                            <div class="confirmation-item d-flex justify-content-between py-1 border-bottom small">
+                                <span class="fw-semibold">Heure:</span>
+                                <span id="conf-time">14:00</span>
+                            </div>
+                            <div class="confirmation-item d-flex justify-content-between py-1 border-bottom small">
+                                <span class="fw-semibold">Nom:</span>
+                                <span id="conf-name">Fatoumata Diarra</span>
+                            </div>
+                            <div class="confirmation-item d-flex justify-content-between py-1 small">
+                                <span class="fw-semibold">Email:</span>
+                                <span id="conf-email">fatou@entreprise.ml</span>
+                            </div>
+                        </div>
+
+                        <div class="form-check mb-3 small">
+                            <input class="form-check-input" type="checkbox" id="termsCheck">
+                            <label class="form-check-label" for="termsCheck">
+                                J'accepte les <a href="#" class="text-primary-blue">conditions générales</a> et la 
+                                <a href="#" class="text-primary-blue">politique de confidentialité</a> d'Antares
+                            </label>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-outline-secondary btn-sm" onclick="prevStep(4, 3)">Retour</button>
+                            <button class="btn btn-orange btn-sm" onclick="submitAppointment()">Confirmer le rendez-vous</button>
+                        </div>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div class="appointment-step text-center" id="success-message">
+                        <div class="mb-3">
+                            <div class="success-icon bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                <i class="fas fa-check text-success" style="font-size: 1.5rem;"></i>
+                            </div>
+                        </div>
+                        <h4 class="fw-semibold text-primary-blue mb-2 small">Rendez-vous confirmé!</h4>
+                        <p class="mb-3 small">Votre consultation avec Antares a été planifiée avec succès. Vous recevrez une confirmation par email avec les détails de votre rendez-vous.</p>
+                        
+                        <div class="bg-light-blue p-2 rounded mb-3 text-start small">
+                            <h6 class="fw-semibold mb-1 small">Prochaines étapes:</h6>
+                            <ol class="mb-0 ps-3">
+                                <li class="mb-1">Vous recevrez un email de confirmation</li>
+                                <li class="mb-1">Notre équipe vous contactera pour toute information complémentaire</li>
+                                <li>Préparez les documents nécessaires pour votre consultation</li>
+                            </ol>
+                        </div>
+                        
+                        <a href="{% url 'home' %}" class="btn btn-orange btn-sm mt-1">Retour à l'accueil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Progress steps */
+    .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        flex: 1;
+    }
+    
+    .progress-step.completed .step-number {
+        background-color: var(--success);
+        color: white;
+        border-color: var(--success);
+    }
+    
+    .progress-step.active .step-number {
+        background-color: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+    }
+    
+    .step-number {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #dee2e6;
+        background-color: white;
+        font-weight: 600;
+        font-size: 0.75rem;
+    }
+    
+    .step-label {
+        margin-top: 0.25rem;
+        font-size: 0.65rem;
+        color: var(--dark-gray);
+    }
+    
+    /* Calendar grid */
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.25rem;
+    }
+    
+    .calendar-header {
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.75rem;
+        color: var(--primary-blue);
+        padding: 0.15rem;
+    }
+    
+    .calendar-day {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        background-color: white;
+        border: 1px solid #dee2e6;
+    }
+    
+    .calendar-day:hover {
+        background-color: var(--light-blue);
+    }
+    
+    .calendar-day.selected {
+        background-color: var(--primary-blue);
+        color: white;
+        border-color: var(--primary-blue);
+    }
+    
+    .calendar-day.disabled {
+        color: #adb5bd;
+        background-color: #f8f9fa;
+        cursor: not-allowed;
+    }
+    
+    /* Time slots */
+    .time-slots {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 0.25rem;
+    }
+    
+    .time-slot {
+        font-size: 0.75rem;
+    }
+    
+    .time-slot.selected {
+        background-color: var(--primary-blue);
+        border-color: var(--primary-blue);
+    }
+    
+    .time-slot.unavailable {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    /* Expert cards */
+    .expert-card {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .expert-card:hover {
+        border-color: var(--primary-blue) !important;
+        background-color: rgba(13, 59, 102, 0.05);
+    }
+    
+    .expert-card.selected {
+        border-color: var(--primary-blue) !important;
+        background-color: rgba(13, 59, 102, 0.1);
+    }
+    
+    /* Appointment steps */
+    .appointment-step {
+        display: none;
+    }
+    
+    .appointment-step.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 767.98px) {
+        .time-slots {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .expert-card {
+            padding: 0.5rem !important;
+        }
+        
+        .expert-card img {
+            width: 35px !important;
+            height: 35px !important;
+        }
+    }
+    
+    @media (max-width: 575.98px) {
+        .time-slots {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .card-body {
+            padding: 1rem !important;
+        }
+    }
+</style>
+
+<script>
+    // Initialize based on URL parameter
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const clientType = urlParams.get('type');
+        
+        if (clientType) {
+            setClientType(clientType);
+        }
+    });
+    
+    function setClientType(type) {
+        // Update UI
+        document.querySelectorAll('.client-type-btn').forEach(btn => {
+            btn.classList.remove('btn-orange');
+            btn.classList.add('btn-outline-secondary');
+        });
+        
+        const activeBtn = document.querySelector(`[onclick="setClientType('${type}')"]`);
+        if (activeBtn) {
+            activeBtn.classList.remove('btn-outline-secondary');
+            activeBtn.classList.add('btn-orange');
+        }
+        
+        // Update hidden field or variable
+        // You might want to store this in a hidden input or JavaScript variable
+    }
+    
+    function nextStep(current, next) {
+        document.getElementById(`step${current}`).classList.remove('active');
+        document.getElementById(`step${next}`).classList.add('active');
+        
+        // Update progress steps
+        document.querySelectorAll('.progress-step').forEach((step, index) => {
+            if (index + 1 < next) {
+                step.classList.add('completed');
+                step.classList.remove('active');
+            } else if (index + 1 === next) {
+                step.classList.add('active');
+                step.classList.remove('completed');
+            } else {
+                step.classList.remove('active', 'completed');
+            }
+        });
+    }
+    
+    function prevStep(current, prev) {
+        document.getElementById(`step${current}`).classList.remove('active');
+        document.getElementById(`step${prev}`).classList.add('active');
+        
+        // Update progress steps
+        document.querySelectorAll('.progress-step').forEach((step, index) => {
+            if (index + 1 < prev) {
+                step.classList.add('completed');
+                step.classList.remove('active');
+            } else if (index + 1 === prev) {
+                step.classList.add('active');
+                step.classList.remove('completed');
+            } else {
+                step.classList.remove('active', 'completed');
+            }
+        });
+    }
+    
+    function selectExpert(card, expertId) {
+        document.querySelectorAll('.expert-card').forEach(c => {
+            c.classList.remove('selected');
+        });
+        card.classList.add('selected');
+        
+        // You might want to store the selected expert in a variable
+    }
+    
+    function submitAppointment() {
+        // Validate terms checkbox
+        if (!document.getElementById('termsCheck').checked) {
+            alert('Veuillez accepter les conditions générales');
+            return;
+        }
+        
+        // In a real app, you would send data to server here
+        document.getElementById('step4').classList.remove('active');
+        document.getElementById('success-message').classList.add('active');
+        
+        // Update progress steps to all completed
+        document.querySelectorAll('.progress-step').forEach(step => {
+            step.classList.add('completed');
+            step.classList.remove('active');
+        });
+    }
+    
+    // Calendar day selection
+    document.querySelectorAll('.calendar-day:not(.disabled)').forEach(day => {
+        day.addEventListener('click', function() {
+            document.querySelectorAll('.calendar-day').forEach(d => {
+                d.classList.remove('selected');
+            });
+            this.classList.add('selected');
+        });
+    });
+    
+    // Time slot selection
+    document.querySelectorAll('.time-slot:not(.unavailable)').forEach(slot => {
+        slot.addEventListener('click', function() {
+            document.querySelectorAll('.time-slot').forEach(s => {
+                s.classList.remove('btn-orange', 'selected');
+                s.classList.add('btn-outline-secondary');
+            });
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('btn-orange', 'selected');
+        });
+    });
+</script>
+{% endblock %}

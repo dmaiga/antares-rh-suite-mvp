@@ -8,10 +8,10 @@
     <div class="row">
       <div class="col-lg-8 mx-auto">
         <h1 class="display-4 fw-bold mb-4">Nos Offres d'Emploi</h1>
-        <p class="lead mb-5">Rejoignez une équipe dynamique et développez votre carrière avec Antares RH</p>
+        <p class="lead mb-5">Rejoignez une équipe dynamique et développez votre carrière avec Antares </p>
         <a href="{% url 'recruteur-info' %}" class="btn btn-outline-light btn-lg px-5" style="color: #F46036;">
-      <i class="bi bi-building me-2"></i>Espace recruteur
-    </a>
+          <i class="bi bi-building me-2"></i>Espace recruteur
+        </a>
         <a href="#job-alerts" class="btn btn-outline-light btn-lg px-5">
           <i class="bi bi-bell me-2"></i>Créer une alerte
         </a>
@@ -21,7 +21,7 @@
 </section>
 
 <!-- Job Search Filters -->
-<section class="py-4 bg-light sticky-top shadow-sm">
+<section class="py-4 bg-light shadow-sm">
   <div class="container">
     <div class="row g-3">
       <div class="col-md-6 col-lg-3">
@@ -69,16 +69,16 @@
 <section id="job-listings" class="py-5">
   <div class="container">
     <div class="row">
-      <div class="col-lg-8 mx-auto text-center mb-5">
+      <div class="col-lg-10 mx-auto text-center mb-5">
         <h2 class="mb-3" style="color: var(--primary-blue);">Offres disponibles</h2>
         <p>Découvrez nos opportunités actuelles et postulez en ligne</p>
       </div>
     </div>
     
     <div class="row">
-      <!-- Sidebar Filters (Desktop) -->
+      <!-- Colonne 1 - Filtres (3/12) -->
       <div class="col-lg-3 mb-4 d-none d-lg-block">
-        <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
+        <div class="card border-0 shadow-sm">
           <div class="card-body">
             <h5 class="mb-4"><i class="bi bi-funnel me-2"></i>Filtres avancés</h5>
             
@@ -134,8 +134,8 @@
         </div>
       </div>
       
-      <!-- Job Listings -->
-      <div class="col-lg-9">
+      <!-- Colonne 2 - Offres d'emploi (6/12) -->
+      <div class="col-lg-6">
         <!-- Mobile Filters Toggle -->
         <button class="btn btn-outline-primary w-100 mb-4 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobileFilters">
           <i class="bi bi-funnel me-2"></i>Filtres avancés
@@ -367,6 +367,109 @@
           </ul>
         </nav>
       </div>
+      
+      <!-- Colonne 3 - Publicité (3/12) -->
+      <div class="col-lg-3">
+        <!-- Publicités en carousel pour mobile -->
+        <div id="adsCarousel" class="carousel slide d-lg-none mb-4" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <!-- Publicité 1 -->
+            <div class="carousel-item active">
+              <div class="card border-0 shadow-sm ad-card">
+                <div class="card-body text-center">
+                  <h5 class="mb-3">Formation RH Certifiante</h5>
+                  <img src="{% static 'site_web/images/ads/ads1.jpg' %}" alt="Formation RH" class="img-fluid rounded mb-3">
+                  <p class="small">Devenez expert en Ressources Humaines avec notre formation certifiante de 3 mois</p>
+                  <a href="#" class="btn btn-sm btn-outline-primary">En savoir plus</a>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Publicité 2 -->
+            <div class="carousel-item">
+              <div class="card border-0 shadow-sm ad-card">
+                <div class="card-body text-center">
+                  <h5 class="mb-3">CV Professionnel</h5>
+                  <img src="{% static 'site_web/images/ads/ads2.webp' %}" alt="Service CV Pro" class="img-fluid rounded mb-3">
+                  <p class="small">Faites rédiger votre CV par nos experts et multipliez vos chances d'embauche</p>
+                  <a href="#" class="btn btn-sm btn-outline-primary">Commander</a>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Publicité 3 -->
+            <div class="carousel-item">
+              <div class="card border-0 shadow-sm ad-card">
+                <div class="card-body p-0">
+                  <a href="#">
+                    <img src="{% static 'site_web/images/ads/ads3.webp' %}" alt="Publicité" class="img-fluid w-100 rounded">
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Publicité 4 -->
+            <div class="carousel-item">
+              <div class="card border-0 shadow-sm ad-card">
+                <div class="card-body p-0">
+                  <a href="#">
+                    <img src="{% static 'site_web/images/ads/ads4.avif' %}" alt="Publicité" class="img-fluid w-100 rounded">
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#adsCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#adsCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        
+        <!-- Publicités normales pour desktop -->
+        <div class="d-none d-lg-block">
+          <!-- Publicité 1 -->
+          <div class="card border-0 shadow-sm mb-4 ad-card">
+            <div class="card-body text-center">
+              <h5 class="mb-3">Formation RH Certifiante</h5>
+              <img src="{% static 'site_web/images/ads/ads1.jpg' %}" alt="Formation RH" class="img-fluid rounded mb-3">
+              <p class="small">Devenez expert en Ressources Humaines avec notre formation certifiante de 3 mois</p>
+              <a href="#" class="btn btn-sm btn-outline-primary">En savoir plus</a>
+            </div>
+          </div>
+          
+          <!-- Publicité 2 -->
+          <div class="card border-0 shadow-sm mb-4 ad-card">
+            <div class="card-body text-center">
+              <h5 class="mb-3">CV Professionnel</h5>
+              <img src="{% static 'site_web/images/ads/ads2.webp' %}" alt="Service CV Pro" class="img-fluid rounded mb-3">
+              <p class="small">Faites rédiger votre CV par nos experts et multipliez vos chances d'embauche</p>
+              <a href="#" class="btn btn-sm btn-outline-primary">Commander</a>
+            </div>
+          </div>
+          
+          <!-- Publicité 3 - Bannière verticale -->
+          <div class="card border-0 shadow-sm mb-4 ad-card">
+            <div class="card-body p-0">
+              <a href="#">
+                <img src="{% static 'site_web/images/ads/ads3.webp' %}" alt="Publicité" class="img-fluid w-100 rounded">
+              </a>
+            </div>
+          </div>
+          
+          <!-- Publicité 4 -->
+          <div class="card border-0 shadow-sm mb-4 ad-card">
+            <div class="card-body p-0">
+              <a href="#">
+                <img src="{% static 'site_web/images/ads/ads4.avif' %}" alt="Publicité" class="img-fluid w-100 rounded">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -375,8 +478,8 @@
 <section id="job-alerts" class="py-5 bg-light">
   <div class="container">
     <div class="row align-items-center">
-      <div class="col-lg-6 mb-4 mb-lg-0">
-        <img src="{% static 'site_web/images/jobs/job_alerts.jpg' %}" alt="Alerte emploi" class="img-fluid rounded shadow">
+      <div class="col-lg-6 mb-4 mb-lg-0 d-none d-lg-block">
+        <!-- Image supprimée en version mobile -->
       </div>
       <div class="col-lg-6">
         <h2 class="mb-4" style="color: var(--primary-blue);">Ne ratez plus aucune opportunité</h2>
@@ -412,7 +515,7 @@
 <section class="py-5 bg-primary-blue">
   <div class="container text-center">
     <h2 class="mb-4">Vous recrutez ?</h2>
-    <p class="lead mb-5">Publiez vos offres d'emploi et trouvez les meilleurs talents avec Antares RH</p>
+    <p class="lead mb-5">Publiez vos offres d'emploi et trouvez les meilleurs talents avec Antares </p>
     <a href="{% url 'contact' %}"  class="btn btn-light btn-lg px-5 me-3" style="color: #F46036;">
       <i class="bi bi-telephone me-2"></i>Nous contacter
     </a>
@@ -427,6 +530,8 @@
     min-height: 400px;
     display: flex;
     align-items: center;
+    background-size: cover;
+    background-position: center;
   }
   
   .company-logo {
@@ -437,7 +542,9 @@
   }
   
   .job-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.1s ease, box-shadow 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
   }
   
   .job-card:hover {
@@ -445,14 +552,56 @@
     box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
   }
   
-  .sticky-top {
-    position: sticky;
-    z-index: 1020;
-  }
-  
   .badge {
     font-weight: 500;
     padding: 0.5em 0.8em;
+  }
+  
+  /* Styles pour les cartes de publicité */
+  .ad-card {
+    transition: all 0.1s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+  
+  .ad-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-color: rgba(13, 59, 102, 0.2);
+  }
+  
+  .ad-card img {
+    transition: transform 0.1s ease;
+    max-height: 180px;
+    width: auto;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  .ad-card:hover img {
+    transform: scale(1.03);
+  }
+  
+  /* Carousel styles */
+  .carousel {
+    max-width: 100%;
+  }
+  
+  .carousel-item {
+    padding: 0 15px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 991.98px) {
+    .pub-col {
+      order: -1;
+      margin-bottom: 2rem;
+    }
+    
+    .jobs-hero .btn {
+      margin-bottom: 1rem;
+    }
   }
   
   @media (max-width: 767.98px) {
@@ -462,13 +611,21 @@
     }
     
     .jobs-hero .btn {
-      display: block;
       width: 100%;
-      margin-bottom: 1rem;
+      display: block;
     }
     
     .jobs-hero .btn:last-child {
       margin-bottom: 0;
+    }
+    
+    .ad-card {
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Hide job alerts image on mobile */
+    #job-alerts img {
+      display: none;
     }
   }
 </style>

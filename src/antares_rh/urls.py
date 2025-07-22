@@ -27,7 +27,8 @@ import statics.views
 import site_web.views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', authentication.views.login_page, name='login'),
+    path('',site_web.views.home,name='home'),
+    path('auth/login', authentication.views.login_page, name='login'),
     path('auth/', include('authentication.urls')),
     path('documents/', include('documents.urls')),
     path('logs/', include('logs.urls')),

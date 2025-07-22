@@ -9,7 +9,7 @@
     <div class="row align-items-center">
       <div class="col-lg-6 order-lg-1 order-2 mt-3 mt-lg-0">
         <h1 class="fw-bold mb-3 fs-2" style="color: var(--primary-blue);">
-          Antares RH : Au service des talents et des organisations
+          Antares : Au service des talents et des organisations
         </h1>
         <p class="lead mb-2" style="color: var(--secondary-blue);">
           Cabinet spécialisé en gestion des ressources humaines et en organisation des entreprises.
@@ -34,6 +34,10 @@
       <div class="col-lg-6 order-lg-2 order-1 hero-img-mobile">
         <img src="{% static 'site_web/images/hero/hero-team.jpg' %}" 
              alt="Équipe professionnelle" 
+               loading="lazy"  
+             width="1200" 
+     height="800"
+     alt="Équipe Antares "
              class="img-fluid rounded-3 shadow-sm">
       </div>
     </div>
@@ -131,52 +135,61 @@
     </div>
   </div>
 </section>
-
-<!-- Section Valeurs -->
-<section class="values-section py-3" style="background-color: #FFFFFF;">
+<!-- Section Valeurs - Optimisée pour mobile -->
+<section class="values-section py-5" style="background-color: #FFFFFF;">
   <div class="container">
-    <h2 class="text-center mb-3" style="color: #0D3B66;">Notre ADN à Antares</h2>
+    <h2 class="text-center mb-5" style="color: #0D3B66;">Notre ADN à Antares</h2>
     <div class="row g-4">
-      <div class="col-md-6 col-lg-3">
-        <div class="value-card text-center p-3 h-100">
-          <div class="icon-circle mb-4 mx-auto" style="background-color: rgba(13,59,102,0.1);">
-            <i class="bi bi-shield-check fs-3" style="color: #0D3B66;">1</i>
+      <!-- Carte Valeur 1 -->
+      <div class="col-6 col-md-6 col-lg-3">
+        <div class="value-card text-center p-3 h-100 border-0 shadow-sm rounded-3">
+          <div class="icon-circle mb-3 mx-auto d-flex align-items-center justify-content-center" 
+               style="background-color: rgba(13,59,102,0.1); width: 60px; height: 60px;">
+            <i class="bi bi-shield-check fs-4" style="color: #0D3B66;"></i>
           </div>
-          <h3 style="color: #0D3B66;">Fiabilité</h3>
-          <p class="text-muted">Engagements contractuels strictement respectés</p>
+          <h3 class="h5 mb-3" style="color: #0D3B66;">Fiabilité</h3>
+          <p class="small text-muted mb-0">Engagements contractuels strictement respectés</p>
         </div>
       </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="value-card text-center p-3 h-100">
-          <div class="icon-circle mb-4 mx-auto" style="background-color: rgba(13,59,102,0.1);">
-            <i class="bi bi-geo-alt fs-3" style="color: #0D3B66;">2</i>
+      
+      <!-- Carte Valeur 2 -->
+      <div class="col-6 col-md-6 col-lg-3">
+        <div class="value-card text-center p-3 h-100 border-0 shadow-sm rounded-3">
+          <div class="icon-circle mb-3 mx-auto d-flex align-items-center justify-content-center" 
+               style="background-color: rgba(13,59,102,0.1); width: 60px; height: 60px;">
+            <i class="bi bi-geo-alt fs-4" style="color: #0D3B66;"></i>
           </div>
-          <h3 style="color: #0D3B66;">Expertise locale</h3>
-          <p class="text-muted">Connaissance approfondie des marchés africains</p>
+          <h3 class="h5 mb-3" style="color: #0D3B66;">Expertise locale</h3>
+          <p class="small text-muted mb-0">Connaissance approfondie des marchés africains</p>
         </div>
       </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="value-card text-center p-3 h-100">
-          <div class="icon-circle mb-4 mx-auto" style="background-color: rgba(13,59,102,0.1);">
-            <i class="bi bi-lightbulb fs-3" style="color: #0D3B66;">3</i>
+      
+      <!-- Carte Valeur 3 -->
+      <div class="col-6 col-md-6 col-lg-3">
+        <div class="value-card text-center p-3 h-100 border-0 shadow-sm rounded-3">
+          <div class="icon-circle mb-3 mx-auto d-flex align-items-center justify-content-center" 
+               style="background-color: rgba(13,59,102,0.1); width: 60px; height: 60px;">
+            <i class="bi bi-lightbulb fs-4" style="color: #0D3B66;"></i>
           </div>
-          <h3 style="color: #0D3B66;">Innovation</h3>
-          <p class="text-muted">Solutions digitales pour une gestion RH moderne</p>
+          <h3 class="h5 mb-3" style="color: #0D3B66;">Innovation</h3>
+          <p class="small text-muted mb-0">Solutions digitales pour une gestion RH moderne</p>
         </div>
       </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="value-card text-center p-3 h-100">
-          <div class="icon-circle mb-4 mx-auto" style="background-color: rgba(13,59,102,0.1);">
-            <i class="bi bi-people fs-3" style="color: #0D3B66;">4</i>
+      
+      <!-- Carte Valeur 4 -->
+      <div class="col-6 col-md-6 col-lg-3">
+        <div class="value-card text-center p-3 h-100 border-0 shadow-sm rounded-3">
+          <div class="icon-circle mb-3 mx-auto d-flex align-items-center justify-content-center" 
+               style="background-color: rgba(13,59,102,0.1); width: 60px; height: 60px;">
+            <i class="bi bi-people fs-4" style="color: #0D3B66;"></i>
           </div>
-          <h3 style="color: #0D3B66;">Proximité</h3>
-          <p class="text-muted">Relation personnalisée avec chaque client</p>
+          <h3 class="h5 mb-3" style="color: #0D3B66;">Proximité</h3>
+          <p class="small text-muted mb-0">Relation personnalisée avec chaque client</p>
         </div>
       </div>
     </div>
   </div>
 </section>
-
 <!-- Carrousel Partenaires -->
 <section class="partners-section bg-"style="background-color: #F4F4F9;">
   <div class="container-fluid px-0">
@@ -220,65 +233,117 @@
   </div>
 </section>
 
-<!-- Témoignages -->
+
+<!-- Témoignages - Optimisé pour mobile -->
 <section class="testimonials-section py-5" style="background-color: #0D3B66; color: white;">
   <div class="container">
-    <h2 class="text-center mb-5">Ils nous font confiance</h2>
+    <h2 class="text-center mb-5">Ils témoignent</h2>
+    
     <div class="row g-4">
-      <div class="col-md-4">
-        <div class="testimonial-card p-4 h-100" style="background-color: rgba(255,255,255,0.1); border-radius: 8px;">
-          <div class="d-flex align-items-center mb-4">
-            <img src="{% static 'site_web/images/profil/pro_user5.jpg' %}" alt="Mohamed K." class="rounded-circle me-3" width="60">
-          <div>
+      <!-- Témoignage 1 -->
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="testimonial-card p-4 h-100" style="background-color: rgba(255,255,255,0.1); border-radius: 12px;">
+          <div class="d-flex align-items-center mb-3">
+            <img src="{% static 'site_web/images/profil/pro_user5.jpg' %}" alt="Mohamed K." 
+                 class="rounded-circle me-3" width="50" height="50" style="object-fit: cover;">
+            <div>
               <h5 class="mb-0">Mohamed K.</h5>
               <p class="small mb-0" style="color: rgba(255,255,255,0.7);">Directeur Financier</p>
             </div>
           </div>
-          <p class="lead">"Leur compréhension des enjeux locaux a fait la différence dans notre recrutement de cadres dirigeants."</p>
+          <div class="rating mb-2">
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+          </div>
+          <p class="mb-0">"Leur compréhension des enjeux locaux a fait la différence dans notre recrutement de cadres dirigeants."</p>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="testimonial-card p-4 h-100" style="background-color: rgba(255,255,255,0.1); border-radius: 8px;">
-          <div class="d-flex align-items-center mb-4">
-            <img src="{% static 'site_web/images/profil/pro_user1.jpg' %}" alt="Salif M." class="rounded-circle me-3" width="60">
-          <div>
+      
+      <!-- Témoignage 2 -->
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="testimonial-card p-4 h-100" style="background-color: rgba(255,255,255,0.1); border-radius: 12px;">
+          <div class="d-flex align-items-center mb-3">
+            <img src="{% static 'site_web/images/profil/pro_user1.jpg' %}" alt="Salif M." 
+                 class="rounded-circle me-3" width="50" height="50" style="object-fit: cover;">
+            <div>
               <h5 class="mb-0">Salif M.</h5>
               <p class="small mb-0" style="color: rgba(255,255,255,0.7);">Entrepreneur</p>
             </div>
           </div>
-          <p class="lead">"Antares nous a aidé à etre plus efficient."</p>
+          <div class="rating mb-2">
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-half text-warning"></i>
+          </div>
+          <p class="mb-0">"Antares nous a aidé à être plus efficient avec une équipe qualifiée en un temps record."</p>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="testimonial-card p-4 h-100" style="background-color: rgba(255,255,255,0.1); border-radius: 8px;">
-          <div class="d-flex align-items-center mb-4">
-            <img src="{% static 'site_web/images/profil/pro_user42.jpg' %}" alt="Aminata D." class="rounded-circle me-3" width="60">
+      
+      <!-- Témoignage 3 -->
+      <div class="col-12 col-md-6 col-lg-4">
+        <div class="testimonial-card p-4 h-100" style="background-color: rgba(255,255,255,0.1); border-radius: 12px;">
+          <div class="d-flex align-items-center mb-3">
+            <img src="{% static 'site_web/images/profil/pro_user42.jpg' %}" alt="Aminata D." 
+                 class="rounded-circle me-3" width="50" height="50" style="object-fit: cover;">
             <div>
               <h5 class="mb-0">Aminata D.</h5>
               <p class="small mb-0" style="color: rgba(255,255,255,0.7);">Ingénieure Logiciel</p>
             </div>
           </div>
-          <p class="lead">"Grâce à leur coaching, j'ai décroché un poste à 40% mieux rémunéré que mon précédent emploi."</p>
+          <div class="rating mb-2">
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+          </div>
+          <p class="mb-0">"Grâce à leur coaching, j'ai décroché un poste à 40% mieux rémunéré que mon précédent emploi."</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Bouton "Voir plus" pour mobile -->
+    <div class="text-center mt-4 d-block d-md-none">
+      <button class="btn btn-outline-light btn-sm" id="showMoreTestimonials">
+        Voir plus de témoignages <i class="bi bi-chevron-down"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Final - Optimisé pour mobile -->
+<section class="cta-section py-5" style="background-color: #F46036; color: white;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h2 class="fw-bold mb-4">Prêt à transformer votre expérience RH ?</h2>
+        <p class="lead mb-4">Nos experts sont à votre écoute pour répondre à vos besoins en recrutement et gestion des talents.</p>
+        
+        <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
+          <a href="{% url 'contact' %}" class="btn btn-light btn-lg px-4 py-3" style="color: #F46036;">
+            <i class="bi bi-chat-left-text me-2"></i>Parler à un expert
+          </a>
+          <a href="{% url 'jobs' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+            <i class="bi bi-search me-2"></i>Rechercher des offres
+          </a>
+        </div>
+        
+        <!-- Numéro de téléphone visible sur mobile -->
+        <div class="mt-4 d-block d-md-none">
+          <a href="tel:+22300000000" class="text-white d-inline-flex align-items-center">
+            <i class="bi bi-telephone-fill me-2"></i> +223 00 00 00 00
+          </a>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CTA Final -->
-<section class="cta-section " style="background-color: #F46036; color: white;">
-  <div class="container text-center py-4">
-    <h2 class="fw-bold">Prêt à transformer votre expérience RH ?</h2>
-    <div class="d-flex justify-content-center gap-3">
-      <a href="{% url 'contact' %}" class="btn btn-light btn-lg px-5" style="color: #F46036;">
-        <i class="bi bi-chat-left-text me-2"></i>Parler à un expert
-      </a>
-      <a href="{% url 'jobs' %}" class="btn btn-outline-light btn-lg px-5">
-        <i class="bi bi-search me-2"></i>Rechercher des offres
-      </a>
-    </div>
-  </div>
-</section>
 
 <!-- Splide JS et CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -288,6 +353,72 @@
 <style>
   
   /* Styles spécifiques pour index.html */
+  .values-section .value-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  .values-section .value-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+  
+  /* Témoignages */
+  .testimonials-section .testimonial-card {
+    transition: all 0.3s ease;
+  }
+  
+  .testimonials-section .testimonial-card:hover {
+    background-color: rgba(255,255,255,0.15) !important;
+    transform: translateY(-5px);
+  }
+  
+  /* CTA Section */
+  .cta-section {
+    background: linear-gradient(135deg, #F46036 0%, #e04b22 100%);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    /* Valeurs - 2 colonnes sur mobile */
+    .values-section .col-6 {
+      padding: 0.5rem;
+    }
+    
+    .values-section .value-card {
+      padding: 1rem;
+    }
+    
+    .values-section h3 {
+      font-size: 1rem;
+    }
+    
+    /* Témoignages - pleine largeur sur mobile */
+    .testimonials-section .col-12:not(:first-child) {
+      display: none;
+    }
+    
+    .testimonials-section.show-more .col-12 {
+      display: block;
+    }
+    
+    /* CTA - boutons en colonne */
+    .cta-section .d-flex {
+      flex-direction: column;
+    }
+    
+    .cta-section .btn {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .values-section .icon-circle {
+      width: 80px;
+      height: 80px;
+    }
+  }
   .hero-section {
     background: linear-gradient(135deg, var(--light-gray) 0%, white 100%);
   }

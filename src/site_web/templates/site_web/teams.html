@@ -1,0 +1,713 @@
+{% extends 'site_web/layout.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Hero Section Équipe -->
+<section class="team-hero py-4 py-lg-5" style="background-color: #F4F4F9;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 order-lg-1 order-2">
+        <h1 class="fw-bold mb-3" style="color: var(--primary-blue);">Notre équipe d'experts RH</h1>
+        <p class="lead mb-4" style="color: var(--secondary-blue);">
+          Découvrez les professionnels dévoués qui accompagnent votre réussite. 
+          Notre équipe allie expertise locale et vision internationale pour vous 
+          offrir des solutions RH sur mesure.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="#team" class="btn btn-primary px-4" style="background-color: var(--accent-orange); border: none;">
+            Rencontrer l'équipe
+          </a>
+          <a href="{% url 'contact' %}" class="btn btn-outline-primary px-4" style="border-color: var(--primary-blue); color: var(--primary-blue);">
+            Nous contacter
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-6 order-lg-2 order-1 mb-4 mb-lg-0">
+        <img src="{% static 'site_web/images/teams/team-collab.jpg' %}" 
+             alt="Collaboration d'équipe" 
+             class="img-fluid rounded-3 shadow" 
+             loading="lazy"
+             width="800"
+             height="533">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Valeurs Équipe -->
+<section class="team-values py-5 bg-white">
+  <div class="container">
+    <div class="row justify-content-center mb-5">
+      <div class="col-lg-8 text-center">
+        <h2 class="mb-3" style="color: var(--primary-blue);">Notre philosophie</h2>
+        <p class="lead" style="color: var(--secondary-blue);">
+          Chez Antares, nous croyons en une approche humaine et personnalisée 
+          du management des talents.
+        </p>
+      </div>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-6 col-md-3">
+        <div class="value-card h-100 p-3 p-md-4 text-center border-0 rounded-3 shadow-sm">
+          <div class="icon-square mb-3 mx-auto d-flex align-items-center justify-content-center" 
+               style="background-color: rgba(13,59,102,0.1); width: 50px; height: 50px;">
+            <i class="bi bi-heart-fill fs-4" style="color: var(--accent-orange);"></i>
+          </div>
+          <h3 class="h5 mb-2" style="color: var(--primary-blue);">Passion</h3>
+          <p class="small text-muted mb-0">Engagés dans chaque mission avec enthousiasme.</p>
+        </div>
+      </div>
+      
+      <div class="col-6 col-md-3">
+        <div class="value-card h-100 p-3 p-md-4 text-center border-0 rounded-3 shadow-sm">
+          <div class="icon-square mb-3 mx-auto d-flex align-items-center justify-content-center" 
+               style="background-color: rgba(13,59,102,0.1); width: 50px; height: 50px;">
+            <i class="bi bi-shield-check fs-4" style="color: var(--accent-orange);"></i>
+          </div>
+          <h3 class="h5 mb-2" style="color: var(--primary-blue);">Intégrité</h3>
+          <p class="small text-muted mb-0">Éthique et transparence absolues.</p>
+        </div>
+      </div>
+      
+      <div class="col-6 col-md-3">
+        <div class="value-card h-100 p-3 p-md-4 text-center border-0 rounded-3 shadow-sm">
+          <div class="icon-square mb-3 mx-auto d-flex align-items-center justify-content-center" 
+               style="background-color: rgba(13,59,102,0.1); width: 50px; height: 50px;">
+            <i class="bi bi-lightbulb fs-4" style="color: var(--accent-orange);"></i>
+          </div>
+          <h3 class="h5 mb-2" style="color: var(--primary-blue);">Innovation</h3>
+          <p class="small text-muted mb-0">Solutions RH avant-gardistes.</p>
+        </div>
+      </div>
+      
+      <div class="col-6 col-md-3">
+        <div class="value-card h-100 p-3 p-md-4 text-center border-0 rounded-3 shadow-sm">
+          <div class="icon-square mb-3 mx-auto d-flex align-items-center justify-content-center" 
+               style="background-color: rgba(13,59,102,0.1); width: 50px; height: 50px;">
+            <i class="bi bi-people-fill fs-4" style="color: var(--accent-orange);"></i>
+          </div>
+          <h3 class="h5 mb-2" style="color: var(--primary-blue);">Collaboration</h3>
+          <p class="small text-muted mb-0">Votre succès est notre priorité.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Équipe -->
+<section id="team" class="team-members py-5" style="background-color: #F4F4F9;">
+  <div class="container">
+    <div class="row justify-content-center mb-5">
+      <div class="col-lg-8 text-center">
+        <h2 class="mb-3" style="color: var(--primary-blue);">Rencontrez nos experts</h2>
+        <p class="lead" style="color: var(--secondary-blue);">
+          Des professionnels certifiés avec 10 ans d'expérience moyenne dans leur domaine.
+        </p>
+      </div>
+    </div>
+    
+    <div class="row g-4">
+      <!-- Membre 1 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="member-card h-100 bg-white rounded-3 overflow-hidden shadow-sm">
+          <div class="member-img-container ratio ratio-1x1">
+            <img src="{% static 'site_web/images/teams/femme_1.jpg' %}" 
+                 alt="Directrice Générale" 
+                 class="img-cover"
+                 loading="lazy">
+          </div>
+          <div class="p-4">
+            <h3 class="h5 mb-1" style="color: var(--primary-blue);">Aïssata Diarra</h3>
+            <p class="text-muted small mb-3">Directrice Générale</p>
+            <p class="small mb-3">20+ ans d'expérience en stratégie RH et développement organisationnel.</p>
+            <div class="d-flex align-items-center">
+              <a href="#" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#memberModal1">
+                <i class="bi bi-info-circle"></i> Profil
+              </a>
+              <div class="social-links ms-auto">
+                <a href="#" class="text-muted me-2" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                <a href="#" class="text-muted" aria-label="Email"><i class="bi bi-envelope"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Membre 2 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="member-card h-100 bg-white rounded-3 overflow-hidden shadow-sm">
+          <div class="member-img-container ratio ratio-1x1">
+            <img src="{% static 'site_web/images/teams/perso_1.jpg' %}" 
+                 alt="Manager RH" 
+                 class="img-cover"
+                 loading="lazy">
+          </div>
+          <div class="p-4">
+            <h3 class="h5 mb-1" style="color: var(--primary-blue);">Mohamed Keita</h3>
+            <p class="text-muted small mb-3">Manager RH Senior</p>
+            <p class="small mb-3">Spécialiste en recrutement technique et gestion des talents.</p>
+            <div class="d-flex align-items-center">
+              <a href="#" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#memberModal2">
+                <i class="bi bi-info-circle"></i> Profil
+              </a>
+              <div class="social-links ms-auto">
+                <a href="#" class="text-muted me-2" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                <a href="#" class="text-muted" aria-label="Email"><i class="bi bi-envelope"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Membre 3 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="member-card h-100 bg-white rounded-3 overflow-hidden shadow-sm">
+          <div class="member-img-container ratio ratio-1x1">
+            <img src="{% static 'site_web/images/teams/femme_2.jpg' %}" 
+                 alt="Responsable Formation" 
+                 class="img-cover"
+                 loading="lazy">
+          </div>
+          <div class="p-4">
+            <h3 class="h5 mb-1" style="color: var(--primary-blue);">Fatoumata Diallo</h3>
+            <p class="text-muted small mb-3">Responsable Formation</p>
+            <p class="small mb-3">Expert en développement des compétences et ingénierie pédagogique.</p>
+            <div class="d-flex align-items-center">
+              <a href="#" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#memberModal3">
+                <i class="bi bi-info-circle"></i> Profil
+              </a>
+              <div class="social-links ms-auto">
+                <a href="#" class="text-muted me-2" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                <a href="#" class="text-muted" aria-label="Email"><i class="bi bi-envelope"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Membre 4 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="member-card h-100 bg-white rounded-3 overflow-hidden shadow-sm">
+          <div class="member-img-container ratio ratio-1x1">
+            <img src="{% static 'site_web/images/teams/perso_2.jpg' %}" 
+                 alt="Consultant Recrutement" 
+                 class="img-cover"
+                 loading="lazy">
+          </div>
+          <div class="p-4">
+            <h3 class="h5 mb-1" style="color: var(--primary-blue);">Sékou Traoré</h3>
+            <p class="text-muted small mb-3">Consultant Recrutement</p>
+            <p class="small mb-3">Chasseur de talents spécialisé dans les profils techniques.</p>
+            <div class="d-flex align-items-center">
+              <a href="#" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#memberModal4">
+                <i class="bi bi-info-circle"></i> Profil
+              </a>
+              <div class="social-links ms-auto">
+                <a href="#" class="text-muted me-2" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                <a href="#" class="text-muted" aria-label="Email"><i class="bi bi-envelope"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Membre 5 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="member-card h-100 bg-white rounded-3 overflow-hidden shadow-sm">
+          <div class="member-img-container ratio ratio-1x1">
+            <img src="{% static 'site_web/images/teams/femme_3.jpg' %}" 
+                 alt="Assistante RH" 
+                 class="img-cover"
+                 loading="lazy">
+          </div>
+          <div class="p-4">
+            <h3 class="h5 mb-1" style="color: var(--primary-blue);">Aminata Coulibaly</h3>
+            <p class="text-muted small mb-3">Assistante RH</p>
+            <p class="small mb-3">Gestion des dossiers et support administratif.</p>
+            <div class="d-flex align-items-center">
+              <a href="#" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#memberModal5">
+                <i class="bi bi-info-circle"></i> Profil
+              </a>
+              <div class="social-links ms-auto">
+                <a href="#" class="text-muted me-2" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                <a href="#" class="text-muted" aria-label="Email"><i class="bi bi-envelope"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Membre 6 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="member-card h-100 bg-white rounded-3 overflow-hidden shadow-sm">
+          <div class="member-img-container ratio ratio-1x1">
+            <img src="{% static 'site_web/images/teams/femme_4.jpg' %}" 
+                 alt="Consultante Juridique" 
+                 class="img-cover"
+                 loading="lazy">
+          </div>
+          <div class="p-4">
+            <h3 class="h5 mb-1" style="color: var(--primary-blue);">Bintou Sissoko</h3>
+            <p class="text-muted small mb-3">Consultante Juridique RH</p>
+            <p class="small mb-3">Expertise en droit du travail et conformité sociale.</p>
+            <div class="d-flex align-items-center">
+              <a href="#" class="btn btn-sm btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#memberModal6">
+                <i class="bi bi-info-circle"></i> Profil
+              </a>
+              <div class="social-links ms-auto">
+                <a href="#" class="text-muted me-2" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                <a href="#" class="text-muted" aria-label="Email"><i class="bi bi-envelope"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="team-cta py-5" style="background-color: var(--primary-blue); color: white;">
+  <div class="container text-center">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <h2 class="fw-bold mb-4">Prêt à collaborer avec notre équipe ?</h2>
+        <p class="lead mb-5">Nos experts RH sont à votre disposition pour discuter de vos besoins en recrutement, formation ou conseil.</p>
+        <div class="d-flex flex-column flex-md-row justify-content-center gap-3">
+          <a href="{% url 'contact' %}" class="btn btn-light btn-lg px-4 py-3" style="color: var(--primary-blue);">
+            <i class="bi bi-chat-left-text me-2"></i>Contactez-nous
+          </a>
+          <a href="tel:+22300000000" class="btn btn-outline-light btn-lg px-4 py-3">
+            <i class="bi bi-telephone me-2"></i>Appelez-nous
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modals pour les profils détaillés -->
+<!-- Modal 1 -->
+<div class="modal fade" id="memberModal1" tabindex="-1" aria-labelledby="memberModalLabel1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="memberModalLabel1">Aïssata Diarra - Directrice Générale</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-5">
+            <img src="{% static 'site_web/images/teams/femme_1.jpg' %}" 
+                 class="img-fluid rounded mb-3" 
+                 alt="Aïssata Diarra"
+                 loading="lazy">
+            <div class="d-flex justify-content-center gap-3 mb-3">
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-linkedin me-1"></i> LinkedIn
+              </a>
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-envelope me-1"></i> Email
+              </a>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <h4>Biographie</h4>
+            <p>Aïssata Diarra dirige Antares  depuis sa création en 2010. Avec plus de 20 ans d'expérience en ressources humaines, elle a développé une expertise unique en stratégie RH et transformation organisationnelle.</p>
+            
+            <h4 class="mt-4">Expertise</h4>
+            <ul>
+              <li>Stratégie RH et alignement business</li>
+              <li>Transformation organisationnelle</li>
+              <li>Développement du leadership</li>
+              <li>Gestion du changement</li>
+            </ul>
+            
+            <h4 class="mt-4">Formation</h4>
+            <ul>
+              <li>MBA en Gestion des Ressources Humaines, HEC Paris</li>
+              <li>Certification en Coaching Executive, ICF</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2 -->
+<div class="modal fade" id="memberModal2" tabindex="-1" aria-labelledby="memberModalLabel2" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="memberModalLabel2">Mohamed Keita - Manager RH Senior</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-5">
+            <img src="{% static 'site_web/images/teams/perso_1.jpg' %}" 
+                 class="img-fluid rounded mb-3" 
+                 alt="Mohamed Keita"
+                 loading="lazy">
+            <div class="d-flex justify-content-center gap-3 mb-3">
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-linkedin me-1"></i> LinkedIn
+              </a>
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-envelope me-1"></i> Email
+              </a>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <h4>Biographie</h4>
+            <p>Mohamed Keita apporte 15 ans d'expérience en gestion des talents et recrutement technique. Spécialiste des secteurs minier et technologique, il a placé plus de 200 candidats dans des postes clés.</p>
+            
+            <h4 class="mt-4">Expertise</h4>
+            <ul>
+              <li>Recrutement technique et industriel</li>
+              <li>Gestion des talents</li>
+              <li>Évaluation des compétences</li>
+              <li>Stratégie d'attraction des talents</li>
+            </ul>
+            
+            <h4 class="mt-4">Formation</h4>
+            <ul>
+              <li>Master en Psychologie du Travail</li>
+              <li>Certification en Assessment Center</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3 -->
+<div class="modal fade" id="memberModal3" tabindex="-1" aria-labelledby="memberModalLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="memberModalLabel3">Fatoumata Diallo - Responsable Formation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-5">
+            <img src="{% static 'site_web/images/teams/femme_2.jpg' %}" 
+                 class="img-fluid rounded mb-3" 
+                 alt="Fatoumata Diallo"
+                 loading="lazy">
+            <div class="d-flex justify-content-center gap-3 mb-3">
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-linkedin me-1"></i> LinkedIn
+              </a>
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-envelope me-1"></i> Email
+              </a>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <h4>Biographie</h4>
+            <p>Fatoumata Diallo conçoit et anime des programmes de formation sur mesure depuis 12 ans. Son approche pédagogique innovante a permis à des centaines de professionnels d'acquérir de nouvelles compétences.</p>
+            
+            <h4 class="mt-4">Expertise</h4>
+            <ul>
+              <li>Ingénierie pédagogique</li>
+              <li>Développement des compétences</li>
+              <li>Formation en leadership</li>
+              <li>Digital learning</li>
+            </ul>
+            
+            <h4 class="mt-4">Formation</h4>
+            <ul>
+              <li>Master en Sciences de l'Éducation</li>
+              <li>Certification en Neurosciences Appliquées</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 4 -->
+<div class="modal fade" id="memberModal4" tabindex="-1" aria-labelledby="memberModalLabel4" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="memberModalLabel4">Sékou Traoré - Consultant Recrutement</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-5">
+            <img src="{% static 'site_web/images/teams/perso_2.jpg' %}" 
+                 class="img-fluid rounded mb-3" 
+                 alt="Sékou Traoré"
+                 loading="lazy">
+            <div class="d-flex justify-content-center gap-3 mb-3">
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-linkedin me-1"></i> LinkedIn
+              </a>
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-envelope me-1"></i> Email
+              </a>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <h4>Biographie</h4>
+            <p>Sékou Traoré est spécialisé dans le recrutement de profils techniques et digitaux. Avec 8 ans d'expérience, il a développé un réseau étendu de candidats qualifiés et une méthodologie de sourcing efficace.</p>
+            
+            <h4 class="mt-4">Expertise</h4>
+            <ul>
+              <li>Sourcing de talents techniques</li>
+              <li>Recrutement IT et digital</li>
+              <li>Évaluation technique</li>
+              <li>Chasse de tête</li>
+            </ul>
+            
+            <h4 class="mt-4">Formation</h4>
+            <ul>
+              <li>Diplôme d'Ingénieur en Informatique</li>
+              <li>Certification en Recrutement par Compétences</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 5 -->
+<div class="modal fade" id="memberModal5" tabindex="-1" aria-labelledby="memberModalLabel5" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="memberModalLabel5">Aminata Coulibaly - Assistante RH</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-5">
+            <img src="{% static 'site_web/images/teams/femme_3.jpg' %}" 
+                 class="img-fluid rounded mb-3" 
+                 alt="Aminata Coulibaly"
+                 loading="lazy">
+            <div class="d-flex justify-content-center gap-3 mb-3">
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-linkedin me-1"></i> LinkedIn
+              </a>
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-envelope me-1"></i> Email
+              </a>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <h4>Biographie</h4>
+            <p>Aminata Coulibaly gère avec efficacité l'administration RH et le suivi des dossiers candidats. Son organisation et sa rigueur assurent le bon déroulement des processus de recrutement.</p>
+            
+            <h4 class="mt-4">Expertise</h4>
+            <ul>
+              <li>Gestion administrative RH</li>
+              <li>Suivi des processus de recrutement</li>
+              <li>Organisation d'entretiens</li>
+              <li>Gestion de bases de données</li>
+            </ul>
+            
+            <h4 class="mt-4">Formation</h4>
+            <ul>
+              <li>BTS Assistant de Manager</li>
+              <li>Certification en Gestion RH</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 6 -->
+<div class="modal fade" id="memberModal6" tabindex="-1" aria-labelledby="memberModalLabel6" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="memberModalLabel6">Bintou Sissoko - Consultante Juridique RH</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-5">
+            <img src="{% static 'site_web/images/teams/femme_4.jpg' %}" 
+                 class="img-fluid rounded mb-3" 
+                 alt="Bintou Sissoko"
+                 loading="lazy">
+            <div class="d-flex justify-content-center gap-3 mb-3">
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-linkedin me-1"></i> LinkedIn
+              </a>
+              <a href="#" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-envelope me-1"></i> Email
+              </a>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <h4>Biographie</h4>
+            <p>Bintou Sissoko accompagne les entreprises sur les aspects juridiques et sociaux des ressources humaines. Avec 10 ans d'expérience en droit du travail, elle garantit la conformité des pratiques RH.</p>
+            
+            <h4 class="mt-4">Expertise</h4>
+            <ul>
+              <li>Droit du travail</li>
+              <li>Conformité sociale</li>
+              <li>Rédaction de contrats</li>
+              <li>Gestion des litiges</li>
+            </ul>
+            
+            <h4 class="mt-4">Formation</h4>
+            <ul>
+              <li>Master en Droit Social</li>
+              <li>Certification en Médiation Professionnelle</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Styles optimisés pour performance et mobile */
+  .team-hero {
+    background: linear-gradient(135deg, #F4F4F9 0%, white 100%);
+  }
+  
+  /* Cartes membres */
+  .member-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  .member-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1) !important;
+  }
+  
+  .member-img-container {
+    background-color: #f8f9fa;
+  }
+  
+  .img-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  .member-card:hover .img-cover {
+    transform: scale(1.03);
+  }
+  
+  /* Ratio images */
+  .ratio {
+    position: relative;
+  }
+  
+  .ratio > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Section CTA */
+  .team-cta {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #0a2b4e 100%);
+  }
+  
+  /* Optimisations responsive */
+  @media (max-width: 767.98px) {
+    .team-hero h1 {
+      font-size: 1.8rem;
+    }
+    
+    .team-hero .lead,
+    .team-cta .lead {
+      font-size: 1rem;
+    }
+    
+    .value-card {
+      padding: 1rem !important;
+    }
+    
+    .value-card h3 {
+      font-size: 1rem;
+    }
+    
+    /* Modal pleine largeur sur mobile */
+    .modal-dialog {
+      margin: 0;
+      max-width: 100%;
+    }
+    
+    .modal-content {
+      border-radius: 0;
+      min-height: 100vh;
+    }
+    
+    /* Stack columns in modal */
+    .modal-body .row {
+      flex-direction: column;
+    }
+    
+    .modal-body .col-md-5, 
+    .modal-body .col-md-7 {
+      max-width: 100%;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .member-img-container {
+      min-height: 280px;
+    }
+  }
+</style>
+
+<script>
+  // Optimisation : Chargement différé des modals
+  document.addEventListener('DOMContentLoaded', function() {
+    const memberCards = document.querySelectorAll('.member-card');
+    
+    memberCards.forEach(card => {
+      card.addEventListener('click', function(e) {
+        if (e.target.closest('[data-bs-toggle="modal"]')) {
+          const modalId = e.target.closest('[data-bs-toggle="modal"]').getAttribute('data-bs-target');
+          const modal = new bootstrap.Modal(document.querySelector(modalId));
+          modal.show();
+        }
+      });
+    });
+  });
+</script>
+
+{% endblock %}
