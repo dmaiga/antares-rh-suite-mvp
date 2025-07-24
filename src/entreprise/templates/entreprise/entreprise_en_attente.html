@@ -1,0 +1,63 @@
+{% extends 'authentication/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Entreprises en attente de validation</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{% url 'entreprise-dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Entreprises en attente</li>
+    </ol>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Liste des demandes
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered" id="datatablesSimple">
+                <thead>
+                    <tr>
+                        <th>Nom Entreprise</th>
+                        <th>Secteur</th>
+                        <th>Représentant</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>Date demande</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entreprise in entreprises %}
+                    <tr>
+                        <td>{{ entreprise.nom_entreprise }}</td>
+                        <td>{{ entreprise.secteur_activite }}</td>
+                        <td>{{ entreprise.first_name }} {{ entreprise.last_name }}</td>
+                        <td>{{ entreprise.email }}</td>
+                        <td>{{ entreprise.telephone_pro }}</td>
+                        <td>{{ entreprise.date_joined|date:"d/m/Y" }}</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'entreprise-approuver' entreprise.id %}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-check"></i> Valider
+                                </a>
+                                <a href="{% url 'entreprise-detail' entreprise.id %}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Détails
+                                </a>
+                                <a href="{% url 'entreprise-rejet' entreprise.id %}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-times"></i> Rejeter
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Aucune entreprise en attente de validation</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

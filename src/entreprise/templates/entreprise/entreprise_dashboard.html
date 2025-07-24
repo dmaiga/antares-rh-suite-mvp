@@ -1,0 +1,187 @@
+{% extends 'authentication/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Dashboard RH - Gestion des Entreprises</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Tableau de bord</li>
+    </ol>
+
+    <!-- Statistiques -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6>Entreprises totales</h6>
+                            <h4>{{ stats.total_entreprises }}</h4>
+                        </div>
+                        <i class="fas fa-building fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{% url 'entreprise-liste' %}">Voir la liste</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6>Entreprises actives</h6>
+                            <h4>{{ stats.entreprises_actives }}</h4>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{% url 'entreprise-actives' %}">Voir la liste</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6>En attente</h6>
+                            <h4>{{ stats.entreprises_en_attente }}</h4>
+                        </div>
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{% url 'entreprise-en-attente' %}">Voir la liste</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6>Dernière validation</h6>
+                            <h4>{{ stats.derniere_validation|date:"d/m/Y" }}</h4>
+                        </div>
+                        <i class="fas fa-calendar-alt fa-2x"></i>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="{% url 'activite-recente' %}">Activité récente</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des entreprises en attente -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Demandes d'inscription en attente
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered" id="datatablesSimple">
+                <thead>
+                    <tr>
+                        <th>Nom Entreprise</th>
+                        <th>Secteur</th>
+                        <th>Représentant</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>Date demande</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entreprise in entreprises_en_attente %}
+                    <tr>
+                        <td>{{ entreprise.nom_entreprise }}</td>
+                        <td>{{ entreprise.secteur_activite }}</td>
+                        <td>{{ entreprise.user.first_name }} {{ entreprise.last_name }}</td>
+                        <td>{{ entreprise.user.email }}</td>
+                        <td>{{ entreprise.ser.telephone_pro }}</td>
+                        <td>{{ entreprise.user.date_joined|date:"d/m/Y" }}</td>
+                        <td>
+                            <a href="{% url 'entreprise-approuver' entreprise.user.id %}" class="btn btn-success btn-sm">
+    <i class="fas fa-check"></i> Valider
+</a>
+<a href="{% url 'entreprise-detail' entreprise.user.id %}" class="btn btn-info btn-sm">
+    <i class="fas fa-eye"></i> Détails
+</a>
+
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Aucune entreprise en attente de validation</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Dernières entreprises validées -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Dernières entreprises validées
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for entreprise in dernieres_validees %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+<h5 class="card-title">{{ entreprise.nom }}</h5>  {# nom de l’entreprise #}
+<p class="card-text">
+    <i class="fas fa-user-tie"></i> {{ entreprise.user.first_name }} {{ entreprise.user.last_name }}<br>
+    <i class="fas fa-envelope"></i> {{ entreprise.user.email }}<br>
+    <i class="fas fa-phone"></i> {{ entreprise.user.telephone_pro }}
+</p>
+
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <small class="text-muted">
+    Validée le {{ entreprise.user.date_joined|date:"d/m/Y" }}
+</small>
+<a href="{% url 'entreprise-detail' entreprise.user.id %}" class="btn btn-sm btn-outline-primary float-end">
+    Voir
+</a>
+
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <p class="text-center">Aucune entreprise validée récemment</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#datatablesSimple').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/fr-FR.json'
+            },
+            order: [[5, 'desc']]
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends 'authentication/base.html' %}
+{% load static %}
+
+{% block title %}Approbation d'Entreprise{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Carte principale d'approbation -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-check-circle me-2"></i>
+                            Approbation d'Entreprise
+                        </div>
+                        <span class="badge bg-light text-dark fs-6">
+                            {% if entreprise.is_active %}
+                                Statut: <span class="text-success">Active</span>
+                            {% else %}
+                                Statut: <span class="text-warning">En attente</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-3 text-center">
+                            <div class="icon-entreprise mb-3">
+                                <i class="fas fa-building fa-4x text-primary"></i>
+                            </div>
+                            <h4>{{ entreprise.nom }}</h4>
+                            <p class="text-muted">SIRET: {{ entreprise.siret|default:"Non fourni" }}</p>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5><i class="fas fa-info-circle me-2 text-primary"></i>Informations de base</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>Date d'inscription:</span>
+                                            <span class="fw-bold">{{ entreprise.date_joined|date:"d/m/Y" }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>Email:</span>
+                                            <span class="fw-bold">{{ entreprise.email }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>Téléphone:</span>
+                                            <span class="fw-bold">{{ entreprise.telephone|default:"-" }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5><i class="fas fa-map-marker-alt me-2 text-primary"></i>Localisation</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>Adresse:</span>
+                                            <span class="fw-bold text-end">{{ entreprise.adresse|linebreaksbr|default:"-" }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>Ville:</span>
+                                            <span class="fw-bold">{{ entreprise.ville|default:"-" }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>Pays:</span>
+                                            <span class="fw-bold">{{ entreprise.pays|default:"-" }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulaire d'approbation -->
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="approve">
+                        
+                        <div class="mb-3">
+                            <label for="commentaire" class="form-label">
+                                <i class="fas fa-comment me-1"></i> Commentaire (optionnel)
+                            </label>
+                            <textarea class="form-control" id="commentaire" name="commentaire" rows="3" 
+                                      placeholder="Ajoutez un commentaire visible par l'entreprise..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'entreprise-detail' entreprise.id %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times-circle me-1"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check-circle me-1"></i> Approuver l'entreprise
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne latérale -->
+        <div class="col-lg-4">
+            <!-- Carte de vérification -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-clipboard-check me-1"></i>
+                    Checklist de Vérification
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-start {% if entreprise.siret %}list-group-item-success{% endif %}">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">SIRET valide</div>
+                                {% if entreprise.siret %}{{ entreprise.siret }}{% else %}Non fourni{% endif %}
+                            </div>
+                            {% if entreprise.siret %}
+                                <span class="badge bg-success rounded-pill"><i class="fas fa-check"></i></span>
+                            {% else %}
+                                <span class="badge bg-danger rounded-pill"><i class="fas fa-times"></i></span>
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start {% if entreprise.email_verified %}list-group-item-success{% endif %}">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Email vérifié</div>
+                                {{ entreprise.email }}
+                            </div>
+                            {% if entreprise.email_verified %}
+                                <span class="badge bg-success rounded-pill"><i class="fas fa-check"></i></span>
+                            {% else %}
+                                <span class="badge bg-warning rounded-pill"><i class="fas fa-exclamation-triangle"></i></span>
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start {% if entreprise.profile_complete %}list-group-item-success{% endif %}">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Profil complet</div>
+                                {{ entreprise.profile_completion }}% complété
+                            </div>
+                            {% if entreprise.profile_complete %}
+                                <span class="badge bg-success rounded-pill"><i class="fas fa-check"></i></span>
+                            {% else %}
+                                <span class="badge bg-warning rounded-pill">{{ entreprise.profile_completion }}%</span>
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">Documents</div>
+                                {% if entreprise.documents.count > 0 %}
+                                    {{ entreprise.documents.count }} fichier(s)
+                                {% else %}
+                                    Aucun document
+                                {% endif %}
+                            </div>
+                            {% if entreprise.documents.count > 0 %}
+                                <span class="badge bg-success rounded-pill"><i class="fas fa-check"></i></span>
+                            {% else %}
+                                <span class="badge bg-warning rounded-pill"><i class="fas fa-exclamation-triangle"></i></span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Historique des actions -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-history me-1"></i>
+                    Historique des Actions
+                </div>
+                <div class="card-body">
+                    <div class="timeline-small">
+                        {% for action in historique %}
+                        <div class="d-flex mb-3">
+                            <div class="flex-shrink-0">
+                                <i class="fas 
+                                    {% if action.action == 'created' %}fa-user-plus bg-primary
+                                    {% elif action.action == 'approved' %}fa-check-circle bg-success
+                                    {% elif action.action == 'rejected' %}fa-times-circle bg-danger
+                                    {% else %}fa-info-circle bg-secondary{% endif %} 
+                                    rounded-circle p-2 text-white">
+                                </i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h6 class="mb-0">{{ action.get_action_display }}</h6>
+                                <p class="small text-muted mb-0">
+                                    {{ action.timestamp|date:"d/m/Y H:i" }} par {{ action.user.get_full_name }}
+                                </p>
+                                {% if action.notes %}
+                                    <p class="small mt-1 mb-0">{{ action.notes }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center text-muted py-2">
+                            Aucun historique disponible
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .icon-entreprise {
+        background-color: #e9f7ef;
+        padding: 1rem;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .timeline-small .fa {
+        width: 36px;
+        height: 36px;
+        text-align: center;
+        line-height: 32px;
+    }
+    .list-group-item-success {
+        background-color: rgba(25, 135, 84, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Confirmation avant soumission
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (!confirm("Êtes-vous sûr de vouloir approuver cette entreprise ? Cette action enverra une notification à l'entreprise.")) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

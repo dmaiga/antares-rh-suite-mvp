@@ -1,0 +1,42 @@
+{% extends 'site_web/layout.html' %}
+{% load static %}
+
+{% block content %}
+<section class="py-5" style="background: linear-gradient(rgba(13, 59, 102, 0.9), rgba(13, 59, 102, 0.9))">
+  <div class="container py-5 text-white text-center">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <h1 class="display-4 fw-bold mb-4">Demande enregistrée</h1>
+        <p class="lead">Merci pour votre inscription</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-5 text-center">
+            <div class="mb-4">
+              <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+            </div>
+            <h2 class="mb-4">Votre demande a bien été reçue</h2>
+            <p class="lead mb-4">
+              Nous avons bien enregistré votre demande d'inscription en tant qu'entreprise.
+              Notre équipe va l'examiner et vous contactera par email dans les plus brefs délais.
+            </p>
+            <p class="text-muted mb-4">
+              Vous recevrez un email contenant vos identifiants de connexion une fois votre compte validé.
+            </p>
+            <a href="{% url 'home' %}" class="btn btn-primary">
+              <i class="bi bi-house-door me-2"></i> Retour à l'accueil
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,597 @@
+{% extends 'site_web/layout.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Hero Section Entreprise -->
+<section class="hero-entreprise py-5" style="background: linear-gradient(rgba(13, 59, 102, 0.8), rgba(13, 59, 102, 0.8))">
+  <div class="container py-5 my-3 text-white">
+    <div class="row">
+      <div class="col-lg-8">
+        <h1 class="display-4 fw-bold mb-4">Votre partenaire RH stratégique</h1>
+        <p class="lead mb-4">Des solutions sur mesure pour optimiser votre gestion des talents et booster votre performance organisationnelle</p>
+        
+        <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+          <!-- CTA 1 -->
+          <a href="#contact-entreprise" class="btn btn-orange btn-lg px-4">
+            <i class="bi bi-envelope me-2"></i>Demander un Audit 
+          </a>
+          
+          <!-- CTA 2 -->
+          <a href="{%url 'entreprise-registry' %}" class="btn btn-light btn-lg px-4" style="color: var(--primary-blue);">
+            <i class="bi bi-lightning-fill me-2"></i>Nous rejoindre
+          </a>
+          
+          <!-- CTA 3 -->
+          <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg px-4">
+            <i class="bi bi-headset me-2"></i>Être rappelé
+          </a>
+        </div>
+        
+        <!-- Texte info sous les boutons -->
+        <p class="small mt-2 opacity-75 mb-0">
+          <i class="bi bi-shield-lock me-2"></i>Données 100% sécurisées - Sans engagement
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Valeurs Entreprise -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold mb-3" style="color: var(--primary-blue);">Pourquoi choisir Antares  ?</h2>
+      <p class="lead mx-auto" style="max-width: 700px; color: var(--secondary-blue);">5 bonnes raisons de nous faire confiance pour vos enjeux RH</p>
+    </div>
+    
+    <div class="row g-4">
+      <!-- Raison 1 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body p-4 text-center">
+            <div class="icon-circle mx-auto mb-4" style="background-color: rgba(244, 96, 54, 0.1);">
+              <i class="bi bi-speedometer2 fs-3" style="color: var(--accent-orange);"></i>
+            </div>
+            <h3 style="color: var(--primary-blue);">Recrutement rapide</h3>
+            <p class="text-muted">Délai moyen de 72h pour les profils juniors, 15 jours pour les cadres</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Raison 2 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body p-4 text-center">
+            <div class="icon-circle mx-auto mb-4" style="background-color: rgba(244, 96, 54, 0.1);">
+              <i class="bi bi-shield-check fs-3" style="color: var(--accent-orange);"></i>
+            </div>
+            <h3 style="color: var(--primary-blue);">Conformité légale</h3>
+            <p class="text-muted">Garantie de conformité avec le code du travail malien et les conventions collectives</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Raison 3 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body p-4 text-center">
+            <div class="icon-circle mx-auto mb-4" style="background-color: rgba(244, 96, 54, 0.1);">
+              <i class="bi bi-currency-exchange fs-3" style="color: var(--accent-orange);"></i>
+            </div>
+            <h3 style="color: var(--primary-blue);">Optimisation des coûts</h3>
+            <p class="text-muted">Jusqu'à 30% d'économies sur vos processus RH</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nouvelle Raison 4 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body p-4 text-center">
+            <div class="icon-circle mx-auto mb-4" style="background-color: rgba(244, 96, 54, 0.1);">
+              <i class="bi bi-people-fill fs-3" style="color: var(--accent-orange);"></i>
+            </div>
+            <h3 style="color: var(--primary-blue);">Réseau de talents</h3>
+            <p class="text-muted">Accès à notre base exclusive de 10 000+ profils qualifiés</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nouvelle Raison 5 -->
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body p-4 text-center">
+            <div class="icon-circle mx-auto mb-4" style="background-color: rgba(244, 96, 54, 0.1);">
+              <i class="bi bi-graph-up fs-3" style="color: var(--accent-orange);"></i>
+            </div>
+            <h3 style="color: var(--primary-blue);">Approche data-driven</h3>
+            <p class="text-muted">Analyse des tendances RH et reporting personnalisé</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Espace vide pour conserver l'alignement -->
+      <div class="col-md-6 col-lg-4 d-none d-lg-block">
+        <div class="card h-100 border-0 bg-transparent shadow-none"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Nouvelle section "On en parle" -->
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <img src="{% static 'site_web/images/entreprise/hero_entreprise.jpg' %}" 
+             alt="Tableau de bord entreprise" 
+             class="img-fluid rounded-3 shadow">
+      </div>
+      <div class="col-lg-6">
+        <div class="ps-lg-5">
+          <h2 class="fw-bold mb-4" style="color: var(--primary-blue);">Gérez vos RH en toute simplicité</h2>
+          <p class="lead mb-4" style="color: var(--secondary-blue);">
+            Notre plateforme dédiée aux entreprises vous permet de :
+          </p>
+          <ul class="list-unstyled mb-5">
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Publier vos offres en 1 clic</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Suivre vos candidatures en temps réel</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Gérer vos contrats intérimaires</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Accéder à des rapports analytiques</li>
+          </ul>
+          <div class="d-flex flex-wrap gap-3">
+            <a href="{%url 'entreprise-registry' %}" class="btn btn-orange btn-lg px-4">
+              <i class="bi bi-building me-3"></i>Créer un compte entreprise
+            </a>
+           
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Section Solutions -->
+<!-- Section Solutions -->
+<section class="py-5" id="solutions">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5" style="color: var(--primary-blue);">Nos solutions pour les entreprises</h2>
+    
+    <div class="row g-4">
+      <!-- Solution 1 - Recrutement -->
+      <div class="col-lg-6">
+        <div class="card solution-card h-100 border-0 overflow-hidden shadow-sm">
+          <div class="row g-0 h-100">
+            <div class="col-md-5">
+              <div class="image-container h-100">
+                <img src="{% static 'site_web/images/entreprise/recrutement.jpg' %}" 
+                     class="img-fluid h-100 w-100" 
+                     alt="Recrutement permanent"
+                     style="object-fit: cover; min-height: 250px;">
+              </div>
+            </div>
+            <div class="col-md-7 bg-white">
+              <div class="card-body p-4 d-flex flex-column h-100">
+                <h3 class="h4" style="color: var(--primary-blue);">Recrutement permanent</h3>
+                <ul class="list-unstyled mb-4">
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Chasse de tête sur mesure</li>
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Pré-sélection rigoureuse</li>
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Tests de compétences</li>
+                </ul>
+                <div class="mt-auto">
+                  <a href="{% url 'savoir-plus' %}" class="btn btn-outline-primary">En savoir plus</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Solution 2 - Intérim -->
+      <div class="col-lg-6">
+        <div class="card solution-card h-100 border-0 overflow-hidden shadow-sm">
+          <div class="row g-0 h-100">
+            <div class="col-md-5">
+              <div class="image-container h-100">
+                <img src="{% static 'site_web/images/entreprise/interim.jpg' %}" 
+                     class="img-fluid h-100 w-100" 
+                     alt="Personnel intérimaire"
+                     style="object-fit: cover; min-height: 250px;">
+              </div>
+            </div>
+            <div class="col-md-7 bg-white">
+              <div class="card-body p-4 d-flex flex-column h-100">
+                <h3 class="h4" style="color: var(--primary-blue);">Personnel intérimaire</h3>
+                <ul class="list-unstyled mb-4">
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Réactivité (24h max)</li>
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Large panel de métiers</li>
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Gestion administrative complète</li>
+                </ul>
+                <div class="mt-auto">
+                  <a href="{% url 'savoir-plus' %}" class="btn btn-outline-primary">En savoir plus</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Solution 3 - Externalisation -->
+      <div class="col-lg-6">
+        <div class="card solution-card h-100 border-0 overflow-hidden shadow-sm">
+          <div class="row g-0 h-100">
+            <div class="col-md-5">
+              <div class="image-container h-100">
+                <img src="{% static 'site_web/images/entreprise/externalisation.jpg' %}" 
+                     class="img-fluid h-100 w-100" 
+                     alt="Externalisation RH"
+                     style="object-fit: cover; min-height: 250px;">
+              </div>
+            </div>
+            <div class="col-md-7 bg-white">
+              <div class="card-body p-4 d-flex flex-column h-100">
+                <h3 class="h4" style="color: var(--primary-blue);">Externalisation RH</h3>
+                <ul class="list-unstyled mb-4">
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Paie et déclarations sociales</li>
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Gestion des contrats</li>
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Administration du personnel</li>
+                </ul>
+                <div class="mt-auto">
+                  <a href="{% url 'savoir-plus' %}" class="btn btn-outline-primary">En savoir plus</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Solution 4 - Audit -->
+      <div class="col-lg-6">
+        <div class="card solution-card h-100 border-0 overflow-hidden shadow-sm">
+          <div class="row g-0 h-100">
+            <div class="col-md-5">
+              <div class="image-container h-100">
+                <img src="{% static 'site_web/images/entreprise/audit.jpg' %}" 
+                     class="img-fluid h-100 w-100" 
+                     alt="Audit social"
+                     style="object-fit: cover; min-height: 250px;">
+              </div>
+            </div>
+            <div class="col-md-7 bg-white">
+              <div class="card-body p-4 d-flex flex-column h-100">
+                <h3 class="h4" style="color: var(--primary-blue);">Audit social</h3>
+                <ul class="list-unstyled mb-4">
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Diagnostic organisationnel</li>
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Analyse des compétences</li>
+                  <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Plan d'action personnalisé</li>
+                </ul>
+                <div class="mt-auto">
+                  <a href="{% url 'savoir-plus' %}" class="btn btn-outline-primary">En savoir plus</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Processus de recrutement -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5" style="color: var(--primary-blue);">Notre processus en 5 étapes</h2>
+    
+    <div class="process-steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Briefing initial</h3>
+          <p>Analyse de vos besoins et définition du profil recherché</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Sourcing ciblé</h3>
+          <p>Recherche active dans notre base et sur le marché</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>Pré-sélection</h3>
+          <p>Tests techniques et entretiens de filtrage</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3>Présentation</h3>
+          <p>Remise des 3 meilleurs profils sous 72h</p>
+        </div>
+      </div>
+      
+      <div class="step">
+        <div class="step-number">5</div>
+        <div class="step-content">
+          <h3>Suivi post-recrutement</h3>
+          <p>Évaluation à 30 et 90 jours</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- Témoignages clients -->
+<section class="py-5" style="background-color: var(--primary-blue); color: white;">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5">Nos clients témoignent</h2>
+    
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="testimonial-card p-4 h-100" style="background-color: rgba(255,255,255,0.1); border-radius: 8px;">
+          <div class="d-flex align-items-center mb-3">
+            <img src="{% static 'site_web/images/entreprise/perso_1.jpg' %}" class="rounded-circle me-3" width="100" alt="Directeur">
+            <div>
+              <h5 class="mb-0">M. Coulibaly</h5>
+              <p class="small mb-0 opacity-75">Directeur Général, SONAVIE</p>
+            </div>
+          </div>
+          <div class="rating mb-3">
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+          </div>
+          <p>"Antares a comblé un poste clé pour notre expansion en 2 semaines seulement. Le candidat proposé correspondait parfaitement à nos attentes."</p>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="testimonial-card p-4 h-100" style="background-color: rgba(255,255,255,0.1); border-radius: 8px;">
+          <div class="d-flex align-items-center mb-3">
+            <img src="{% static 'site_web/images//entreprise/femme_1.jpg' %}" class="rounded-circle me-3" width="100" alt="DRH">
+            <div>
+              <h5 class="mb-0">Mme. Diallo</h5>
+              <p class="small mb-0 opacity-75">DRH, Groupe BAMA</p>
+            </div>
+          </div>
+          <div class="rating mb-3">
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+          </div>
+          <p>"Nous externalisons toute notre gestion administrative avec Antares depuis 3 ans. Gain de temps et réduction des coûts significatifs."</p>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="testimonial-card p-4 h-100" style="background-color: rgba(255,255,255,0.1); border-radius: 8px;">
+          <div class="d-flex align-items-center mb-3">
+            <img src="{% static 'site_web/images/entreprise/perso_2.jpg'  %}" class="rounded-circle me-3" width="100" alt="Manager">
+            <div>
+              <h5 class="mb-0">M. Keita</h5>
+              <p class="small mb-0 opacity-75">Manager, CMM</p>
+            </div>
+          </div>
+          <div class="rating mb-3">
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-fill text-warning"></i>
+            <i class="bi bi-star-half text-warning"></i>
+          </div>
+          <p>"Leur connaissance du marché local nous a permis d'éviter plusieurs mauvais recrutements. Nous ne travaillons plus qu'avec eux."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- CTA Entreprise -->
+<section class="py-5" id="contact-entreprise" style="background-color: #F4F4F9;">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <h2 class="fw-bold mb-3" style="color: var(--primary-blue);">Prêt à optimiser votre gestion RH ?</h2>
+        <p class="lead mb-4" style="color: var(--secondary-blue);">Nos experts vous accompagnent dans la réalisation de vos objectifs</p>
+        <div class="d-flex align-items-center">
+          <i class="bi bi-telephone fs-4 me-3" style="color: var(--accent-orange);"></i>
+          <div>
+            <p class="mb-0 small text-muted">Appelez-nous maintenant</p>
+            <a href="tel:+223 20 29 20 40" class="h5 mb-0" style="color: var(--primary-blue); text-decoration: none;">+223 20292040</a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-4 p-lg-5">
+            <h3 class="h4 mb-4" style="color: var(--primary-blue);">Demander un devis</h3>
+            <form>
+              <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Nom de l'entreprise">
+              </div>
+              <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Votre nom">
+              </div>
+              <div class="mb-3">
+                <input type="email" class="form-control" placeholder="Email">
+              </div>
+              <div class="mb-3">
+                <input type="tel" class="form-control" placeholder="Téléphone">
+              </div>
+              <div class="mb-3">
+                <select class="form-select">
+                  <option selected>Service intéressé</option>
+                  <option>Recrutement permanent</option>
+                  <option>Personnel intérimaire</option>
+                  <option>Externalisation RH</option>
+                  <option>Audit social</option>
+                  <option>Autre demande</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-orange w-100">Envoyer la demande</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+<style>
+  /* Styles spécifiques à la page entreprise */
+  .hero-entreprise {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .btn-orange {
+    background-color: var(--accent-orange);
+    border-color: var(--accent-orange);
+    color: white;
+  }
+  
+  .btn-orange:hover {
+    background-color: #e0552a;
+    border-color: #e0552a;
+    color: white;
+  }
+  
+  .process-steps {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .process-steps::before {
+    content: "";
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    right: 40px;
+    height: 3px;
+    background-color: var(--accent-orange);
+    z-index: 1;
+  }
+  
+  .step {
+    display: flex;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 2;
+  }
+  
+  .step-number {
+    width: 80px;
+    height: 80px;
+    background-color: white;
+    border: 3px solid var(--accent-orange);
+    color: var(--accent-orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: 20px;
+    flex-shrink: 0;
+  }
+  
+  .step-content {
+    padding-top: 15px;
+  }
+    .solution-card {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+  }
+  
+  .solution-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+  }
+  
+  .image-container {
+    overflow: hidden;
+  }
+  
+  .step-content h3 {
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+  }
+  
+ 
+  /* Styles pour la nouvelle section plateforme */
+  .dashboard-img {
+    border: 1px solid rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .dashboard-img:hover {
+    transform: scale(1.02);
+  }
+  
+  @media (max-width: 768px) {
+    .solution-card .row {
+      flex-direction: column;
+      height: auto;
+    }
+    
+    .solution-card .col-md-5 {
+      height: 200px;
+    }
+    
+    .solution-card .col-md-7 {
+      height: auto;
+    }
+    .process-steps::before {
+      display: none;
+    }
+    
+    .step {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .step-number {
+      margin-right: 0;
+      margin-bottom: 15px;
+    }
+    
+    .cta-buttons {
+      flex-direction: column;
+    }
+    
+    .cta-buttons .btn {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  }
+  .solution-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+
+</style>
+
+
+{% endblock %}

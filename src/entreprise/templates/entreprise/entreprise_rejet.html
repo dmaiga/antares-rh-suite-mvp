@@ -1,0 +1,250 @@
+{% extends 'authentication/base.html' %}
+{% load static %}
+
+{% block title %}Rejet d'Entreprise{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Carte principale de rejet -->
+            <div class="card border-0 shadow-lg mt-5">
+                <div class="card-header bg-danger text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-ban me-2"></i>
+                            Rejet d'Entreprise
+                        </div>
+                        <span class="badge bg-light text-dark">
+                            {{ entreprise.nom }}
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Avertissement important -->
+                    <div class="alert alert-danger">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle fa-2x"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="alert-heading">Action irréversible</h5>
+                                <p class="mb-0">
+                                    Le rejet d'une entreprise désactive son compte et supprime son accès à la plateforme. 
+                                    Cette action ne peut être annulée que par un administrateur.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informations entreprise -->
+                    <div class="mb-4 p-3 border rounded">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-info-circle me-2"></i>Informations</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><strong>Email:</strong> {{ entreprise.email }}</li>
+                                    <li class="mb-2"><strong>SIRET:</strong> {{ entreprise.siret|default:"Non fourni" }}</li>
+                                    <li class="mb-2"><strong>Inscrite le:</strong> {{ entreprise.date_joined|date:"d/m/Y" }}</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5><i class="fas fa-chart-line me-2"></i>Activité</h5>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><strong>Dernière connexion:</strong> 
+                                        {% if entreprise.last_login %}
+                                            {{ entreprise.last_login|timesince }}
+                                        {% else %}
+                                            Jamais
+                                        {% endif %}
+                                    </li>
+                                    <li class="mb-2"><strong>Statut:</strong> 
+                                        <span class="badge {% if entreprise.is_active %}bg-success{% else %}bg-warning{% endif %}">
+                                            {% if entreprise.is_active %}Active{% else %}En attente{% endif %}
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulaire de rejet -->
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <!-- Motif du rejet -->
+                        <div class="mb-4">
+                            <h5 class="mb-3"><i class="fas fa-comment-dots me-2"></i>Motif du rejet</h5>
+                            <div class="mb-3">
+                                <label class="form-label">Raison principale</label>
+                                <select class="form-select" name="raison_principale" required>
+                                    <option value="" selected disabled>Choisissez une raison...</option>
+                                    <option value="documents">Documents manquants ou invalides</option>
+                                    <option value="information">Informations incomplètes ou erronées</option>
+                                    <option value="activite">Activité non conforme</option>
+                                    <option value="autre">Autre raison</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="details_rejet" class="form-label">Détails (obligatoire)</label>
+                                <textarea class="form-control" id="details_rejet" name="details_rejet" 
+                                          rows="4" required placeholder="Expliquez en détail le motif du rejet..."></textarea>
+                                <div class="form-text">
+                                    Ce message sera envoyé à l'entreprise et enregistré dans l'historique.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Options -->
+                        <div class="mb-4">
+                            <h5 class="mb-3"><i class="fas fa-cog me-2"></i>Options</h5>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="notify_entreprise" 
+                                       name="notify_entreprise" checked>
+                                <label class="form-check-label" for="notify_entreprise">
+                                    Notifier l'entreprise par email
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="allow_reapply" 
+                                       name="allow_reapply">
+                                <label class="form-check-label" for="allow_reapply">
+                                    Autoriser une nouvelle demande
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- Actions -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'entreprise-detail' entreprise.id %}" 
+                               class="btn btn-secondary">
+                                <i class="fas fa-times-circle me-1"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-danger" id="submitBtn">
+                                <i class="fas fa-ban me-1"></i> Confirmer le rejet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Historique des rejets -->
+            <div class="card border-0 shadow-lg mt-4 mb-5">
+                <div class="card-header bg-light">
+                    <i class="fas fa-history me-2"></i>
+                    Historique des Rejets
+                </div>
+                <div class="card-body">
+                    {% if historique_rejets %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Entreprise</th>
+                                    <th>Motif</th>
+                                    <th>Par</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rejet in historique_rejets %}
+                                <tr>
+                                    <td>{{ rejet.date_rejet|date:"d/m/Y" }}</td>
+                                    <td>{{ rejet.entreprise.nom }}</td>
+                                    <td>
+                                        <span class="d-inline-block text-truncate" style="max-width: 150px;" 
+                                              title="{{ rejet.motif }}">
+                                            {{ rejet.motif }}
+                                        </span>
+                                    </td>
+                                    <td>{{ rejet.responsable.get_full_name }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-check-circle fa-2x mb-2"></i>
+                        <p>Aucun rejet enregistré pour cette entreprise</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border-radius: 0.5rem;
+    }
+    .card-header {
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+    }
+    .list-unstyled li {
+        padding: 0.25rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Confirmation renforcée avant soumission
+    const form = document.querySelector('form');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (form && submitBtn) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Vérification du champ de détails
+            const details = document.getElementById('details_rejet').value.trim();
+            if (details.length < 20) {
+                alert('Veuillez fournir une explication détaillée (au moins 20 caractères)');
+                return;
+            }
+            
+            // Double confirmation
+            if (confirm("ATTENTION : Cette action est irréversible. Confirmez-vous le rejet de cette entreprise ?")) {
+                if (confirm("Êtes-vous ABSOLUMENT certain ? Cette entreprise perdra immédiatement son accès.")) {
+                    form.submit();
+                }
+            }
+        });
+    }
+
+    // Affichage dynamique en fonction de la raison sélectionnée
+    const raisonSelect = document.querySelector('select[name="raison_principale"]');
+    const detailsTextarea = document.getElementById('details_rejet');
+    
+    if (raisonSelect && detailsTextarea) {
+        raisonSelect.addEventListener('change', function() {
+            let placeholder = "Expliquez en détail le motif du rejet...";
+            
+            switch(this.value) {
+                case 'documents':
+                    placeholder = "Précisez quels documents sont manquants ou invalides...";
+                    break;
+                case 'information':
+                    placeholder = "Listez les informations incomplètes ou erronées...";
+                    break;
+                case 'activite':
+                    placeholder = "Expliquez en quoi l'activité est non conforme...";
+                    break;
+                case 'autre':
+                    placeholder = "Décrivez précisément la raison du rejet...";
+                    break;
+            }
+            
+            detailsTextarea.placeholder = placeholder;
+        });
+    }
+});
+</script>
+{% endblock %}

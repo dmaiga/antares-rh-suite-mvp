@@ -1,0 +1,182 @@
+{% extends 'authentication/base.html' %}
+{% load static %}
+
+{% block title %}Entreprises Désactivées{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Entreprises Désactivées</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{% url 'entreprise-dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'entreprise-liste' %}">Liste des entreprises</a></li>
+        <li class="breadcrumb-item active">Désactivées</li>
+    </ol>
+
+    <!-- Statistiques et actions -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-info-circle me-2"></i>Informations</h5>
+                    <p class="card-text">
+                        Cette liste contient les entreprises qui ont été désactivées manuellement ou rejetées.
+                        Vous pouvez les réactiver si nécessaire.
+                    </p>
+                    <a href="{% url 'entreprise-actives' %}" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-list me-1"></i> Voir les entreprises actives
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-filter me-2"></i>Filtres rapides</h5>
+                    <div class="btn-group" role="group">
+                        <a href="?status=rejected" class="btn btn-sm btn-outline-secondary">Rejetées</a>
+                        <a href="?status=disabled" class="btn btn-sm btn-outline-secondary">Désactivées</a>
+                        <a href="?" class="btn btn-sm btn-outline-primary">Toutes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des entreprises désactivées -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-ban me-1"></i>
+                    Liste des Entreprises Désactivées
+                </div>
+                <div class="text-muted small">
+                    Total: {{ entreprises.count }}
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nom</th>
+                            <th>SIRET</th>
+                            <th>Raison</th>
+                            <th>Date Désactivation</th>
+                            <th>Désactivée par</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entreprise in entreprises %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'entreprise-detail' entreprise.id %}" class="text-decoration-none">
+                                    {{ entreprise.nom }}
+                                </a>
+                            </td>
+                            <td>{{ entreprise.siret|default:"-" }}</td>
+                            <td>
+                                {% if entreprise.motif_rejet %}
+                                    <span class="badge bg-danger">Rejet: {{ entreprise.motif_rejet|truncatechars:20 }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Désactivée manuellement</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ entreprise.date_desactivation|date:"d/m/Y H:i"|default:"-" }}</td>
+                            <td>{{ entreprise.desactivee_par.get_full_name|default:"Système" }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'entreprise-approuver' entreprise.id %}" 
+                                       class="btn btn-outline-success" 
+                                       title="Réactiver cette entreprise"
+                                       onclick="return confirm('Êtes-vous sûr de vouloir réactiver cette entreprise ?');">
+                                        <i class="fas fa-power-off"></i>
+                                    </a>
+                                    <a href="{% url 'entreprise-detail' entreprise.id %}" 
+                                       class="btn btn-outline-info" 
+                                       title="Voir les détails">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'entreprise-reset-password' entreprise.id %}" 
+                                       class="btn btn-outline-warning" 
+                                       title="Réinitialiser le mot de passe">
+                                        <i class="fas fa-key"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">
+                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                <h5>Aucune entreprise désactivée</h5>
+                                <p class="text-muted">Toutes les entreprises sont actives</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historique des désactivations -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-history me-1"></i>
+            Historique Récent des Désactivations
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                {% for log in historique %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>{{ log.entreprise.nom }}</strong> - 
+                            <span class="text-muted">{{ log.get_action_display }}</span>
+                            {% if log.motif %}
+                                <br><small class="text-muted">Motif: {{ log.motif }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">{{ log.date_action|date:"d/m/Y H:i" }}</small><br>
+                            <small>Par {{ log.utilisateur.get_full_name }}</small>
+                        </div>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="list-group-item text-center text-muted py-3">
+                    Aucun historique de désactivation récent
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(220, 53, 69, 0.05);
+    }
+    .badge {
+        font-size: 0.85em;
+        font-weight: normal;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tooltips pour les boutons d'action
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

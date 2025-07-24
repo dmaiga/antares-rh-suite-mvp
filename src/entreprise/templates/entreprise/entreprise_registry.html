@@ -1,0 +1,194 @@
+{% extends 'site_web/layout.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section Register -->
+<section class="register-hero py-5" style="background: linear-gradient(rgba(13, 59, 102, 0.9), rgba(13, 59, 102, 0.9))">
+  <div class="container py-5 text-white text-center">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <h1 class="display-4 fw-bold mb-4">Inscription Entreprise</h1>
+        <p class="lead">Rejoignez notre plateforme pour accéder à des talents qualifiés</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Registration Benefits -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-5">
+            <h2 class="text-center mb-5" style="color: var(--primary-blue);">Pourquoi s'inscrire sur notre plateforme ?</h2>
+            
+            <div class="row g-4">
+              <div class="col-md-4">
+                <div class="text-center">
+                  <div class="bg-primary-blue rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-people-fill text-white fs-3"></i>
+                  </div>
+                  <h5>Accès à des talents qualifiés</h5>
+                  <p class="text-muted">Trouvez les meilleurs profils correspondant à vos besoins spécifiques</p>
+                </div>
+              </div>
+              
+              <div class="col-md-4">
+                <div class="text-center">
+                  <div class="bg-primary-blue rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-speedometer2 text-white fs-3"></i>
+                  </div>
+                  <h5>Processus de recrutement accéléré</h5>
+                  <p class="text-muted">Gagnez du temps avec nos outils de gestion des candidatures</p>
+                </div>
+              </div>
+              
+              <div class="col-md-4">
+                <div class="text-center">
+                  <div class="bg-primary-blue rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-shield-check text-white fs-3"></i>
+                  </div>
+                  <h5>Gestion sécurisée</h5>
+                  <p class="text-muted">Vos données sont protégées selon les dernières normes de sécurité</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Registration Process -->
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <h2 class="text-center mb-5" style="color: var(--primary-blue);">Procédure d'inscription</h2>
+        
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center">
+                <span class="badge bg-primary-blue rounded-circle mb-3" style="width: 40px; height: 40px; line-height: 40px; font-size: 1.2rem;">1</span>
+                <h5>Remplissez le formulaire</h5>
+                <p class="text-muted">Fournissez les informations essentielles sur votre entreprise</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center">
+                <span class="badge bg-primary-blue rounded-circle mb-3" style="width: 40px; height: 40px; line-height: 40px; font-size: 1.2rem;">2</span>
+                <h5>Validation par notre équipe</h5>
+                <p class="text-muted">Nous vérifions vos informations sous 24h ouvrables</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+              <div class="card-body text-center">
+                <span class="badge bg-primary-blue rounded-circle mb-3" style="width: 40px; height: 40px; line-height: 40px; font-size: 1.2rem;">3</span>
+                <h5>Accès à votre espace</h5>
+                <p class="text-muted">Publiez vos offres et gérez vos recrutements</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Formulaire d'inscription -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-5">
+            <h2 class="text-center mb-4" style="color: var(--primary-blue);">Formulaire d'inscription</h2>
+            <p class="text-center text-muted mb-5">Tous les champs marqués d'un astérisque (*) sont obligatoires</p>
+            
+         <!-- Remplacez tout le formulaire manuel par -->
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  
+  <div class="row g-3">
+    {% for field in form %}
+      <div class="col-12">
+        <label for="{{ field.id_for_label }}" class="form-label">
+          {{ field.label }}{% if field.field.required %} *{% endif %}
+        </label>
+        {{ field }}
+        {% if field.help_text %}
+          <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    
+    <div class="col-12 mt-4">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="id_terms" name="terms" required>
+        <label class="form-check-label" for="id_terms">
+          J'accepte les <a href="#">conditions générales</a> et la <a href="#">politique de confidentialité</a> *
+        </label>
+      </div>
+    </div>
+
+    <div class="col-12 mt-4">
+      <button type="submit" class="btn btn-primary w-100 py-3">
+        <i class="bi bi-building-add me-2"></i> S'inscrire
+      </button>
+    </div>
+  </div>
+</form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Support Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h3 class="mb-4" style="color: var(--primary-blue);">Besoin d'aide pour votre inscription ?</h3>
+        <p class="lead mb-5">Notre équipe est disponible pour vous accompagner dans le processus d'inscription</p>
+        
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <i class="bi bi-envelope fs-1 mb-3" style="color: var(--accent-orange);"></i>
+                <h5>Support par email</h5>
+                <p>Contactez-nous à <a href="mailto:info@antares-rh.com">info@antares-rh.com</a></p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <i class="bi bi-telephone fs-1 mb-3" style="color: var(--accent-orange);"></i>
+                <h5>Assistance téléphonique</h5>
+                <p>Appelez-nous au <a href="tel:+22320292040">+223 20 29 20 40</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+{% endblock %}

@@ -1,0 +1,458 @@
+{% extends 'site_web/layout.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="services-hero py-5" style="background: linear-gradient(rgba(13, 59, 102, 0.9), rgba(13, 59, 102, 0.9))">
+  <div class="container py-5 text-white text-center">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <h1 class="display-4 fw-bold mb-4">Nos Solutions RH Complètes</h1>
+        <p class="lead">Découvrez comment nous transformons la gestion des talents</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services Navigation -->
+<section class="py-4 bg-light " style="top: 72px; z-index: 1020;">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex flex-wrap justify-content-center service-nav">
+          <a href="#recrutement" class="btn btn-outline-primary mx-2 mb-2">Recrutement</a>
+          <a href="#formation" class="btn btn-outline-primary mx-2 mb-2">Formation</a>
+          <a href="#conseil-rh" class="btn btn-outline-primary mx-2 mb-2">Conseil RH</a>
+          <a href="#externalisation" class="btn btn-outline-primary mx-2 mb-2">Externalisation</a>
+          <a href="#coaching" class="btn btn-outline-primary mx-2 mb-2">Coaching</a>
+          <a href="#audit-rh" class="btn btn-outline-primary mx-2 mb-2">Audit RH</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Recrutement Section -->
+<section id="recrutement" class="py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <img src="{% static 'site_web/images/savoir_plus/recrutement.jpg' %}" alt="Service de recrutement" class="img-fluid rounded shadow">
+      </div>
+      <div class="col-lg-6">
+        <h2 class="mb-4" style="color: var(--primary-blue);">Recrutement</h2>
+        <h5 class="mb-3">Trouvez les talents qui feront la différence dans votre organisation</h5>
+        <p>Notre approche sur-mesure combine méthodes traditionnelles et innovations technologiques pour identifier les profils les plus adaptés à vos besoins spécifiques.</p>
+        
+        <div class="mt-4">
+          <h6 class="mb-3">Nos méthodes :</h6>
+          <ul class="list-unstyled">
+            <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Chasse de tête ciblée</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Analyse comportementale</li>
+            <li class="mb-2"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Matching algorithmique</li>
+            <li><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Processus accéléré (7 jours en moyenne)</li>
+          </ul>
+        </div>
+        
+        <div class="mt-4 pt-3 border-top">
+          <a href="#contact" class="btn btn-primary">Demander un audit </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Formation Section -->
+<section id="formation" class="py-5 bg-light">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
+        <img src="{% static 'site_web/images/savoir_plus/formation.jpg' %}" alt="Service de formation" class="img-fluid rounded shadow">
+      </div>
+      <div class="col-lg-6 order-lg-1">
+        <h2 class="mb-4" style="color: var(--primary-blue);">Formation</h2>
+        <h5 class="mb-3">Développez les compétences de vos équipes avec nos programmes sur mesure</h5>
+        <p>Des formations adaptées à vos enjeux métiers, dispensées par des experts praticiens pour une montée en compétences immédiatement opérationnelle.</p>
+        
+        <div class="row mt-4">
+          <div class="col-md-6">
+            <h6 class="mb-3">Thématiques :</h6>
+            <ul class="list-unstyled">
+              <li class="mb-2"><i class="bi bi-arrow-right-circle me-2" style="color: var(--accent-orange);"></i> Leadership</li>
+              <li class="mb-2"><i class="bi bi-arrow-right-circle me-2" style="color: var(--accent-orange);"></i> Digitalisation</li>
+              <li><i class="bi bi-arrow-right-circle me-2" style="color: var(--accent-orange);"></i> Soft skills</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6 class="mb-3">Formats :</h6>
+            <ul class="list-unstyled">
+              <li class="mb-2"><i class="bi bi-laptop me-2" style="color: var(--accent-orange);"></i> E-learning</li>
+              <li class="mb-2"><i class="bi bi-people me-2" style="color: var(--accent-orange);"></i> Présentiel</li>
+              <li><i class="bi bi-phone me-2" style="color: var(--accent-orange);"></i> Mobile learning</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Conseil RH Section -->
+<section id="conseil-rh" class="py-3">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center mb-5">
+        <h2 class="mb-3" style="color: var(--primary-blue);">Conseil RH</h2>
+        <p class="lead">Optimisez votre gestion des ressources humaines avec notre expertise</p>
+      </div>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-80 border-0 shadow-sm">
+          <div class="card-body text-center">
+            <div class="icon-square bg-primary-blue text-white rounded-circle mb-3 mx-auto" style="width: 60px; height: 60px; line-height: 60px;">
+              <i class="bi bi-diagram-3 fs-3"></i>
+            </div>
+            <h5>Organisation RH</h5>
+            <p>Structuration des services et définition des rôles</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card h-80 border-0 shadow-sm">
+          <div class="card-body text-center">
+            <div class="icon-square bg-primary-blue text-white rounded-circle mb-3 mx-auto" style="width: 60px; height: 60px; line-height: 60px;">
+              <i class="bi bi-graph-up fs-3"></i>
+            </div>
+            <h5>Performance</h5>
+            <p>Optimisation des processus et indicateurs clés</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card h-80 border-0 shadow-sm">
+          <div class="card-body text-center">
+            <div class="icon-square bg-primary-blue text-white rounded-circle mb-3 mx-auto" style="width: 60px; height: 60px; line-height: 60px;">
+              <i class="bi bi-currency-exchange fs-3"></i>
+            </div>
+            <h5>Rémunération</h5>
+            <p>Stratégie de rémunération compétitive</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Externalisation Section -->
+<section id="externalisation" class="py-5 bg-light">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <div class="pe-lg-5">
+          <h2 class="mb-4" style="color: var(--primary-blue);">Externalisation RH</h2>
+          <h5 class="mb-3">Confiez-nous la gestion administrative de vos RH</h5>
+          <p>Libérez-vous des contraintes administratives pour vous concentrer sur votre cœur de métier grâce à notre solution d'externalisation complète.</p>
+          
+          <div class="mt-4">
+            <div class="d-flex mb-3">
+              <div class="flex-shrink-0">
+                <i class="bi bi-check-circle-fill fs-4" style="color: var(--accent-orange);"></i>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6 class="mb-1">Paie et déclarations sociales</h6>
+                <p class="small text-muted mb-0">Gestion précise et conforme à la réglementation</p>
+              </div>
+            </div>
+            
+            <div class="d-flex mb-3">
+              <div class="flex-shrink-0">
+                <i class="bi bi-check-circle-fill fs-4" style="color: var(--accent-orange);"></i>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6 class="mb-1">Administration du personnel</h6>
+                <p class="small text-muted mb-0">Gestion des contrats, absences et dossiers</p>
+              </div>
+            </div>
+            
+            <div class="d-flex">
+              <div class="flex-shrink-0">
+                <i class="bi bi-check-circle-fill fs-4" style="color: var(--accent-orange);"></i>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6 class="mb-1">Reporting mensuel</h6>
+                <p class="small text-muted mb-0">Tableaux de bord personnalisés</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card border-0 shadow">
+          <div class="card-body p-4">
+            <h5 class="mb-4 text-center">Nos engagements</h5>
+            <div class="d-flex align-items-start mb-4">
+              <div class="flex-shrink-0 bg-primary-blue rounded-circle p-2 text-white">
+                <i class="bi bi-shield-check"></i>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6>Sécurité des données</h6>
+                <p class="small mb-0">Certification APDP,RGPD et hébergement sécurisé</p>
+              </div>
+            </div>
+            
+            <div class="d-flex align-items-start mb-4">
+              <div class="flex-shrink-0 bg-primary-blue rounded-circle p-2 text-white">
+                <i class="bi bi-headset"></i>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6>Support réactif</h6>
+                <p class="small mb-0">Assistance dédiée sous 2h ouvrées</p>
+              </div>
+            </div>
+            
+            <div class="d-flex align-items-start">
+              <div class="flex-shrink-0 bg-primary-blue rounded-circle p-2 text-white">
+                <i class="bi bi-graph-up-arrow"></i>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6>Gains de productivité</h6>
+                <p class="small mb-0">Jusqu'à 40% d'économie sur vos coûts RH</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Coaching Section -->
+<section id="coaching" class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center mb-5">
+        <h2 class="mb-3" style="color: var(--primary-blue);">Coaching</h2>
+        <p class="lead">Accompagnement personnalisé pour vos managers et talents</p>
+      </div>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex">
+              <div class="flex-shrink-0 text-primary-blue">
+                <i class="bi bi-person-gear fs-1"></i>
+              </div>
+              <div class="flex-grow-1 ms-4">
+                <h5>Coaching individuel</h5>
+                <p>Développement du leadership et gestion des talents clés</p>
+                <ul class="list-unstyled">
+                  <li class="mb-1"><i class="bi bi-dot me-1"></i> Bilans de compétences</li>
+                  <li class="mb-1"><i class="bi bi-dot me-1"></i> Préparation à des rôles stratégiques</li>
+                  <li><i class="bi bi-dot me-1"></i> Gestion de carrière</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex">
+              <div class="flex-shrink-0 text-primary-blue">
+                <i class="bi bi-people fs-1"></i>
+              </div>
+              <div class="flex-grow-1 ms-4">
+                <h5>Coaching d'équipe</h5>
+                <p>Optimisation de la performance collective</p>
+                <ul class="list-unstyled">
+                  <li class="mb-1"><i class="bi bi-dot me-1"></i> Team building stratégique</li>
+                  <li class="mb-1"><i class="bi bi-dot me-1"></i> Gestion des conflits</li>
+                  <li><i class="bi bi-dot me-1"></i> Cohésion intergénérationnelle</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center mt-5">
+      <div class="bg-light p-4 rounded">
+        <h5 class="mb-3">Notre approche</h5>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="p-3">
+              <div class="bg-primary-blue text-white rounded-circle mx-auto mb-3" style="width: 70px; height: 70px; line-height: 70px;">1</div>
+              <h6>Diagnostic</h6>
+              <p class="small">Analyse approfondie des besoins</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3">
+              <div class="bg-primary-blue text-white rounded-circle mx-auto mb-3" style="width: 70px; height: 70px; line-height: 70px;">2</div>
+              <h6>Plan d'action</h6>
+              <p class="small">Objectifs SMART et indicateurs</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="p-3">
+              <div class="bg-primary-blue text-white rounded-circle mx-auto mb-3" style="width: 70px; height: 70px; line-height: 70px;">3</div>
+              <h6>Suivi</h6>
+              <p class="small">Ajustements et mesure des résultats</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Audit RH Section -->
+<section id="audit-rh" class="py-5 bg-light">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
+        <img src="{% static 'site_web/images/savoir_plus/audit.jpg' %}" alt="Service d'audit RH" class="img-fluid rounded shadow">
+      </div>
+      <div class="col-lg-6 order-lg-1">
+        <h2 class="mb-4" style="color: var(--primary-blue);">Audit RH</h2>
+        <h5 class="mb-3">Évaluez et améliorez vos processus RH</h5>
+        <p>Notre méthodologie rigoureuse vous fournit un état des lieux précis avec des recommandations actionnables pour optimiser votre fonction RH.</p>
+        
+        <div class="accordion mt-4" id="auditAccordion">
+          <div class="accordion-item border-0 mb-3 shadow-sm">
+            <h3 class="accordion-header" id="headingOne">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                Audit complet
+              </button>
+            </h3>
+            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#auditAccordion">
+              <div class="accordion-body">
+                <ul class="list-unstyled">
+                  <li class="mb-2"><i class="bi bi-check-square me-2" style="color: var(--accent-orange);"></i> Analyse des processus</li>
+                  <li class="mb-2"><i class="bi bi-check-square me-2" style="color: var(--accent-orange);"></i> Benchmark sectoriel</li>
+                  <li><i class="bi bi-check-square me-2" style="color: var(--accent-orange);"></i> Conformité légale</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item border-0 mb-3 shadow-sm">
+            <h3 class="accordion-header" id="headingTwo">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Audit ciblé
+              </button>
+            </h3>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#auditAccordion">
+              <div class="accordion-body">
+                <ul class="list-unstyled">
+                  <li class="mb-2"><i class="bi bi-check-square me-2" style="color: var(--accent-orange);"></i> Recrutement</li>
+                  <li class="mb-2"><i class="bi bi-check-square me-2" style="color: var(--accent-orange);"></i> Formation</li>
+                  <li><i class="bi bi-check-square me-2" style="color: var(--accent-orange);"></i> Rémunération</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <div class="accordion-item border-0 shadow-sm">
+            <h3 class="accordion-header" id="headingThree">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                Diagnostic social
+              </button>
+            </h3>
+            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#auditAccordion">
+              <div class="accordion-body">
+                <ul class="list-unstyled">
+                  <li class="mb-2"><i class="bi bi-check-square me-2" style="color: var(--accent-orange);"></i> Climat social</li>
+                  <li class="mb-2"><i class="bi bi-check-square me-2" style="color: var(--accent-orange);"></i> Baromètre RH</li>
+                  <li><i class="bi bi-check-square me-2" style="color: var(--accent-orange);"></i> Enquête satisfaction</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-4 pt-3">
+          <a href="#contact" class="btn btn-outline-primary me-2">Télécharger notre brochure</a>
+          <a href="#contact" class="btn btn-primary">Demander un devis</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 text-white" style="background-color: var(--secondary-blue);">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h2 class="mb-4">Prêt à transformer votre gestion RH ?</h2>
+        <p class="lead mb-5">Nos experts sont à votre disposition pour analyser vos besoins et vous proposer la solution la plus adaptée</p>
+        <a href="{% url 'contact' %}" class="btn btn-light btn-lg px-4 me-2">Nous contacter</a>
+        <a href="tel:+22320292040" class="btn btn-outline-light btn-lg px-4">
+          <i class="bi bi-telephone me-2"></i> +223 20 29 20 40
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  
+  
+  .icon-square {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .accordion-button:not(.collapsed) {
+    background-color: rgba(13, 59, 102, 0.1);
+    color: var(--primary-blue);
+    box-shadow: none;
+  }
+  
+  .accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(13, 59, 102, 0.2);
+  }
+</style>
+
+<script>
+  // Highlight active service in navigation when scrolling
+  document.addEventListener('DOMContentLoaded', function() {
+    const serviceSections = document.querySelectorAll('section[id]');
+    const serviceLinks = document.querySelectorAll('.service-nav a');
+    
+    window.addEventListener('scroll', function() {
+      let current = '';
+      
+      serviceSections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        
+        if (pageYOffset >= (sectionTop - 200)) {
+          current = section.getAttribute('id');
+        }
+      });
+      
+      serviceLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+          link.style.backgroundColor = 'var(--primary-blue)';
+          link.style.color = 'white';
+        }
+      });
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,210 @@
+{% extends 'authentication/base.html' %}
+{% load static %}
+
+{% block title %}Activité Récente des Entreprises{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Activité Récente</h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item"><a href="{% url 'entreprise-dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active">Activité récente</li>
+    </ol>
+
+    <!-- Filtres période -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-calendar-alt me-1"></i>
+            Période d'activité
+        </div>
+        <div class="card-body">
+            <div class="btn-group" role="group">
+                <a href="?period=day" class="btn btn-outline-primary {% if period == 'day' %}active{% endif %}">Aujourd'hui</a>
+                <a href="?period=week" class="btn btn-outline-primary {% if period == 'week' %}active{% endif %}">7 jours</a>
+                <a href="?period=month" class="btn btn-outline-primary {% if period == 'month' %}active{% endif %}">30 jours</a>
+                <a href="?period=all" class="btn btn-outline-primary {% if period == 'all' %}active{% endif %}">Tout</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques activité -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <h5>Nouvelles inscriptions</h5>
+                    <h2>{{ stats.nouvelles_inscriptions }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <h5>Entreprises validées</h5>
+                    <h2>{{ stats.entreprises_validees }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <h5>Connexions</h5>
+                    <h2>{{ stats.connexions }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white mb-4">
+                <div class="card-body">
+                    <h5>Actions administratives</h5>
+                    <h2>{{ stats.actions_admin }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline des activités -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-stream me-1"></i>
+                    Timeline des Activités
+                </div>
+                <small class="text-muted">
+                    {{ activites.count }} événements trouvés
+                </small>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="timeline">
+                {% for activite in activites %}
+                <div class="timeline-item {% cycle 'timeline-left' 'timeline-right' %}">
+                    <div class="timeline-badge 
+                        {% if activite.type == 'inscription' %}bg-primary
+                        {% elif activite.type == 'validation' %}bg-success
+                        {% elif activite.type == 'connexion' %}bg-info
+                        {% elif activite.type == 'desactivation' %}bg-danger
+                        {% else %}bg-secondary{% endif %}">
+                        <i class="fas 
+                            {% if activite.type == 'inscription' %}fa-user-plus
+                            {% elif activite.type == 'validation' %}fa-check-circle
+                            {% elif activite.type == 'connexion' %}fa-sign-in-alt
+                            {% elif activite.type == 'desactivation' %}fa-ban
+                            {% else %}fa-info-circle{% endif %}"></i>
+                    </div>
+                    <div class="timeline-card">
+                        <div class="timeline-header">
+                            <strong>{{ activite.get_type_display }}</strong>
+                            <small class="text-muted float-end">{{ activite.date|date:"d/m/Y H:i" }}</small>
+                        </div>
+                        <div class="timeline-body">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-building me-2"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <a href="{% url 'entreprise-detail' activite.entreprise.id %}" class="text-decoration-none">
+                                        {{ activite.entreprise.nom }}
+                                    </a>
+                                    {% if activite.motif %}
+                                        <p class="mb-0 text-muted small">Motif: {{ activite.motif }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-footer">
+                            <small>
+                                <i class="fas fa-user-circle me-1"></i>
+                                {% if activite.utilisateur %}
+                                    {{ activite.utilisateur.get_full_name }}
+                                {% else %}
+                                    Système
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-5">
+                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                    <h5>Aucune activité récente</h5>
+                    <p class="text-muted">Aucun événement n'a été enregistré pour cette période</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphique d'activité (placeholder pour Chart.js) -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-chart-line me-1"></i>
+            Statistiques d'activité
+        </div>
+        <div class="card-body">
+            <canvas id="activityChart" width="100%" height="30"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Timeline styling */
+    .timeline {
+        position: relative;
+        padding-left: 50px;
+    }
+    .timeline:before {
+        content: '';
+        position: absolute;
+        left: 25px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e9ecef;
+    }
+    .timeline-item {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    .timeline-badge {
+        position: absolute;
+        left: 12px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+    }
+    .timeline-card {
+        position: relative;
+        margin-left: 40px;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        background: #fff;
+        padding: 1rem;
+    }
+    .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.25rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .timeline-footer {
+        margin-top: 0.5rem;
+        padding-top: 0.25rem;
+        border-top: 1px solid #dee2e6;
+        font-size: 0.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% endblock %}
