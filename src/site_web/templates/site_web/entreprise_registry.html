@@ -103,8 +103,7 @@
     </div>
   </div>
 </section>
-
-<!-- Registration Form -->
+<!-- Formulaire d'inscription -->
 <section class="py-5 bg-light">
   <div class="container">
     <div class="row justify-content-center">
@@ -114,129 +113,49 @@
             <h2 class="text-center mb-4" style="color: var(--primary-blue);">Formulaire d'inscription</h2>
             <p class="text-center text-muted mb-5">Tous les champs marqués d'un astérisque (*) sont obligatoires</p>
             
-            <form method="post" enctype="multipart/form-data">
-              {% csrf_token %}
-              
-              <div class="row g-3">
-                <!-- Informations de l'entreprise -->
-                <div class="col-md-6">
-                  <label for="company-name" class="form-label">Nom de l'entreprise *</label>
-                  <input type="text" class="form-control" id="company-name" name="company_name" required>
-                </div>
-                
-                <div class="col-md-6">
-                  <label for="company-activity" class="form-label">Secteur d'activité *</label>
-                  <select class="form-select" id="company-activity" name="company_activity" required>
-                    <option value="" selected disabled>Choisissez...</option>
-                    <option value="IT">Technologie de l'information</option>
-                    <option value="finance">Finance</option>
-                    <option value="health">Santé</option>
-                    <option value="education">Éducation</option>
-                    <option value="other">Autre</option>
-                  </select>
-                </div>
-                
-                <div class="col-12">
-                  <label for="company-address" class="form-label">Adresse *</label>
-                  <input type="text" class="form-control" id="company-address" name="company_address" required>
-                </div>
-                
-                <div class="col-md-4">
-                  <label for="company-city" class="form-label">Ville *</label>
-                  <input type="text" class="form-control" id="company-city" name="company_city" required>
-                </div>
-                
-                <div class="col-md-4">
-                  <label for="company-country" class="form-label">Pays *</label>
-                  <select class="form-select" id="company-country" name="company_country" required>
-                    <option value="Mali" selected>Mali</option>
-                    <option value="autre">Autre</option>
-                  </select>
-                </div>
-                
-                <div class="col-md-4">
-                  <label for="company-size" class="form-label">Taille de l'entreprise *</label>
-                  <select class="form-select" id="company-size" name="company_size" required>
-                    <option value="" selected disabled>Choisissez...</option>
-                    <option value="1-10">1-10 employés</option>
-                    <option value="11-50">11-50 employés</option>
-                    <option value="51-200">51-200 employés</option>
-                    <option value="201-500">201-500 employés</option>
-                    <option value="500+">500+ employés</option>
-                  </select>
-                </div>
-                
-                <!-- Informations du contact -->
-                <div class="col-md-6">
-                  <label for="contact-name" class="form-label">Nom du contact *</label>
-                  <input type="text" class="form-control" id="contact-name" name="contact_name" required>
-                </div>
-                
-                <div class="col-md-6">
-                  <label for="contact-position" class="form-label">Poste occupé *</label>
-                  <input type="text" class="form-control" id="contact-position" name="contact_position" required>
-                </div>
-                
-                <div class="col-md-6">
-                  <label for="contact-email" class="form-label">Email professionnel *</label>
-                  <input type="email" class="form-control" id="contact-email" name="contact_email" required>
-                </div>
-                
-                <div class="col-md-6">
-                  <label for="contact-phone" class="form-label">Téléphone *</label>
-                  <input type="tel" class="form-control" id="contact-phone" name="contact_phone" required>
-                </div>
-                
-                <!-- Compte utilisateur -->
-                <div class="col-md-6">
-                  <label for="user-email" class="form-label">Email pour le compte *</label>
-                  <input type="email" class="form-control" id="user-email" name="user_email" required>
-                </div>
-                
-                <div class="col-md-6">
-                  <label for="user-password" class="form-label">Mot de passe *</label>
-                  <input type="password" class="form-control" id="user-password" name="user_password" required>
-                </div>
-                
-                <div class="col-12">
-                  <label for="company-description" class="form-label">Description de l'entreprise</label>
-                  <textarea class="form-control" id="company-description" name="company_description" rows="3"></textarea>
-                </div>
-                
-                <div class="col-12">
-                  <label for="company-logo" class="form-label">Logo de l'entreprise</label>
-                  <input class="form-control" type="file" id="company-logo" name="company_logo" accept="image/*">
-                </div>
-                
-                <div class="col-12 mt-4">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="terms-accept" name="terms_accept" required>
-                    <label class="form-check-label" for="terms-accept">
-                      J'accepte les <a href="#" style="color: var(--primary-blue);">conditions générales</a> et la <a href="#" style="color: var(--primary-blue);">politique de confidentialité</a> *
-                    </label>
-                  </div>
-                </div>
-                
-                <div class="col-12 mt-4">
-                  <button type="submit" class="btn btn-primary w-100 py-3">
-                    <i class="bi bi-building-add me-2"></i> S'inscrire
-                  </button>
-                </div>
-                
-                <div class="col-12 text-center mt-3">
-    <p class="mb-0">Vous avez déjà un compte ? 
-        <a href="{% url 'login' %}?type=company" style="color: var(--primary-blue);">Connectez-vous</a>
-    </p>
-</div>
-              </div>
-            </form>
+         <!-- Remplacez tout le formulaire manuel par -->
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  
+  <div class="row g-3">
+    {% for field in form %}
+      <div class="col-12">
+        <label for="{{ field.id_for_label }}" class="form-label">
+          {{ field.label }}{% if field.field.required %} *{% endif %}
+        </label>
+        {{ field }}
+        {% if field.help_text %}
+          <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    
+    <div class="col-12 mt-4">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="id_terms" name="terms" required>
+        <label class="form-check-label" for="id_terms">
+          J'accepte les <a href="#">conditions générales</a> et la <a href="#">politique de confidentialité</a> *
+        </label>
+      </div>
+    </div>
+
+    <div class="col-12 mt-4">
+      <button type="submit" class="btn btn-primary w-100 py-3">
+        <i class="bi bi-building-add me-2"></i> S'inscrire
+      </button>
+    </div>
+  </div>
+</form>
+
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-
 <!-- Support Section -->
 <section class="py-5">
   <div class="container">

@@ -15,7 +15,11 @@ class User(AbstractUser):
         ('rh', 'Ressources Humaines'),
         ('employe', 'Employé'),
         ('stagiaire', 'Stagiaire'),
+        ('entreprise', 'Entreprise'),
+        ('recruteur', 'Recruteur'),
+        ('candidat', 'Candidat'),
     ]
+
 
     STATUT_CHOICES = [
         ('actif', 'Actif'),
@@ -63,6 +67,16 @@ class User(AbstractUser):
     # Fichiers
     cv = models.FileField(upload_to='cvs/', blank=True, null=True)
     contract_file = models.FileField(upload_to='contracts/', blank=True, null=True)
+    
+    # Champs recruteur
+    fonction_recruteur = models.CharField(max_length=100, blank=True)
+    cv_recruteur = models.FileField(upload_to='cvs/', blank=True, null=True)
+
+    # Champs candidat
+    niveau_etude = models.CharField(max_length=100, blank=True)
+    experience = models.TextField(blank=True)
+    domaines_recherche = models.CharField(max_length=255, blank=True)
+
 
     def __str__(self):
         return f"{self.get_full_name()} ({self.role})"

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'todo',
     'statics',
     'site_web',
+    'entreprise',
     
 ]
 
