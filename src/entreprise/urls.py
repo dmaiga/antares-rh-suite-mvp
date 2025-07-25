@@ -6,8 +6,12 @@ urlpatterns = [
     path('info/', views.entreprise_info, name='entreprise-info'),
     path('savoir-plus/', views.savoir_plus, name='savoir-plus'),
     path('inscription/', views.entreprise_registry, name='entreprise-registry'),
+    path('add_entreprise/', views.add_entreprise, name='add-entreprise'),
     path('confirmation/', views.confirmation_inscription, name='confirmation-inscription'),
-
+    path('services/', views.services, name='services'),
+    path('corbeille/', views.corbeille_entreprises, name='corbeille-entreprises'),
+    path('<int:entreprise_id>/restaurer/', views.restaurer_entreprise, name='restaurer-entreprise'),
+    path('<int:user_id>/rejeter/', views.rejeter_entreprise, name='rejeter-entreprise'),
     # Dashboard RH entreprise
     path('dashboard/', views.dashboard_rh, name='entreprise-dashboard'),
 

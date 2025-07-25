@@ -10,8 +10,6 @@ def home(request):
 def about(request):
     return render(request, 'site_web/about.html')
 
-def services(request):
-    return render(request, 'site_web/services.html')
 
 def jobs(request):
     return render(request, 'site_web/jobs.html')
@@ -26,11 +24,9 @@ def appointment(request):
     return render(request, 'site_web/appointment.html')
 
 def login(request):
-    if request.method == 'GET' and 'from_registry' in request.GET:   
-        return render(request, 'site_web/login.html', {'registration_success': True})
-    # Traitement normal de la connexion
-    return render(request, 'site_web/login.html')
-
+    login_type = request.GET.get('type', 'candidate')  # 'candidate' par défaut
+    context = {'login_type': login_type}
+    return render(request, 'site_web/login.html', context)
 
 def candidat_register(request):
     if request.method == 'POST':

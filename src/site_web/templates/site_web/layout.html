@@ -248,17 +248,17 @@ form input:focus {
         Se connecter
     </a>
     <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="{% url 'site_login' %}?type=candidate">
+        <li><a class="dropdown-item" href="{% url 'site_login' %}" onclick="setLoginType('candidate')">
             <i class="bi bi-person-vcard me-2"></i> Candidat
-        </a></li><li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'site_login' %}?type=company">
-            <i class="bi bi-building me-2"></i>Entreprise
-        </a></li><li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'site_login' %}?type=employee">
-            <i class="bi bi-person-badge me-2"></i>Salarié
         </a></li>
-        
-        
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="{% url 'site_login' %}" onclick="setLoginType('company')">
+            <i class="bi bi-building me-2"></i> Entreprise
+        </a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="{% url 'site_login' %}" onclick="setLoginType('employee')">
+            <i class="bi bi-person-badge me-2"></i> Salarié
+        </a></li>
     </ul>
 </li>
       </ul>
@@ -460,7 +460,31 @@ form input:focus {
   }
 </style>
 
+<script>
+// Stocke le type d'utilisateur dans sessionStorage
+function setLoginType(type) {
+    sessionStorage.setItem('loginType', type);
+    window.location.href = "{% url 'site_login' %}?type=" + type;
+}
 
+// Au chargement de la page, active le bon onglet
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type') || sessionStorage.getItem('loginType') || 'candidate';
+    
+    // Active le bon onglet Bootstrap
+    if (type === 'company') {
+        const tab = new bootstrap.Tab(document.getElementById('company-tab'));
+        tab.show();
+    } else if (type === 'employee') {
+        const tab = new bootstrap.Tab(document.getElementById('employee-tab'));
+        tab.show();
+    }
+    
+    // Nettoie le sessionStorage après utilisation
+    sessionStorage.removeItem('loginType');
+});
+</script>
 
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

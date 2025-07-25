@@ -1,12 +1,12 @@
-# entreprise/forms.py
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 from django import forms
 from authentication.models import User
 from entreprise.models import Entreprise
 
 class EntrepriseRegisterForm(forms.ModelForm):
-    # Champs utilisateur (représentant)
+    # Champs utilisateur (représentant) - username retiré
     email = forms.EmailField(required=True)
-    username = forms.CharField(label="Nom d'utilisateur", max_length=150)
     first_name = forms.CharField(label="Prénom du représentant", max_length=150)
     last_name = forms.CharField(label="Nom du représentant", max_length=150)
     telephone_pro = forms.CharField(label="Téléphone professionnel", max_length=20)
@@ -14,7 +14,11 @@ class EntrepriseRegisterForm(forms.ModelForm):
     # Champs entreprise
     nom = forms.CharField(label="Nom de l'entreprise", max_length=255)
     secteur_activite = forms.CharField(label="Secteur d'activité", required=True)
-    site_web = forms.URLField(label="Site web", required=False)
+    site_web = forms.CharField(
+        label="Site web", 
+        required=False,
+        help_text="Exemple: www.monentreprise.com ou https://monentreprise.com"
+    )
     description = forms.CharField(label="Description", widget=forms.Textarea, required=False)
     adresse = forms.CharField(label="Adresse", required=False)
     ville = forms.CharField(required=False)
@@ -34,22 +38,44 @@ class EntrepriseRegisterForm(forms.ModelForm):
     class Meta:
         model = User
         fields = [
-            'username', 'email', 'first_name', 'last_name', 'telephone_pro',
+            'email', 'first_name', 'last_name', 'telephone_pro',
             'nom', 'secteur_activite', 'site_web', 'description',
             'adresse', 'ville', 'pays', 'taille_entreprise', 'logo'
         ]
 
+    def clean_site_web(self):
+        site_web = self.cleaned_data.get('site_web', '').strip()
+        
+        if not site_web:
+            return ''
+            
+        # Ajoutez http:// si ce n'est pas déjà présent
+        if not site_web.startswith(('http://', 'https://')):
+            site_web = 'http://' + site_web
+            
+        # Validation de l'URL
+        validator = URLValidator()
+        try:
+            validator(site_web)
+        except ValidationError:
+            raise forms.ValidationError("Veuillez entrer une URL valide (ex: www.monentreprise.com)")
+        
+        return site_web  # <-- N'oubliez pas de retourner la valeur nettoyée
+
     def save(self, commit=True):
+        # Création de l'utilisateur sans username pour l'instant
+        email_pro = self.cleaned_data['email']
         user = User(
-            username=self.cleaned_data['username'],
-            email=self.cleaned_data['email'],
+            username=email_pro,  # ← utilisé comme identifiant unique
+            email=email_pro,
             first_name=self.cleaned_data['first_name'],
             last_name=self.cleaned_data['last_name'],
             telephone_pro=self.cleaned_data['telephone_pro'],
             role='entreprise',
             is_active=False
         )
-        user.set_unusable_password()
+        user.set_unusable_password()  # Pas de mot de passe utilisable initialement
+        
         if commit:
             user.save()
             Entreprise.objects.create(

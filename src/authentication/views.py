@@ -70,7 +70,6 @@ def get_performance_class(percentage):
         return 'Satisfaisant'
     return 'Insuffisant'
 
-
 @login_required
 @user_passes_test(is_rh_or_admin)
 def dashboard_rh(request):
@@ -80,9 +79,11 @@ def dashboard_rh(request):
         role = request.GET.get('role')
         nom = request.GET.get('nom')
         statut = request.GET.get('statut')
-        users = User.objects.exclude(role='admin').order_by('last_name')
+        
+        # Filtre par défaut pour ne montrer que les employés et stagiaires
+        users = User.objects.filter(role__in=['employe', 'stagiaire']).order_by('last_name')
 
-        # Application des filtres
+        # Application des filtres supplémentaires
         if poste:
             users = users.filter(poste_occupe__icontains=poste)
         if role:
@@ -123,9 +124,9 @@ def dashboard_rh(request):
                 'weekly_avg': weekly_avg,
                 'weekly_class': get_performance_class(weekly_avg),
             })
+
         context = {
             'stats': stats,
-            'week_range': f"{start_of_week:%d/%m} - {(start_of_week + timedelta(days=4)):%d/%m}",
             'jours_semaine': jours_semaine,
             'users': users,
             'filters': {
@@ -141,6 +142,7 @@ def dashboard_rh(request):
     except Exception as e:
         logger.error(f"Erreur dans dashboard RH : {str(e)}")
         raise
+
 
 @login_required
 @user_passes_test(is_rh_or_admin)

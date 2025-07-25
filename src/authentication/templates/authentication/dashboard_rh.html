@@ -1,5 +1,6 @@
 {% extends 'authentication/base.html' %}
-
+{% load static %}
+{% load todo_extras %}
 {% block content %}
 <!DOCTYPE html>
 <html lang="fr">
@@ -162,59 +163,99 @@
     .bg-good { background-color: #689f38; }
     .bg-average { background-color: #ff8f00; }
     .bg-poor { background-color: #d32f2f; }
+    .percent-red {
+        background-color: #ffebee;
+        color: #c62828;
+        font-weight: bold;
+    }
+    .percent-yellow {
+        background-color: #fff8e1;
+        color: #f57f17;
+        font-weight: bold;
+    }
+    .percent-green {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        font-weight: bold;
+    }
+    .percent-light-green {
+        background-color: #e8f5e9;
+        color: #1b5e20;
+        font-weight: bold;
+    }
 </style>
 </head>
 <body>
    
 <div class="container-fluid">
-    <!-- Tableau synthèse des performances - version simplifiée -->
-    <div class="performance-summary-card">
-        <div style="background: #1976d2; color: white; padding: 12px; border-radius: 8px 8px 0 0;">
-            <h5 style="margin: 0; font-size: 1.2rem;">
-                <i class="bi bi-table me-2"></i>Synthèse des performances - Semaine du {{ jours_semaine.0|date:"d M" }} au {{ jours_semaine.4|date:"d M Y" }}
+
+    <!-- Tableau synthèse des performances -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-table me-2"></i>
+                Synthèse des performances - Semaine du {{ jours_semaine.0|date:"d M" }} au {{ jours_semaine.4|date:"d M Y" }}
             </h5>
         </div>
         
-        <div style="overflow-x: auto;">
-            <table class="summary-table">
-                <thead>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
                     <tr>
                         <th style="min-width: 200px;">Employé</th>
                         {% for day in jours_semaine %}
-                        <th>{{ day|date:"l" }}</th>  {# Format complet du jour (lundi, mardi...) #}
+                        <th>{{ day|date:"l"|capfirst }}</th>
                         {% endfor %}
-                        <th>Résultat</th>
+                        <th>Moyenne</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for stat in stats %}
+                    {% if stat.user.role in 'employe,stagiaire' %}
                     <tr>
-                        <td style="text-align: left;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
                                 {% if stat.user.photo %}
-                                <img src="{{ stat.user.photo.url }}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;">
+                                <img src="{{ stat.user.photo.url }}" class="rounded-circle" 
+                                     style="width: 36px; height: 36px; object-fit: cover;">
+                                {% else %}
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 36px; height: 36px;">
+                                    <i class="bi bi-person text-muted"></i>
+                                </div>
                                 {% endif %}
                                 <div>
                                     <div>{{ stat.user.get_full_name }}</div>
-                                    <small style="color: #666;">{{ stat.user.poste_occupe }}</small>
+                                    <small class="text-muted">{{ stat.user.poste_occupe }}</small>
                                 </div>
                             </div>
                         </td>
                         {% for day in stat.days %}
-                        <td class="{% if day.percentage < 50 %}percent-red{% elif day.percentage < 86 %}percent-yellow{% elif day.percentage == 86 %}percent-green{% else %}percent-light-green{% endif %}">
+                        <td class="align-middle text-center {{ day.css_class }}">
                             {{ day.percentage }}%
                         </td>
                         {% endfor %}
-                        <td class="{% if stat.weekly_avg < 50 %}percent-red{% elif stat.weekly_avg < 86 %}percent-yellow{% elif stat.weekly_avg == 86 %}percent-green{% else %}percent-light-green{% endif %}">
+                        <td class="align-middle text-center fw-bold {{ stat.weekly_class }}">
                             {{ stat.weekly_avg }}%
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% empty %}
+                    <tr>
+                        <td colspan="{{ jours_semaine|length|add:2 }}" class="text-center py-4">
+                            <div class="d-flex flex-column align-items-center">
+                                <i class="bi bi-exclamation-circle fs-3 text-muted mb-2"></i>
+                                <p class="text-muted mb-0">Aucun employé ou stagiaire trouvé</p>
+                                <small class="text-muted">Vérifiez vos filtres ou ajoutez des utilisateurs</small>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-    </div>   
-    
+    </div>
+</div>
     <!-- Filtres compacts -->
     <div class="filter-card">
         <form method="get" class="filter-form">
