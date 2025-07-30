@@ -1,0 +1,222 @@
+{% extends 'authentication/base.html' %}
+{% load static %}
+
+{% block title %}Liste des Entreprises{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+    .entreprise-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+        border: none;
+        margin-bottom: 20px;
+    }
+    .entreprise-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+    .company-logo {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .statut-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    .statut-active { background-color: #d1fae5; color: #065f46; }
+    .statut-inactive { background-color: #fee2e2; color: #991b1b; }
+    .statut-supprimer { background-color: #e5e7eb; color: #374151; }
+    .search-filter-card {
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .filter-btn {
+        border-radius: 20px;
+        padding: 8px 20px;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    .empty-state {
+        padding: 3rem;
+        text-align: center;
+    }
+</style>
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mt-4 mb-2">Liste des Entreprises</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'entreprise-dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Entreprises</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="card search-filter-card">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <!-- Barre de recherche -->
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" 
+                               class="form-control" 
+                               name="search" 
+                               placeholder="Rechercher une entreprise..."
+                               value="{{ search_query }}">
+                    </div>
+                </div>
+                
+                <!-- Filtre par statut -->
+                <div class="col-md-4">
+                    <select class="form-select" name="statut">
+                        <option value="">Tous les statuts</option>
+                        {% for statut in statuts %}
+                            <option value="{{ statut }}" {% if statut_filter == statut %}selected{% endif %}>
+                                {{ statut|title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Boutons -->
+                <div class="col-md-2 d-flex">
+                    <button type="submit" class="btn btn-primary filter-btn flex-grow-1">
+                        <i class="fas fa-filter me-1"></i> Filtrer
+                    </button>
+                    <a href="{% url 'entreprise-liste' %}" class="btn btn-outline-secondary filter-btn ms-2">
+                        <i class="fas fa-sync-alt"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des entreprises -->
+    <div class="row">
+        {% for entreprise in entreprises %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 entreprise-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-start mb-3">
+                        {% if entreprise.logo %}
+                            <img src="{{ entreprise.logo.url }}" class="company-logo me-3">
+                        {% else %}
+                            <div class="company-logo bg-light text-center me-3 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-building text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="card-title mb-1">{{ entreprise.nom }}</h5>
+                            <span class="statut-badge statut-{{ entreprise.statut }}">
+                                {{ entreprise.get_statut_display }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="text-muted mb-1">
+                            <i class="fas fa-user me-2"></i>
+                            {{ entreprise.user.get_full_name }}
+                        </div>
+                        <div class="text-muted">
+                            <i class="fas fa-envelope me-2"></i>
+                            {{ entreprise.user.email }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-alt me-1"></i>
+                            Inscrit le {{ entreprise.date_inscription|date:"d/m/Y" }}
+                        </small>
+                        <a href="{% url 'entreprise-detail' entreprise.user.id %}" 
+                           class="btn btn-sm btn-outline-primary">
+                            Détails <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body empty-state">
+                    <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                    <h4>Aucune entreprise trouvée</h4>
+                    <p class="text-muted mb-4">Aucune entreprise ne correspond à vos critères de recherche</p>
+                    <a href="{% url 'entreprise-liste' %}" class="btn btn-primary">
+                        Réinitialiser les filtres
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if entreprises.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if entreprises.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="?page=1&statut={{ statut_filter }}&search={{ search_query }}">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="?page={{ entreprises.previous_page_number }}&statut={{ statut_filter }}&search={{ search_query }}">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+            {% endif %}
+            
+            {% for i in entreprises.paginator.page_range %}
+                {% if entreprises.number == i %}
+                    <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                {% elif i > entreprises.number|add:'-3' and i < entreprises.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" 
+                           href="?page={{ i }}&statut={{ statut_filter }}&search={{ search_query }}">
+                            {{ i }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if entreprises.has_next %}
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="?page={{ entreprises.next_page_number }}&statut={{ statut_filter }}&search={{ search_query }}">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" 
+                       href="?page={{ entreprises.paginator.num_pages }}&statut={{ statut_filter }}&search={{ search_query }}">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

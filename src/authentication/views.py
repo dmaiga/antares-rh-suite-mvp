@@ -234,9 +234,7 @@ def employees_view(request):
     department_filter = request.GET.get('department', '')
     role_filter = request.GET.get('role', '')
     statut_filter = request.GET.get('statut', '')
-
-    users = User.objects.exclude(role='admin').select_related('fiche_poste', 'manager')
-
+    users = User.objects.filter(role__in=['employe', 'stagiaire']).order_by('last_name')
     if query:
         users = users.filter(
             Q(username__icontains=query) |

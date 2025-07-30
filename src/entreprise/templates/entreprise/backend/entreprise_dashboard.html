@@ -1,0 +1,290 @@
+{% extends 'authentication/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Couleurs modernes */
+    :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --success: #4cc9f0;
+        --info: #4895ef;
+        --light: #f8f9fa;
+        --dark: #212529;
+    }
+
+    /* Design minimaliste */
+    .stat-card {
+        border: none;
+        border-radius: 12px;
+        transition: transform 0.2s;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    }
+    
+    .stat-icon {
+        font-size: 1.5rem;
+        color: var(--primary);
+        opacity: 0.8;
+    }
+    
+    .company-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    
+    .status-badge {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .active-badge { background: rgba(67, 97, 238, 0.1); color: var(--primary); }
+    .pending-badge { background: rgba(76, 201, 240, 0.1); color: var(--success); }
+    .inactive-badge { background: rgba(248, 249, 250, 0.8); color: var(--dark); border: 1px solid #eee; }
+    
+    /* Tableau épuré */
+    .company-table {
+        border-collapse: separate;
+        border-spacing: 0 8px;
+    }
+    
+    .company-table th {
+        background: transparent;
+        color: #6c757d;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        border: none;
+    }
+    
+    .company-table td {
+        background: white;
+        vertical-align: middle;
+        padding: 12px 16px;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+    
+    .company-table tr:first-child td {
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+    }
+    
+    .company-table tr:last-child td {
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+    }
+    
+    /* Bouton action */
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: all 0.2s;
+    }
+    
+    .action-btn:hover {
+        transform: scale(1.05);
+    }
+    
+    /* Animation subtile */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fade {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+</style>
+
+<div class="container-fluid px-4 py-3">
+    <!-- Header minimal -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0 fw-light">Entreprises</h2>
+            <p class="text-muted small mb-0">Gestion des partenaires</p>
+        </div>
+        <a href="{% url 'add-entreprise' %}" class="btn btn-sm btn-primary rounded-pill px-3">
+            <i class="fas fa-plus me-1"></i> Nouveau
+        </a>
+    </div>
+
+    <!-- Statistiques simplifiées -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card p-3 animate-fade" style="animation-delay: 0.1s">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon me-3">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Total</h6>
+                        <h4 class="mb-0">{{ stats.total_entreprises }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="stat-card p-3 animate-fade" style="animation-delay: 0.2s">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon me-3">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Actives</h6>
+                        <h4 class="mb-0">{{ stats.entreprises_actives }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="stat-card p-3 animate-fade" style="animation-delay: 0.3s">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon me-3">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">En attente</h6>
+                        <h4 class="mb-0">{{ stats.entreprises_en_attente }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="stat-card p-3 animate-fade" style="animation-delay: 0.4s">
+                <div class="d-flex align-items-center">
+                    <div class="stat-icon me-3">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Corbeille</h6>
+                        <h4 class="mb-0">{{ stats.entreprises_supprimees }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau principal -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="company-table w-100">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Entreprise</th>
+                            <th>Statut</th>
+                            <th>Date</th>
+                            <th class="text-end pe-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entreprise in entreprises_recentes %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    {% if entreprise.logo %}
+                                    <img src="{{ entreprise.logo.url }}" class="company-logo me-3" alt="{{ entreprise.nom }}">
+                                    {% else %}
+                                    <div class="company-logo bg-light d-flex align-items-center justify-content-center me-3">
+                                        <i class="fas fa-building text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-medium">{{ entreprise.nom }}</div>
+                                        <div class="text-muted small">{{ entreprise.secteur_activite }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if entreprise.statut == 'active' %}
+                                <span class="status-badge active-badge">
+                                    <i class="fas fa-circle small me-1" style="font-size: 6px; vertical-align: middle;"></i>
+                                    Active
+                                </span>
+                                {% elif entreprise.statut == 'inactive' %}
+                                <span class="status-badge inactive-badge">
+                                    <i class="fas fa-circle small me-1" style="font-size: 6px; vertical-align: middle;"></i>
+                                    Inactive
+                                </span>
+                                {% else %}
+                                <span class="status-badge pending-badge">
+                                    <i class="fas fa-circle small me-1" style="font-size: 6px; vertical-align: middle;"></i>
+                                    En attente
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="text-muted">{{ entreprise.date_inscription|date:"d/m/Y" }}</span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="{% url 'entreprise-detail' entreprise.user.id %}" 
+                                   class="action-btn bg-primary text-white"
+                                   title="Voir détails">
+                                    <i class="fas fa-eye"></i>Voir details
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <i class="fas fa-building text-muted mb-3" style="font-size: 2rem;"></i>
+                                <h5 class="text-muted">Aucune entreprise trouvée</h5>
+                                <a href="{% url 'add-entreprise' %}" class="btn btn-sm btn-primary mt-2 rounded-pill">
+                                    Ajouter une entreprise
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation secondaire minimaliste -->
+    <div class="d-flex justify-content-center mt-4">
+        <div class="btn-group btn-group-sm" role="group">
+            <a href="{% url 'entreprise-liste' %}" class="btn btn-outline-primary rounded-pill mx-1">Toutes</a>
+            <a href="{% url 'entreprise-actives' %}" class="btn btn-outline-primary rounded-pill mx-1">Actives</a>
+            <a href="{% url 'entreprise-en-attente' %}" class="btn btn-outline-primary rounded-pill mx-1">En attente</a>
+            <a href="{% url 'corbeille-entreprises' %}" class="btn btn-outline-primary rounded-pill mx-1">Corbeille</a>
+        </div>
+    </div>
+</div>
+
+<!-- Micro-interaction pour le bouton -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple hover effect
+    const actionBtns = document.querySelectorAll('.action-btn');
+    actionBtns.forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            btn.style.transform = 'scale(1.1)';
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'scale(1)';
+        });
+    });
+});
+</script>
+{% endblock %}

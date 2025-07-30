@@ -30,16 +30,48 @@
         </div>
       </div>
 
-      <!-- Image à cacher sur mobile -->
-      <div class="col-lg-6 order-lg-2 order-1 hero-img-mobile">
-        <img src="{% static 'site_web/images/hero/hero-team.jpg' %}" 
-             alt="Équipe professionnelle" 
-               loading="lazy"  
-             width="1200" 
-     height="800"
-     alt="Équipe Antares "
-             class="img-fluid rounded-3 shadow-sm">
-      </div>
+     <!-- Carrousel Desktop (caché sur mobile) -->
+<div class="col-lg-6 order-lg-2 order-1 d-none d-lg-block">
+  <div class="hero-carousel">
+    <!-- Image 1 -->
+    <div class="carousel-item active">
+      <img src="{% static 'site_web/images/hero/hero-image-1.png' %}" 
+           alt="Équipe professionnelle" 
+           loading="eager"  
+           width="1200" 
+           height="800"
+           class="img-fluid rounded-3 shadow-sm">
+    </div>
+     <!-- Image 2 -->
+    <div class="carousel-item">
+      <img src="{% static 'site_web/images/hero/logo_antares.png' %}" 
+           alt="Entretien professionnel" 
+           loading="eager"
+           class="img-fluid rounded-3 shadow-sm">
+    </div>
+    <!-- Image 3 -->
+    <div class="carousel-item">
+      <img src="{% static 'site_web/images/hero/hero-image-2.png' %}" 
+           alt="Entretien professionnel" 
+           loading="eager"
+           class="img-fluid rounded-3 shadow-sm">
+    </div>
+    <!-- Image 4 -->
+    <div class="carousel-item">
+      <img src="{% static 'site_web/images/hero/hero-image-3.png' %}" 
+           alt="Entretien professionnel" 
+           loading="eager"
+           class="img-fluid rounded-3 shadow-sm">
+    </div>
+    <!-- Image 5 -->
+    <div class="carousel-item">
+      <img src="{% static 'site_web/images/hero/hero-image-4.png' %}" 
+           alt="Espace de travail" 
+           loading="eager"
+           class="img-fluid rounded-3 shadow-sm">
+    </div>
+  </div>
+</div>
     </div>
   </div>
 </section>
@@ -351,7 +383,41 @@
 <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
 
 <style>
-  
+  /* Hero Carousel */
+/* Hero Carousel - Version corrigée */
+.hero-carousel {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 500px; /* Hauteur fixe */
+  width: 100%;
+}
+
+.hero-carousel .carousel-item {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+}
+
+.hero-carousel .carousel-item.active {
+  opacity: 1;
+}
+
+.hero-carousel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Garantit que l'image couvre toute la zone */
+  object-position: center; /* Centre l'image */
+}
+
+/* Mobile adaptation */
+@media (max-width: 1200px) {
+  .hero-carousel {
+    height: 350px; /* Ajustement pour écrans moyens */
+  }
+}
   /* Styles spécifiques pour index.html */
   .values-section .value-card {
     transition: all 0.3s ease;
@@ -533,7 +599,13 @@
     .hero-section h1 {
     font-size: 1.3rem !important;
   }
-
+.hero-section .col-lg-6 {
+    padding: 0 1rem;
+  }
+  
+  .hero-section h1 {
+    font-size: 1.5rem !important;
+  }
   .hero-section p.lead {
     font-size: 0.95rem !important;
   }
@@ -564,5 +636,43 @@
       }
     }).mount();
   });
+// Carrousel amélioré avec préchargement
+document.addEventListener('DOMContentLoaded', function() {
+  const carousel = document.querySelector('.hero-carousel');
+  if (!carousel) return;
+
+  const items = carousel.querySelectorAll('.carousel-item');
+  let currentIndex = 0;
+  const speed = 3500; // 3.5 secondes
+
+  // Préchargement des images
+  function preloadImages() {
+    items.forEach(item => {
+      const img = item.querySelector('img');
+      if (img) img.loading = 'eager';
+    });
+  }
+
+  function showNextItem() {
+    items[currentIndex].classList.remove('active');
+    currentIndex = (currentIndex + 1) % items.length;
+    items[currentIndex].classList.add('active');
+  }
+
+  preloadImages();
+  
+  // Démarrer seulement s'il y a plusieurs images
+  if (items.length > 1) {
+    const interval = setInterval(showNextItem, speed);
+    
+    // Contrôles interactifs
+    carousel.addEventListener('mouseenter', () => clearInterval(interval));
+    carousel.addEventListener('mouseleave', () => {
+      interval = setInterval(showNextItem, speed);
+    });
+  } else if (items.length === 1) {
+    items[0].classList.add('active'); // Afficher la seule image
+  }
+});
 </script>
 {% endblock %}

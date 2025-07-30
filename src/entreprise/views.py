@@ -2,7 +2,8 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 from authentication.models import User
-from .forms import EntrepriseRegisterForm
+from .models import DemandeService
+from .forms import EntrepriseRegisterForm,CreateEntrepriseForm
 from django.contrib import messages
 from django.utils import timezone
 from entreprise.models import Entreprise
@@ -13,43 +14,91 @@ from django.contrib.auth import login, authenticate ,logout
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import timezone
-from django.db.models import Count, Q
-from django.db.models import ExpressionWrapper, F, FloatField
-from django.db.models import Case, When, IntegerField, Value, Sum
+from django.db.models import Count, Q,Prefetch, Case, When, IntegerField, Value, Sum, ExpressionWrapper, F, FloatField
 
+#-------------------------------------------------------------------------------------
+#                                       PUBLIC
+#_____________________________________________________________________________________
+def entreprise_info(request):
+    return render(request, 'entreprise/public/entreprise_info.html')
+
+def savoir_plus(request):
+    return render(request, 'entreprise/public/savoir_plus.html')
+
+def confirmation_inscription(request):
+    return render(request, 'entreprise/public/confirmation_inscription.html')
+
+def services(request):
+    return render(request, 'entreprise/public/services.html')
+
+def entreprise_registry(request):
+    if request.method == 'POST':
+        form = EntrepriseRegisterForm(request.POST, request.FILES)  # Important pour les fichiers
+        if form.is_valid():
+            form.save()
+            return redirect('confirmation-inscription')
+    else:
+        form = EntrepriseRegisterForm()
+
+    return render(request, 'entreprise/public/entreprise_registry.html', {
+        'form': form,
+        'form_title': 'Inscription Entreprise'
+    })
+#-------------------------------------------------------------------------------------
+#                                       BACKEND
+#_____________________________________________________________________________________
 def is_rh_or_admin(user):
     return user.is_authenticated and user.role in ['admin', 'rh']
-
 
 @login_required
 @user_passes_test(is_rh_or_admin)
 def dashboard_rh(request):
+    # Statistiques principales basées sur le modèle
     stats = {
         'total_entreprises': Entreprise.objects.count(),
-        'entreprises_actives': Entreprise.objects.filter(approuvee=True).count(),
-        'entreprises_en_attente': Entreprise.objects.filter(user__is_active=False).count(),
-        'derniere_validation': Entreprise.objects.filter(approuvee=True)
+        'entreprises_actives': Entreprise.objects.filter(statut='active').count(),
+        'entreprises_inactives': Entreprise.objects.filter(statut='inactive').count(),
+        'entreprises_supprimees': Entreprise.objects.filter(statut='supprimer').count(),
+        'entreprises_en_attente': User.objects.filter(
+            role='entreprise', 
+            is_active=False,
+            entreprise__isnull=False
+        ).count(),
+        'derniere_validation': Entreprise.objects.filter(statut='active')
                               .order_by('-date_inscription')
-                              .first().date_inscription if Entreprise.objects.filter(approuvee=True).exists() else "Jamais"
+                              .first().date_inscription if Entreprise.objects.filter(statut='active').exists() else "Jamais",
+        'demandes_rh': DemandeService.objects.filter(statut='en_attente').count()
     }
 
-    entreprises_en_attente = Entreprise.objects.filter(user__is_active=False).select_related('user').order_by('-user__date_joined')[:10]
-    dernieres_validees = Entreprise.objects.filter(user__is_active=True).select_related('user').order_by('-user__date_joined')[:3]
+    # Listes importantes
+    entreprises_recentes = Entreprise.objects.filter(
+        statut='active'
+    ).select_related('user').order_by('-date_inscription')[:5]
+    
+    entreprises_en_attente = User.objects.filter(
+        role='entreprise', 
+        is_active=False,
+        entreprise__isnull=False
+    ).select_related('entreprise').order_by('-date_joined')[:5]
+    
+    demandes_rh = DemandeService.objects.filter(
+        statut='en_attente'
+    ).select_related('entreprise', 'service').order_by('-date_demande')[:5]
 
     context = {
         'stats': stats,
+        'entreprises_recentes': entreprises_recentes,
         'entreprises_en_attente': entreprises_en_attente,
-        'dernieres_validees': dernieres_validees,
-        'entreprises_corbeille': Entreprise.objects.filter(deleted=True).count(),
+        'demandes_rh': demandes_rh,
+        'section': 'dashboard',
     }
-    return render(request, 'entreprise/entreprise_dashboard.html', context)
-
+    return render(request, 'entreprise/backend/entreprise_dashboard.html', context)
 
 @login_required
 @user_passes_test(is_rh_or_admin)
 def entreprises_en_attente(request):
     entreprises = User.objects.filter(  role='entreprise', is_active=False,  entreprise__isnull=False).select_related('entreprise')
-    return render(request, 'entreprise/entreprise_en_attente.html', {'entreprises': entreprises})
+    return render(request, 'entreprise/backend/entreprise_en_attente.html', {'entreprises': entreprises})
 
 @login_required
 @user_passes_test(is_rh_or_admin)
@@ -92,59 +141,92 @@ def approuver_entreprise(request, user_id):
 def detail_entreprise(request, user_id):
     try:
         user = User.objects.select_related('entreprise').get(id=user_id, role='entreprise')
-    except User.DoesNotExist:
-        raise Http404("Aucun utilisateur entreprise ne correspond à cet identifiant.")
+        entreprise = user.entreprise
+    except (User.DoesNotExist, Entreprise.DoesNotExist):
+        raise Http404("Entreprise introuvable")
 
-    entreprise = user.entreprise
-
-    return render(request, 'entreprise/entreprise_detail.html', {'entreprise': entreprise})
-
-def entreprise_registry(request):
-    if request.method == 'POST':
-        form = EntrepriseRegisterForm(request.POST)
-        if form.is_valid():
-            form.save()  # L'objet User ET Entreprise sont créés ici
-            return redirect('confirmation-inscription')
-    else:
-        form = EntrepriseRegisterForm()
-
-    return render(request, 'entreprise/entreprise_registry.html', {'form': form})
-
-def add_entreprise(request):
-    if request.method == 'POST':
-        form = EntrepriseRegisterForm(request.POST)
-        if form.is_valid():
-            form.save()  # L'objet User ET Entreprise sont créés ici
-            return redirect('entreprise-dashboard')
-    else:
-        form = EntrepriseRegisterForm()
-
-    return render(request, 'entreprise/add_entreprise.html', {'form': form})
-
-def entreprise_info(request):
-    return render(request, 'entreprise/entreprise_info.html')
-
-def savoir_plus(request):
-    return render(request, 'entreprise/savoir_plus.html')
-
-def confirmation_inscription(request):
-    return render(request, 'entreprise/confirmation_inscription.html')
-
-def services(request):
-    return render(request, 'entreprise/services.html')
+    context = {
+        'entreprise': entreprise,
+        'services': entreprise.services.all(),
+        'demandes': entreprise.demandes.select_related('service'),
+        'notifications': entreprise.notifications.order_by('-date_envoi')[:5],
+        'factures': entreprise.factures_libres.order_by('-date_envoi')
+    }
+    
+    return render(request, 'entreprise/backend/entreprise_detail.html', context)
 
 
 @login_required
 @user_passes_test(is_rh_or_admin)
+def add_entreprise(request):
+    if request.method == 'POST':
+        form = CreateEntrepriseForm(request.POST, request.FILES) 
+        if form.is_valid():
+            form.save()  # L'objet User ET Entreprise sont créés ici
+            return redirect('entreprise-dashboard')
+    else:
+        form = CreateEntrepriseForm()
+        print(form.errors)  
+
+    return render(request, 'entreprise/backend/add_entreprise.html', {'form': form})
+
+from django.db.models import Count, Q
+
+@login_required
+@user_passes_test(is_rh_or_admin)
 def entreprise_liste(request):
+    # Récupérer toutes les entreprises (sans filtre deleted par défaut)
+    entreprises = Entreprise.objects.all().select_related('user').order_by('-date_inscription')
+
+    # Filtres
+    statut_filter = request.GET.get('statut')
+    search_query = request.GET.get('search')
+
+    # Filtre par statut
+    if statut_filter in ['active', 'inactive', 'supprimer']:
+        entreprises = entreprises.filter(statut=statut_filter)
+    
+    # Filtre par recherche
+    if search_query:
+        entreprises = entreprises.filter(
+            Q(nom__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query) |
+            Q(user__email__icontains=search_query)
+        )
+
+    # Récupérer les valeurs distinctes pour les filtres
+    statuts = [choice[0] for choice in Entreprise._meta.get_field('statut').choices]
+
+    # Pagination (10 par page)
+    paginator = Paginator(entreprises, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'entreprise/backend/entreprise_liste.html', {
+        'entreprises': page_obj,
+        'statuts': statuts,
+        'statut_filter': statut_filter,
+        'search_query': search_query,
+    })
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def entreprises_actives(request):
+    # Construction de la requête de base
+    queryset = Entreprise.objects.filter(
+        deleted=False,
+        approuvee=True
+    ).select_related('user').prefetch_related(
+    Prefetch('demandes', queryset=DemandeService.objects.select_related('service').order_by('-date_demande'))
+    )
+
     # Récupération des paramètres de filtrage
     search_query = request.GET.get('q', '')
     status_filter = request.GET.get('status', '')
-    sort_by = request.GET.get('sort', '-date_inscription')
+    secteur_filter = request.GET.get('secteur', '')
 
-    # Construction de la requête de base avec select_related pour optimiser
-    queryset = Entreprise.objects.filter(deleted=False).select_related('user').all()
-    # Application des filtres
+    # Filtre par recherche
     if search_query:
         queryset = queryset.filter(
             Q(nom__icontains=search_query) |
@@ -154,112 +236,39 @@ def entreprise_liste(request):
             Q(user__first_name__icontains=search_query) |
             Q(user__last_name__icontains=search_query)
         )
-
-    if status_filter:
-        if status_filter == 'active':
-            queryset = queryset.filter(statut='active')
-        elif status_filter == 'inactive':
-            queryset = queryset.filter(statut='non_active')
-        elif status_filter == 'pending':
-            queryset = queryset.filter(approuvee=False)
-        elif status_filter == 'pause':
-            queryset = queryset.filter(statut='pause')
-
-    # Gestion du tri
-    sort_mapping = {
-        '-date_joined': '-user__date_joined',
-        'date_joined': 'user__date_joined',
-        '-nom': '-nom',
-        'nom': 'nom',
-        '-date_inscription': '-date_inscription',
-        'date_inscription': 'date_inscription'
-    }
     
-    # Utilisation du mapping avec une valeur par défaut
-    sort_field = sort_mapping.get(sort_by, '-date_inscription')
-    queryset = queryset.order_by(sort_field)
+    # Filtre par statut
+    if status_filter in ['active', 'inactive', 'pause']:
+        queryset = queryset.filter(statut=status_filter)
+    
+    # Filtre par secteur
+    if secteur_filter:
+        queryset = queryset.filter(secteur_activite=secteur_filter)
+
+    # Récupération des valeurs distinctes pour les filtres
+    secteurs = Entreprise.objects.filter(deleted=False, approuvee=True) \
+        .values_list('secteur_activite', flat=True) \
+        .distinct().order_by('secteur_activite')
 
     # Pagination
-    paginator = Paginator(queryset, 25)  # 25 entreprises par page
-    page = request.GET.get('page')
-
-    try:
-        entreprises = paginator.page(page)
-    except PageNotAnInteger:
-        entreprises = paginator.page(1)
-    except EmptyPage:
-        entreprises = paginator.page(paginator.num_pages)
-
-    context = {
-        'entreprises': entreprises,
-        'page_range': paginator.get_elided_page_range(number=entreprises.number, on_each_side=2, on_ends=1),
-    }
-    return render(request, 'entreprise/entreprise_liste.html', context)
-
-
-
-@login_required
-@user_passes_test(is_rh_or_admin)
-def entreprises_actives(request):
-    # Définir les périodes de référence
-    one_week_ago = timezone.now() - timezone.timedelta(days=7)
-    one_month_ago = timezone.now() - timezone.timedelta(days=30)
-    
-    # Filtrer les entreprises actives (non supprimées)
-    entreprises = Entreprise.objects.filter(
-        approuvee=True,
-        deleted=False
-    ).select_related('user')
-    
-    # Calculer les statistiques
-    stats = {
-        'total_actives': entreprises.count(),
-        'new_this_week': entreprises.filter(date_inscription__gte=one_week_ago).count(),
-        'recent_logins': entreprises.filter(user__last_login__gte=one_week_ago).count(),
-        'inactive_over_month': entreprises.filter(
-            Q(user__last_login__lt=one_month_ago) | Q(user__last_login__isnull=True)
-        ).count(),
-        'complete_profiles': entreprises.filter(
-            Q(ville__isnull=False) & 
-            Q(pays__isnull=False) & 
-            Q(secteur_activite__isnull=False) &
-            Q(description__isnull=False)
-        ).count(),
-    }
-    
-    # Ajouter des annotations pour la complétude du profil
-    entreprises = entreprises.annotate(
-        profile_fields_filled=(
-            Case(When(ville__isnull=False, then=Value(1)), default=Value(0)) +
-            Case(When(pays__isnull=False, then=Value(1)), default=Value(0)) +
-            Case(When(secteur_activite__isnull=False, then=Value(1)), default=Value(0)) +
-            Case(When(description__isnull=False, then=Value(1)), default=Value(0))
-        )
-    ).annotate(
-        profile_completion_percent=ExpressionWrapper(  # Changed name here
-            F('profile_fields_filled') * 25, 
-            output_field=IntegerField()
-        )
-    )
-    paginator = Paginator(entreprises, 25)  # 25 entreprises par page
+    paginator = Paginator(queryset, 25)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
     context = {
         'page_obj': page_obj,
-        'entreprises': entreprises,
-        'stats': stats,
-        'one_week_ago': one_week_ago,
-        'one_month_ago': one_month_ago,
+        'search_query': search_query,
+        'status_filter': status_filter,
+        'secteur_filter': secteur_filter,
+        'secteurs': secteurs,
     }
-    return render(request, 'entreprise/entreprise_actives.html', context)
-
+    return render(request, 'entreprise/backend/entreprise_actives.html', context)
 
 @login_required
 @user_passes_test(is_rh_or_admin)
 def activite_recente(request):
     entreprises = Entreprise.objects.filter(approuvee=True).order_by('-date_inscription')[:10]
-    return render(request, 'entreprise/activite_recente.html', {'entreprises': entreprises})
+    return render(request, 'entreprise/backend/activite_recente.html', {'entreprises': entreprises})
 
 
 @login_required
@@ -269,15 +278,10 @@ def entreprises_desactivees(request, user_id):
     entreprise = get_object_or_404(Entreprise, user=user)
 
     entreprise.approuvee = False
-    entreprise.statut = 'terminee'
-    user.is_active = False
-
-    user.save()
-    entreprise.save()
+    entreprise.soft_delete(request.user, status='inactive')
     
     messages.success(request, "Le compte de l'entreprise a été désactivé.")
     return redirect('entreprise-detail', entreprise_id=entreprise.id)
-
 
 from django.utils.crypto import get_random_string
 
@@ -314,21 +318,22 @@ def rejeter_entreprise(request, user_id):
 @user_passes_test(is_rh_or_admin)
 def corbeille_entreprises(request):
     entreprises = Entreprise.objects.filter(deleted=True).select_related('user', 'deleted_by')
-    return render(request, 'entreprise/corbeille.html', {'entreprises': entreprises})
-
+    return render(request, 'entreprise/backend/corbeille.html', {'entreprises': entreprises})
+  
 @login_required
 @user_passes_test(is_rh_or_admin)
 def restaurer_entreprise(request, entreprise_id):
     entreprise = get_object_or_404(Entreprise, id=entreprise_id, deleted=True)
     
+    entreprise.user.is_active = True
+    entreprise.user.save()
+
     entreprise.deleted = False
     entreprise.deleted_at = None
     entreprise.deleted_by = None
+    entreprise.statut = 'active'
+    entreprise.approuvee = True
     entreprise.save()
-    
-    # Réactiver aussi le compte utilisateur associé
-    entreprise.user.is_active = True
-    entreprise.user.save()
-    
+
     messages.success(request, f"L'entreprise {entreprise.nom} a été restaurée.")
     return redirect('corbeille-entreprises')

@@ -72,7 +72,7 @@
                         {% for entreprise in entreprises %}
                         <tr>
                             <td>
-                                <a href="{% url 'entreprise-detail' entreprise.id %}" class="text-decoration-none">
+                                <a href="{% url 'entreprise-detail'  entreprise.user.id %}" class="text-decoration-none">
                                     {{ entreprise.nom }}
                                 </a>
                             </td>
@@ -88,18 +88,18 @@
                             <td>{{ entreprise.desactivee_par.get_full_name|default:"Système" }}</td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="{% url 'entreprise-approuver' entreprise.id %}" 
+                                    <a href="{% url 'entreprise-approuver' entreprise.user.id %}" 
                                        class="btn btn-outline-success" 
                                        title="Réactiver cette entreprise"
                                        onclick="return confirm('Êtes-vous sûr de vouloir réactiver cette entreprise ?');">
                                         <i class="fas fa-power-off"></i>
                                     </a>
-                                    <a href="{% url 'entreprise-detail' entreprise.id %}" 
+                                    <a href="{% url 'entreprise-detail' entreprise.user.id %}" 
                                        class="btn btn-outline-info" 
                                        title="Voir les détails">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{% url 'entreprise-reset-password' entreprise.id %}" 
+                                    <a href="{% url 'entreprise-reset-password' entreprise.user.id %}" 
                                        class="btn btn-outline-warning" 
                                        title="Réinitialiser le mot de passe">
                                         <i class="fas fa-key"></i>

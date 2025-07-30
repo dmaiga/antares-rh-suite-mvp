@@ -17,9 +17,6 @@
 
   <style>
     :root {
-      /*--primary-blue: #0D3B66;
-      --accent-orange: #F46036;
-      */
       --secondary-blue: #2D76B6;
       --light-gray: #F4F4F9;
       --dark-gray: #333333;
@@ -36,28 +33,29 @@
     }
     
     .navbar {
-      background-color: white; /* Fond blanc pour mieux voir le bleu */
+      background-color: white;
       box-shadow: 0 2px 15px rgba(13, 59, 102, 0.1);
-      padding: 5px 0;
+      
       border-bottom: 2px solid var(--light-blue);
     }
     
-     .navbar-brand {
-      font-weight: 700;
-      font-size: 1.5rem;
-      color: var(--primary-blue) !important;
-    }
-    
     .navbar-logo {
-      height: 70px;
-      width: auto;
+        height: 130px;
+        width: auto;
+        transition: all 0.3s ease;
     }
     
     .nav-link {
-      font-weight: 500;
-      padding: 8px 15px;
-      transition: all 0.3s ease;
-      color: var(--primary-blue) !important;
+        font-weight: 700;
+        padding: 10px 18px;
+        font-size: 1.3rem;
+        transition: all 0.3s ease;
+        color: var(--primary-blue) !important;
+    }
+    
+    .navbar-brand {
+        margin-right: auto;
+        font-size: 1.8rem; 
     }
     
     .nav-link:hover,
@@ -65,7 +63,7 @@
       color: var(--accent-orange) !important;
     }
     
-     .dropdown-toggle::after {
+    .dropdown-toggle::after {
       border-top-color: var(--primary-blue);
     }
     
@@ -100,60 +98,99 @@
     .container {
       max-width: 1200px;
     }
+     .navbar-container {
+      display: flex;
+      width: 100%;
+      align-items: center;
+    }
+    
+    .navbar-links-container {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .navbar-auth-container {
+      margin-left: auto;
+    }
     
     /* Effets de transition */
     a, button, .card {
       transition: all 0.3s ease;
     }
     
-input[type="email"]::placeholder {
-  color: #999;
-}
-form input:focus {
-  box-shadow: none;
-  border-color: var(--accent-orange);
-}
-/* Style personnalisé pour le dropdown Espaces */
-  .dropdown-menu {
-    min-width: 280px;
-    border: 1px solid rgba(0,0,0,0.1);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  }
-  
-  .dropdown-item {
-    padding: 0.5rem 1rem;
-    transition: all 0.2s;
-  }
-  
-  .dropdown-item:hover {
-    background-color: rgba(13, 59, 102, 0.05);
-  }
-  
-  .dropdown-item .text-muted {
-    font-size: 0.8em;
-  }
-  
-  @media (max-width: 991.98px) {
-    .dropdown-menu {
-      border: none;
+    input[type="email"]::placeholder {
+      color: #999;
+    }
+    form input:focus {
       box-shadow: none;
+      border-color: var(--accent-orange);
     }
     
-    .nav-item.dropdown {
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+    /* Style personnalisé pour le dropdown Espaces */
+    .dropdown-menu {
+      min-width: 280px;
+      border: 1px solid rgba(0,0,0,0.1);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-    .navbar-brand {
-        font-size: 1.3rem;
+    
+    .dropdown-item {
+      padding: 0.5rem 1rem;
+      transition: all 0.2s;
+    }
+    
+    .dropdown-item:hover {
+      background-color: rgba(13, 59, 102, 0.05);
+    }
+    
+    .dropdown-item .text-muted {
+      font-size: 0.8em;
+    }
+    
+    .nav-item.dropdown.list-unstyled {
+      list-style: none;
+    }
+    
+    /* Nouveaux styles pour l'alignement */
+    .navbar-container {
+      display: flex;
+      width: 100%;
+      align-items: center;
+    }
+    
+    .navbar-links-container {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .navbar-auth-container {
+      margin-left: auto;
+    }
+    
+    @media (max-width: 991.98px) {
+      .navbar-brand {
+        margin-right: auto; /* Logo reste à gauche */
       }
       
-      .navbar-logo {
-        height: 35px;
+      .navbar-toggler {
+        margin-left: auto; /* Hamburger à droite */
       }
+      
       .navbar-collapse {
         background-color: white;
         padding: 20px;
         border-radius: 0 0 10px 10px;
         box-shadow: 0 10px 20px rgba(13, 59, 102, 0.1);
+      }
+      
+      .navbar-logo {
+        height: 50px;
+      }
+      
+      .nav-link {
+        font-size: 1rem;
+        padding: 8px 15px;
       }
       
       .nav-item {
@@ -171,97 +208,110 @@ form input:focus {
       .navbar-toggler-icon {
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2813, 59, 102, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
       }
-    
-  }
+      
+      .dropdown-menu {
+        border: none;
+        box-shadow: none;
+      }
+    }
   </style>
 </head>
 <body>
   <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark sticky-top" >
-  <div class="container">
-      <a class="navbar-brand" href="{% url 'home' %}">
-        <img src="{% static 'site_web/images/hero/logo_antares.png' %}" 
-             alt="Logo Antares " 
-             class="navbar-logo"
-             >
-       
-      </a>
-    
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+  <div class="container navbar-container">
+    <!-- Logo à gauche -->
+    <a class="navbar-brand" href="{% url 'home' %}">
+      <img src="{% static 'site_web/images/hero/logo_antares.png' %}" 
+           alt="Logo Antares" 
+           class="navbar-logo">
+    </a>
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
+
+    <!-- Liens de navigation centrés -->
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'home' %}">Accueil</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'about' %}">À propos</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'services' %}">Nos services</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'jobs' %}">Offres d'emploi</a>
-        </li>
-<li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarEspaces" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Espaces
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarEspaces">
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="{% url 'candidate-registry' %}">
-                <i class="bi bi-person-vcard me-2 text-primary-blue"></i>
-                <div>
-                  <div class="fw-bold">Candidat</div>
-                  <small class="text-muted">Postuler aux offres</small>
-                </div>
-              </a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="{% url 'entreprise-registry' %}">
-                <i class="bi bi-building me-2 text-primary-blue"></i>
-                <div>
-                  <div class="fw-bold">Entreprise</div>
-                  <small class="text-muted">Gestion RH complète</small>
-                </div>
-              </a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="{% url 'recruteur-info' %}">
-                <i class="bi bi-person-badge me-2 text-primary-blue"></i>
-                <div>
-                  <div class="fw-bold">Recruteur</div>
-                  <small class="text-muted">Publier des offres</small>
-                </div>
-              </a>
-            </li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'contact' %}">Contact</a>
-        </li>
-        <li class="nav-item ms-lg-3 dropdown">
-    <a class="nav-link btn btn-orange dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Se connecter
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="{% url 'site_login' %}" onclick="setLoginType('candidate')">
-            <i class="bi bi-person-vcard me-2"></i> Candidat
-        </a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'site_login' %}" onclick="setLoginType('company')">
-            <i class="bi bi-building me-2"></i> Entreprise
-        </a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'site_login' %}" onclick="setLoginType('employee')">
-            <i class="bi bi-person-badge me-2"></i> Salarié
-        </a></li>
-    </ul>
-</li>
-      </ul>
+      <div class="navbar-links-container">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'home' %}">Accueil</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'about' %}">À propos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'services' %}">Nos services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'jobs' %}">Offres d'emploi</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarEspaces" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Espaces
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarEspaces">
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{% url 'candidate-registry' %}">
+                  <i class="bi bi-person-vcard me-2 text-primary-blue"></i>
+                  <div>
+                    <div class="fw-bold">Candidat</div>
+                    <small class="text-muted">Postuler aux offres</small>
+                  </div>
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{% url 'entreprise-registry' %}">
+                  <i class="bi bi-building me-2 text-primary-blue"></i>
+                  <div>
+                    <div class="fw-bold">Entreprise</div>
+                    <small class="text-muted">Gestion RH complète</small>
+                  </div>
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{% url 'recruteur-info' %}">
+                  <i class="bi bi-person-badge me-2 text-primary-blue"></i>
+                  <div>
+                    <div class="fw-bold">Recruteur</div>
+                    <small class="text-muted">Publier des offres</small>
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Bouton Se connecter à droite -->
+      <div class="navbar-auth-container">
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown list-unstyled">
+            <a class="nav-link btn btn-orange dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Se connecter
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{% url 'site_login' %}" onclick="setLoginType('candidate')">
+                  <i class="bi bi-person-vcard me-2"></i> Candidat
+              </a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'site_login' %}" onclick="setLoginType('company')">
+                  <i class="bi bi-building me-2"></i> Entreprise
+              </a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'site_login' %}" onclick="setLoginType('employee')">
+                  <i class="bi bi-person-badge me-2"></i> Salarié
+              </a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </nav>

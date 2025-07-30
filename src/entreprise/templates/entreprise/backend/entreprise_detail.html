@@ -1,0 +1,284 @@
+{% extends 'authentication/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Détails de l'entreprise</h1>
+        <div class="btn-group">
+            {% if entreprise.approuvee %}
+                <a href="{% url 'entreprise-desactivees' entreprise.user.id %}" class="btn btn-danger">
+                    <i class="fas fa-ban"></i> Désactiver
+                </a>
+            {% else %}
+                <a href="{% url 'entreprise-approuver' entreprise.user.id %}" class="btn btn-success">
+                    <i class="fas fa-check"></i> Approuver
+                </a>
+            {% endif %}
+            <a href="{% url 'entreprise-reset-password' entreprise.user.id %}" class="btn btn-warning">
+                <i class="fas fa-key"></i> Réinit. mot de passe
+            </a>
+        </div>
+    </div>
+
+    <!-- Carte principale -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">{{ entreprise.nom }}</h6>
+            <span class="badge 
+    {% if entreprise.statut == 'active' %}badge-success
+    {% elif entreprise.statut == 'inactive' %}badge-danger
+    {% else %}badge-secondary
+    {% endif %}">
+    {{ entreprise.get_statut_display }}
+</span>
+        </div>
+        <div class="card-body">
+            <!-- Section Informations de base -->
+            <div class="row">
+                <div class="col-md-4">
+                    {% if entreprise.logo %}
+                        <img src="{{ entreprise.logo.url }}" class="img-fluid rounded mb-3" alt="Logo {{ entreprise.nom }}">
+                    {% else %}
+                        <div class="text-center py-4 bg-light rounded mb-3">
+                            <i class="fas fa-building fa-5x text-gray-400"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>RCCM:</strong> {{ entreprise.rccm|default:"Non renseigné" }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Secteur:</strong> {{ entreprise.secteur_activite }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Taille:</strong> {{ entreprise.taille_entreprise }}
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-8">
+                    <h4 class="mb-3">Informations générales</h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th width="30%">Nom de l'entreprise</th>
+                                <td>{{ entreprise.nom }}</td>
+                            </tr>
+                            <tr>
+                                <th>Contact principal</th>
+                                <td>{{ entreprise.user.get_full_name|default:entreprise.user.username }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>{{ entreprise.user.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Site web</th>
+                                <td>
+                                    {% if entreprise.site_web %}
+                                        <a href="{{ entreprise.site_web }}" target="_blank">{{ entreprise.site_web }}</a>
+                                    {% else %}
+                                        Non renseigné
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Adresse</th>
+                                <td>
+                                    {{ entreprise.adresse }}<br>
+                                    {{ entreprise.ville }} - {{ entreprise.pays }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Date d'inscription</th>
+                                <td>{{ entreprise.date_inscription|date:"d/m/Y H:i" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <h4 class="mt-4 mb-3">Description</h4>
+                    <div class="bg-light p-3 rounded">
+                        {{ entreprise.description|default:"Aucune description fournie."|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Onglets -->
+            <ul class="nav nav-tabs mt-4" id="entrepriseTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="services-tab" data-toggle="tab" href="#services" role="tab">
+                        Services ({{ services.count }})
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="demandes-tab" data-toggle="tab" href="#demandes" role="tab">
+                        Demandes ({{ demandes.count }})
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="factures-tab" data-toggle="tab" href="#factures" role="tab">
+                        Factures ({{ factures.count }})
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="notifications-tab" data-toggle="tab" href="#notifications" role="tab">
+                        Notifications ({{ notifications.count }})
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- Contenu des onglets -->
+            <div class="tab-content pt-3" id="entrepriseTabsContent">
+                <!-- Onglet Services -->
+                <div class="tab-pane fade show active" id="services" role="tabpanel">
+                    {% if services %}
+                        <div class="row">
+                            {% for service in services %}
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ service.titre }}</h5>
+                                            <p class="card-text">{{ service.description|truncatewords:20 }}</p>
+                                        </div>
+                                        <div class="card-footer bg-white">
+                                            <span class="badge badge-primary">{{ service.prix|default:"Gratuit" }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">Aucun service enregistré.</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Onglet Demandes -->
+                <div class="tab-pane fade" id="demandes" role="tabpanel">
+                    {% if demandes %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Service</th>
+                                        <th>Date</th>
+                                        <th>Statut</th>
+                                        <th>Message</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for demande in demandes %}
+                                        <tr>
+                                            <td>{{ demande.service.nom }}</td>
+                                            <td>{{ demande.date_demande|date:"d/m/Y" }}</td>
+                                            <td>
+                                              
+                                                <span class="badge 
+    {% if  demande.statut == 'acceptee' %}badge-success
+    {% elif  demande.statut == 'inactive' %}badge-danger
+    {% else %}badge-secondary
+    {% endif %}">
+    {{ demande.get_statut_display }}
+</span>
+                                            </td>
+                                            <td>{{ demande.message|truncatewords:10 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">Aucune demande de service.</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Onglet Factures -->
+                <div class="tab-pane fade" id="factures" role="tabpanel">
+                    {% if factures %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Titre</th>
+                                        <th>Montant</th>
+                                        <th>Date</th>
+                                        <th>Statut</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for facture in factures %}
+                                        <tr>
+                                            <td>{{ facture.titre }}</td>
+                                            <td>{{ facture.montant }} €</td>
+                                            <td>{{ facture.date_envoi|date:"d/m/Y" }}</td>
+                                            <td>
+                                           
+                                                <span class="badge 
+    {% if facture.statut == 'payee' %}badge-success
+    {% elif facture.statut == 'inactive' %}badge-danger
+    {% else %}badge-secondary
+    {% endif %}">
+    {{ facture.get_statut_display }}
+</span>
+                                            </td>
+                                            <td>
+                                                <a href="{{ facture.fichier_facture.url }}" class="btn btn-sm btn-info" download>
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">Aucune facture enregistrée.</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Onglet Notifications -->
+                <div class="tab-pane fade" id="notifications" role="tabpanel">
+                    {% if notifications %}
+                        <div class="list-group">
+                            {% for notification in notifications %}
+                                <div class="list-group-item list-group-item-action flex-column align-items-start {% if notification.lu %}list-group-item-light{% else %}list-group-item-warning{% endif %}">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ notification.titre }}</h5>
+                                        <small>{{ notification.date_envoi|timesince }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ notification.message }}</p>
+                                    {% if notification.action_requise %}
+                                        <small class="text-danger">Action requise</small>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">Aucune notification.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+// Script pour gérer les onglets
+$(document).ready(function() {
+    // Si hash dans l'URL, activer l'onglet correspondant
+    if(window.location.hash) {
+        $('.nav-tabs a[href="' + window.location.hash + '"]').tab('show');
+    }
+    
+    // Changer l'URL quand on clique sur un onglet
+    $('.nav-tabs a').on('click', function(e) {
+        history.pushState(null, null, $(this).attr('href'));
+    });
+});
+</script>
+{% endblock %}

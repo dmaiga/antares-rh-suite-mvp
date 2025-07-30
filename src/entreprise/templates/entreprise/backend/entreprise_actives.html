@@ -1,0 +1,248 @@
+{% extends 'authentication/base.html' %}
+{% load static %}
+
+{% block title %}Entreprises Actives{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mt-4 mb-0">Entreprises Actives</h1>
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'entreprise-dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Liste</li>
+            </ol>
+        </div>
+        <a href="{% url 'entreprise-liste' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-list me-1"></i> Voir toutes
+        </a>
+    </div>
+
+    <!-- Carte de filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <!-- Champ de recherche -->
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" name="q" 
+                               placeholder="Nom, email, secteur..." value="{{ search_query }}">
+                    </div>
+                </div>
+                
+                <!-- Filtre par secteur -->
+                <div class="col-md-5">
+                    <select class="form-select" name="secteur">
+                        <option value="">Tous secteurs</option>
+                        {% for secteur in secteurs %}
+                            <option value="{{ secteur }}" {% if secteur_filter == secteur %}selected{% endif %}>{{ secteur }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Boutons -->
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-1"></i> Filtrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Carte principale -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Entreprise</th>
+                            <th>Présentant</th>
+                            <th>Contact</th>
+                            <th>Secteur</th>
+                            <th>Service en cours</th>
+                            <th>Nouvelle demande</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entreprise in page_obj %}
+                        <tr>
+                            <!-- Colonne Entreprise -->
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar me-3">
+                                        {% if entreprise.logo %}
+                                            <img src="{{ entreprise.logo.url }}" class="rounded-circle" width="40" height="40">
+                                        {% else %}
+                                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-building text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ entreprise.nom }}</div>
+                                        <small class="text-muted">Inscrite le {{ entreprise.date_inscription|date:"d/m/Y" }}</small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Colonne Présentant -->
+                            <td>
+                                {{ entreprise.user.get_full_name|default:"-" }}
+                            </td>
+
+                            <!-- Colonne Contact -->
+                            <td>
+                                <div>{{ entreprise.user.email }}</div>
+                                {% if entreprise.user.phone %}
+                                <small class="text-muted">{{ entreprise.user.phone }}</small>
+                                {% endif %}
+                            </td>
+
+                            <!-- Colonne Secteur -->
+                            <td>{{ entreprise.secteur_activite|default:"-" }}</td>
+
+                          <!-- Colonne Service en cours -->
+<td>
+    {% with demande_en_cours=entreprise.demandes.first %}
+        {% if demande_en_cours %}
+            <span class="badge bg-info bg-opacity-10 text-info">
+                {{ demande_en_cours.service.nom }}
+            </span>
+            <small class="d-block text-muted">
+                {{ demande_en_cours.date_demande|date:"d/m/Y" }}
+            </small>
+        {% else %}
+            <span class="text-muted">Aucun</span>
+        {% endif %}
+    {% endwith %}
+</td>
+
+<!-- Colonne Nouvelle demande -->
+<td>
+    {% with nouvelle_demande=entreprise.demandes.last %}
+        {% if nouvelle_demande %}
+            <span class="badge bg-primary bg-opacity-10 text-primary">
+                {{ nouvelle_demande.service.nom }}
+            </span>
+            <small class="d-block text-muted">
+                {{ nouvelle_demande.date_demande|date:"d/m/Y" }}
+            </small>
+        {% else %}
+            <span class="text-muted">Aucune</span>
+        {% endif %}
+    {% endwith %}
+</td>
+                            <!-- Colonne Actions -->
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'entreprise-detail' entreprise.user.id %}" class="btn btn-outline-primary" title="Voir détails">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{% url 'entreprise-desactivees' entreprise.user.id %}" class="btn btn-outline-danger confirm-action" title="Désactiver">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                                    <h5>Aucune entreprise trouvée</h5>
+                                    <p class="text-muted mb-4">Aucune entreprise ne correspond à vos critères de recherche</p>
+                                    <a href="{% url 'entreprises-actives' %}" class="btn btn-primary">
+                                        Réinitialiser les filtres
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.paginator.num_pages > 1 %}
+            <div class="card-footer">
+                <nav aria-label="Pagination">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1&q={{ search_query }}&secteur={{ secteur_filter }}">Première</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&secteur={{ secteur_filter }}">Précédente</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}&q={{ search_query }}&secteur={{ secteur_filter }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&secteur={{ secteur_filter }}">Suivante</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ search_query }}&secteur={{ secteur_filter }}">Dernière</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Confirmation avant suppression
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.confirm-action').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (!confirm('Êtes-vous sûr de vouloir désactiver cette entreprise ?')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.avatar {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+}
+.badge.bg-opacity-10 {
+    padding: 0.35em 0.65em;
+    border: 1px solid transparent;
+}
+.table th {
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+}
+</style>
+{% endblock %}
