@@ -1,0 +1,100 @@
+{% extends 'authentication/base_client.html' %}
+{% block content %}
+<div class="container-fluid">
+    <!-- Statistiques rapides -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Services actifs</h5>
+                    <p class="h2">{{ services_actifs.count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <h5 class="card-title">Demandes en attente</h5>
+                    <p class="h2">{{ demandes_par_statut.en_attente.count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Factures impayées</h5>
+                    <p class="h2">{{ factures_impayees.count }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Notifications</h5>
+                    <p class="h2">{{ notifications.count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dernières notifications -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Dernières notifications</h5>
+        </div>
+        <div class="card-body">
+            {% if notifications %}
+                <div class="list-group">
+                    {% for notif in notifications %}
+                        <a href="#" class="list-group-item list-group-item-action {% if not notif.lu %}list-group-item-warning{% endif %}">
+                            <div class="d-flex justify-content-between">
+                                <h6>{{ notif.titre }}</h6>
+                                <small>{{ notif.date_envoi|timesince }}</small>
+                            </div>
+                            <p class="mb-1">{{ notif.message|truncatewords:15 }}</p>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">Aucune notification récente</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Demandes en cours -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Demandes en cours</h5>
+            <a href="{% url 'demandes-client' %}" class="btn btn-sm btn-primary">Voir toutes</a>
+        </div>
+        <div class="card-body">
+            {% if demandes_par_statut.en_cours %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for demande in demandes_par_statut.en_cours|slice:":5" %}
+                                <tr>
+                                    <td>{{ demande.service.nom }}</td>
+                                    <td>{{ demande.date_demande|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-warning">{{ demande.get_statut_display }}</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">Aucune demande en cours</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% if factures %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Titre</th>
+                    <th>Montant</th>
+                    <th>Date envoi</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for facture in factures %}
+                    <tr>
+                        <td>{{ facture.titre }}</td>
+                        <td>{{ facture.montant }} €</td>
+                        <td>{{ facture.date_envoi|date:"d/m/Y" }}</td>
+                        <td>
+                            <span class="badge 
+                                {% if facture.statut == 'payee' %}badge-success
+                                {% elif facture.statut == 'reçue' %}badge-info
+                                {% else %}badge-warning
+                                {% endif %}">
+                                {{ facture.get_statut_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ facture.fichier_facture.url }}" class="btn btn-sm btn-info" download>
+                                <i class="fas fa-download"></i>
+                            </a>
+                            {% if facture.statut == 'reçue' %}
+                                <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#markAsPaidModal{{ facture.id }}">
+                                    <i class="fas fa-check-circle"></i> Marquer comme payée
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">Aucune facture dans cette catégorie.</div>
+{% endif %}

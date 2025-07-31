@@ -1,0 +1,85 @@
+{% extends 'authentication/base_client.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Mes services souscrits</h6>
+            <a href="#" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#newServiceModal">
+                <i class="fas fa-plus"></i> Nouvelle demande
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="servicesTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nom du service</th>
+                            <th>Description</th>
+                            <th>Demandes actives</th>
+                            <th>Total demandes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in services %}
+                            <tr>
+                                <td>{{ service.titre }}</td>
+                                <td>{{ service.description|truncatewords:10 }}</td>
+                                <td>{{ service.demandes_actives }}</td>
+                                <td>{{ service.nb_demandes }}</td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i> Détails
+                                    </a>
+                                    {% if service.actif %}
+                                        <a href="#" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-pause"></i> Suspendre
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">Aucun service actif</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour nouvelle demande -->
+<div class="modal fade" id="newServiceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Nouvelle demande de service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'create-demande' %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Service</label>
+                        <select class="form-select" name="service" required>
+                            {% for service in services %}
+                                <option value="{{ service.id }}">{{ service.titre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-control" name="message" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Envoyer la demande</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

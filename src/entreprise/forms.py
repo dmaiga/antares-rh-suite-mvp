@@ -2,7 +2,7 @@ from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django import forms
 from authentication.models import User
-from entreprise.models import Entreprise, ServiceEntreprise, NotificationEntreprise
+from entreprise.models import Entreprise, ServiceEntreprise, NotificationEntreprise,FactureLibre
 from django.utils import timezone
 
 class EntrepriseRegisterForm(forms.ModelForm):
@@ -209,14 +209,26 @@ class ServiceEntrepriseForm(forms.ModelForm):
         }
 
 
-
 class NotificationEntrepriseForm(forms.ModelForm):
     class Meta:
         model = NotificationEntreprise
-        fields = ['titre', 'message', 'niveau', 'action_requise']
+        fields = ['titre', 'message', 'niveau', 'action_requise', 'fichier']
         labels = {
             'titre': "Titre",
             'message': "Contenu de la notification",
             'niveau': "Niveau d'alerte",
-            'action_requise': "Nécessite une action ?"
+            'action_requise': "Nécessite une action ?",
+            'fichier': "Pièce jointe (facultative)"
+        }
+
+
+class FactureLibreForm(forms.ModelForm):
+    class Meta:
+        model = FactureLibre
+        fields = ['titre', 'description', 'montant', 'fichier_facture']
+        widgets = {
+            'titre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex : Facture Février 2025'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'montant': forms.NumberInput(attrs={'class': 'form-control'}),
+            'fichier_facture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }

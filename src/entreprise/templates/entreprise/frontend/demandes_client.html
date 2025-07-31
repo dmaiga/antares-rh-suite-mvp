@@ -1,0 +1,75 @@
+{% extends 'authentication/base_client.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Mes demandes</h6>
+            <div class="btn-group">
+                <a href="?statut=en_attente" class="btn btn-sm btn-{% if filtre_statut == 'en_attente' %}primary{% else %}outline-primary{% endif %}">
+                    En attente
+                </a>
+                <a href="?statut=en_cours" class="btn btn-sm btn-{% if filtre_statut == 'en_cours' %}warning{% else %}outline-warning{% endif %}">
+                    En cours
+                </a>
+                <a href="?statut=terminee" class="btn btn-sm btn-{% if filtre_statut == 'terminee' %}success{% else %}outline-success{% endif %}">
+                    Terminées
+                </a>
+                <a href="{% url 'demandes-client' %}" class="btn btn-sm btn-{% if not filtre_statut %}dark{% else %}outline-dark{% endif %}">
+                    Toutes
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="demandesTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                            <th>Message</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for demande in demandes %}
+                            <tr>
+                                <td>{{ demande.service.nom }}</td>
+                                <td>{{ demande.date_demande|date:"d/m/Y" }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if demande.statut == 'terminee' %}bg-success
+                                        {% elif demande.statut == 'en_cours' %}bg-warning
+                                        {% elif demande.statut == 'refusee' %}bg-danger
+                                        {% else %}bg-info
+                                        {% endif %}">
+                                        {{ demande.get_statut_display }}
+                                    </span>
+                                </td>
+                                <td>{{ demande.message|truncatewords:5 }}</td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if demande.statut == 'en_attente' %}
+                                        <a href="#" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-times"></i> Annuler
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">
+                                    Aucune demande {% if filtre_statut %}avec ce statut{% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

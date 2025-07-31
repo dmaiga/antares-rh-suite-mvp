@@ -390,8 +390,11 @@ def login_page(request):
                 login(request, user)
                 if user.role in ['admin', 'rh']:
                     return redirect('dashboard-rh')
-                else:
+                if user.role in ['entreprise']:
+                    return redirect('dashboard-client')
+                if user.role in ['employe','stagiaire']:
                     return redirect('dashboard')
+                
             else:
                 message = 'Identifiants invalides.'
     return render(

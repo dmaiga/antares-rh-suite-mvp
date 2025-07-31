@@ -1,6 +1,8 @@
 from django.db import models
 from authentication.models import User
 from django.utils import timezone
+from documents.models import chemin_document  
+
 
 class Entreprise(models.Model):
     class StatutEntreprise(models.TextChoices):
@@ -91,7 +93,10 @@ class DemandeService(models.Model):
         ('en_cours', 'En cours'),
         ('terminee', 'Terminée'),
     ], default='en_attente')
-
+    
+    def peut_etre_modifiee(self):
+        return self.statut in ['en_attente', 'en_cours']
+    
     def __str__(self):
         return f"{self.entreprise.nom} - {self.service.nom}"
 
@@ -102,7 +107,7 @@ class ServiceEntreprise(models.Model):
     prix = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     actif = models.BooleanField(default=True)
     date_creation = models.DateTimeField(auto_now_add=True)
-
+    demandes = models.ManyToManyField('DemandeService', related_name='services_entreprise', blank=True)
     def __str__(self):
         return f"{self.titre} ({self.entreprise.nom})"
     
@@ -114,26 +119,24 @@ class NotificationEntreprise(models.Model):
     message = models.TextField()
     niveau = models.CharField(
         max_length=20,
-        choices=[
-            ('info', 'Info'),
-            ('alerte', 'Alerte'),
-            ('urgent', 'Urgent')
-        ],
+        choices=[('info', 'Info'), ('alerte', 'Alerte'), ('urgent', 'Urgent')],
         default='info'
     )
+    fichier = models.FileField(upload_to=chemin_document, null=True, blank=True)
     lu = models.BooleanField(default=False)
     date_envoi = models.DateTimeField(auto_now_add=True)
     action_requise = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Notification pour {self.entreprise.nom} - {self.titre}"
+        return f"Notification pour {self.entreprise.nom} - {self.titre} - ({self.niveau})"
 
 class FactureLibre(models.Model):
     entreprise = models.ForeignKey(Entreprise, on_delete=models.CASCADE, related_name='factures_libres')
     titre = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     montant = models.DecimalField(max_digits=10, decimal_places=2)
-    fichier_facture = models.FileField(upload_to='factures/')
+    fichier_facture = models.FileField(upload_to=chemin_document)
+    envoyee_par = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="factures_envoyees")
 
     date_envoi = models.DateTimeField(auto_now_add=True)
     date_reception = models.DateTimeField(null=True, blank=True)
@@ -144,10 +147,13 @@ class FactureLibre(models.Model):
         ('payee', 'Payée'),
     ], default='envoyee')
 
-    preuve_paiement = models.FileField(upload_to='preuves_paiement/', null=True, blank=True)
+    preuve_paiement = models.FileField(upload_to='documents/preuves_paiement/' , null=True, blank=True)
     commentaire_entreprise = models.TextField(blank=True)
-
-    envoyee_par = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    
+    def marquer_comme_payee(self, preuve):
+        self.statut = 'payee'
+        self.preuve_paiement = preuve
+        self.save()
 
     def __str__(self):
-        return f"{self.titre} - {self.entreprise.nom} ({self.montant} €)"
+        return f"{self.titre} - {self.entreprise.nom} ({self.montant} fcfa)"

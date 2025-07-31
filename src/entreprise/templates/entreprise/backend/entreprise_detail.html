@@ -5,20 +5,98 @@
 <div class="container-fluid">
     <!-- En-tête -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Détails de l'entreprise</h1>
+        <h1 class="h3 mb-0 text-gray-800">Détails de {{ entreprise.nom }}</h1>
         <div class="btn-group">
             {% if entreprise.approuvee %}
-                <a href="{% url 'entreprise-desactivees' entreprise.user.id %}" class="btn btn-danger">
+                <a href="{% url 'entreprise-desactivees' entreprise.id %}" class="btn btn-danger">
                     <i class="fas fa-ban"></i> Désactiver
                 </a>
             {% else %}
-                <a href="{% url 'entreprise-approuver' entreprise.user.id %}" class="btn btn-success">
-                    <i class="fas fa-check"></i> Approuver
+                <a href="{% url 'restaurer-entreprise' entreprise.id %}" class="btn btn-success">
+                    <i class="fas fa-check"></i> Activer
                 </a>
             {% endif %}
-            <a href="{% url 'entreprise-reset-password' entreprise.user.id %}" class="btn btn-warning">
+            <a href="{% url 'entreprise-reset-password' entreprise.id %}" class="btn btn-warning">
                 <i class="fas fa-key"></i> Réinit. mot de passe
             </a>
+        </div>
+    </div>
+
+    <div class="container-fluid px-4">
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item"><a href="{% url 'entreprise-dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Détails</li>
+        </ol>
+    </div>
+
+    <!-- Statistiques rapides -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Services Actifs</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.services_actifs }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-cogs fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Demandes en attente</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.demandes_en_attente }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-question-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Factures impayées</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.factures_impayees }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-invoice-dollar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Notifications non lues</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ stats.notifications_non_lues }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-bell fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -27,12 +105,12 @@
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">{{ entreprise.nom }}</h6>
             <span class="badge 
-    {% if entreprise.statut == 'active' %}badge-success
-    {% elif entreprise.statut == 'inactive' %}badge-danger
-    {% else %}badge-secondary
-    {% endif %}">
-    {{ entreprise.get_statut_display }}
-</span>
+                {% if entreprise.statut == 'active' %}badge-success
+                {% elif entreprise.statut == 'inactive' %}badge-danger
+                {% else %}badge-secondary
+                {% endif %}">
+                {{ entreprise.get_statut_display }}
+            </span>
         </div>
         <div class="card-body">
             <!-- Section Informations de base -->
@@ -110,17 +188,17 @@
             <ul class="nav nav-tabs mt-4" id="entrepriseTabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="services-tab" data-toggle="tab" href="#services" role="tab">
-                        Services ({{ services.count }})
+                        Services ({{ services_souscrits.count }})
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="demandes-tab" data-toggle="tab" href="#demandes" role="tab">
-                        Demandes ({{ demandes.count }})
+                        Demandes ({{ demandes_par_statut.en_attente.count|add:demandes_par_statut.acceptees.count|add:demandes_par_statut.refusees.count|add:demandes_par_statut.en_cours.count|add:demandes_par_statut.terminees.count }})
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="factures-tab" data-toggle="tab" href="#factures" role="tab">
-                        Factures ({{ factures.count }})
+                        Factures ({{ factures_par_statut.envoyees.count|add:factures_par_statut.recues.count|add:factures_par_statut.payees.count }})
                     </a>
                 </li>
                 <li class="nav-item">
@@ -128,23 +206,44 @@
                         Notifications ({{ notifications.count }})
                     </a>
                 </li>
+                <li class="nav-item ml-auto">
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addServiceModal">
+                        <i class="fas fa-plus"></i> Ajouter un service
+                    </button>
+                    <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#sendNotificationModal">
+                        <i class="fas fa-bell"></i> Envoyer une notification
+                    </button>
+                    <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#sendInvoiceModal">
+                        <i class="fas fa-file-invoice"></i> Envoyer une facture
+                    </button>
+                </li>
             </ul>
             
             <!-- Contenu des onglets -->
             <div class="tab-content pt-3" id="entrepriseTabsContent">
                 <!-- Onglet Services -->
                 <div class="tab-pane fade show active" id="services" role="tabpanel">
-                    {% if services %}
+                    {% if services_souscrits %}
                         <div class="row">
-                            {% for service in services %}
+                            {% for service in services_souscrits %}
                                 <div class="col-md-4 mb-4">
                                     <div class="card h-100">
                                         <div class="card-body">
                                             <h5 class="card-title">{{ service.titre }}</h5>
                                             <p class="card-text">{{ service.description|truncatewords:20 }}</p>
+                                            <div class="progress mb-2">
+                                                <div class="progress-bar bg-{% if service.progression == 100 %}success{% elif service.progression > 0 %}warning{% else %}danger{% endif %}" 
+                                                     role="progressbar"  
+                                                     aria-valuenow="{{ service.progression }}" aria-valuemin="0" aria-valuemax="100">
+                                                    {{ service.progression }}%
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="card-footer bg-white">
+                                        <div class="card-footer bg-white d-flex justify-content-between">
                                             <span class="badge badge-primary">{{ service.prix|default:"Gratuit" }}</span>
+                                            <span class="badge badge-{% if service.actif %}success{% else %}danger{% endif %}">
+                                                {% if service.actif %}Actif{% else %}Inactif{% endif %}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -157,86 +256,68 @@
                 
                 <!-- Onglet Demandes -->
                 <div class="tab-pane fade" id="demandes" role="tabpanel">
-                    {% if demandes %}
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Service</th>
-                                        <th>Date</th>
-                                        <th>Statut</th>
-                                        <th>Message</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for demande in demandes %}
-                                        <tr>
-                                            <td>{{ demande.service.nom }}</td>
-                                            <td>{{ demande.date_demande|date:"d/m/Y" }}</td>
-                                            <td>
-                                              
-                                                <span class="badge 
-    {% if  demande.statut == 'acceptee' %}badge-success
-    {% elif  demande.statut == 'inactive' %}badge-danger
-    {% else %}badge-secondary
-    {% endif %}">
-    {{ demande.get_statut_display }}
-</span>
-                                            </td>
-                                            <td>{{ demande.message|truncatewords:10 }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                    <ul class="nav nav-pills mb-3" id="demandes-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="pill" href="#demandes-en-attente">En attente ({{ demandes_par_statut.en_attente.count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#demandes-acceptees">Acceptées ({{ demandes_par_statut.acceptees.count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#demandes-refusees">Refusées ({{ demandes_par_statut.refusees.count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#demandes-en-cours">En cours ({{ demandes_par_statut.en_cours.count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#demandes-terminees">Terminées ({{ demandes_par_statut.terminees.count }})</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="demandes-en-attente">
+                            {% include 'entreprise/partials/demandes_table.html' with demandes=demandes_par_statut.en_attente %}
                         </div>
-                    {% else %}
-                        <div class="alert alert-info">Aucune demande de service.</div>
-                    {% endif %}
+                        <div class="tab-pane fade" id="demandes-acceptees">
+                            {% include 'entreprise/partials/demandes_table.html' with demandes=demandes_par_statut.acceptees %}
+                        </div>
+                        <div class="tab-pane fade" id="demandes-refusees">
+                            {% include 'entreprise/partials/demandes_table.html' with demandes=demandes_par_statut.refusees %}
+                        </div>
+                        <div class="tab-pane fade" id="demandes-en-cours">
+                            {% include 'entreprise/partials/demandes_table.html' with demandes=demandes_par_statut.en_cours %}
+                        </div>
+                        <div class="tab-pane fade" id="demandes-terminees">
+                            {% include 'entreprise/partials/demandes_table.html' with demandes=demandes_par_statut.terminees %}
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Onglet Factures -->
                 <div class="tab-pane fade" id="factures" role="tabpanel">
-                    {% if factures %}
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Titre</th>
-                                        <th>Montant</th>
-                                        <th>Date</th>
-                                        <th>Statut</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for facture in factures %}
-                                        <tr>
-                                            <td>{{ facture.titre }}</td>
-                                            <td>{{ facture.montant }} €</td>
-                                            <td>{{ facture.date_envoi|date:"d/m/Y" }}</td>
-                                            <td>
-                                           
-                                                <span class="badge 
-    {% if facture.statut == 'payee' %}badge-success
-    {% elif facture.statut == 'inactive' %}badge-danger
-    {% else %}badge-secondary
-    {% endif %}">
-    {{ facture.get_statut_display }}
-</span>
-                                            </td>
-                                            <td>
-                                                <a href="{{ facture.fichier_facture.url }}" class="btn btn-sm btn-info" download>
-                                                    <i class="fas fa-download"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                    <ul class="nav nav-pills mb-3" id="factures-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="pill" href="#factures-envoyees">Envoyées ({{ factures_par_statut.envoyees.count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#factures-recues">Reçues ({{ factures_par_statut.recues.count }})</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="pill" href="#factures-payees">Payées ({{ factures_par_statut.payees.count }})</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="factures-envoyees">
+                            {% include 'entreprise/partials/factures_table.html' with factures=factures_par_statut.envoyees %}
                         </div>
-                    {% else %}
-                        <div class="alert alert-info">Aucune facture enregistrée.</div>
-                    {% endif %}
+                        <div class="tab-pane fade" id="factures-recues">
+                            {% include 'entreprise/partials/factures_table.html' with factures=factures_par_statut.recues %}
+                        </div>
+                        <div class="tab-pane fade" id="factures-payees">
+                            {% include 'entreprise/partials/factures_table.html' with factures=factures_par_statut.payees %}
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Onglet Notifications -->
@@ -244,15 +325,28 @@
                     {% if notifications %}
                         <div class="list-group">
                             {% for notification in notifications %}
-                                <div class="list-group-item list-group-item-action flex-column align-items-start {% if notification.lu %}list-group-item-light{% else %}list-group-item-warning{% endif %}">
+                                <div class="list-group-item list-group-item-action flex-column align-items-start 
+                                    {% if notification.lu %}list-group-item-light{% else %}list-group-item-warning{% endif %}">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">{{ notification.titre }}</h5>
+                                        <h5 class="mb-1">
+                                            {{ notification.titre }}
+                                            <span class="badge badge-{% if notification.niveau == 'urgent' %}danger{% elif notification.niveau == 'alerte' %}warning{% else %}info{% endif %}">
+                                                {{ notification.get_niveau_display }}
+                                            </span>
+                                        </h5>
                                         <small>{{ notification.date_envoi|timesince }}</small>
                                     </div>
                                     <p class="mb-1">{{ notification.message }}</p>
-                                    {% if notification.action_requise %}
-                                        <small class="text-danger">Action requise</small>
-                                    {% endif %}
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        {% if notification.action_requise %}
+                                            <small class="text-danger"><i class="fas fa-exclamation-circle"></i> Action requise</small>
+                                        {% endif %}
+                                        {% if notification.fichier %}
+                                            <a href="{{ notification.fichier.url }}" class="btn btn-sm btn-info" download>
+                                                <i class="fas fa-download"></i> Télécharger
+                                            </a>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             {% endfor %}
                         </div>
@@ -264,20 +358,95 @@
         </div>
     </div>
 </div>
+
+<!-- Modals -->
+<div class="modal fade" id="addServiceModal" tabindex="-1" role="dialog" aria-labelledby="addServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addServiceModalLabel">Ajouter un service</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="{% url 'entreprise-detail' entreprise.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {{ service_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="submit" name="add_service" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="sendNotificationModal" tabindex="-1" role="dialog" aria-labelledby="sendNotificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sendNotificationModalLabel">Envoyer une notification</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="{% url 'entreprise-detail' entreprise.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {{ notification_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="submit" name="send_notification" class="btn btn-primary">Envoyer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="sendInvoiceModal" tabindex="-1" role="dialog" aria-labelledby="sendInvoiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sendInvoiceModalLabel">Envoyer une facture</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="{% url 'entreprise-detail' entreprise.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {{ facture_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="submit" name="send_facture" class="btn btn-primary">Envoyer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block javascript %}
 <script>
-// Script pour gérer les onglets
 $(document).ready(function() {
-    // Si hash dans l'URL, activer l'onglet correspondant
+    // Gestion des onglets
     if(window.location.hash) {
         $('.nav-tabs a[href="' + window.location.hash + '"]').tab('show');
     }
     
-    // Changer l'URL quand on clique sur un onglet
     $('.nav-tabs a').on('click', function(e) {
         history.pushState(null, null, $(this).attr('href'));
+    });
+
+    // Marquer les notifications comme lues
+    $('.list-group-item-warning').on('click', function() {
+        $(this).removeClass('list-group-item-warning').addClass('list-group-item-light');
+        // Ici, vous pourriez ajouter une requête AJAX pour marquer la notification comme lue en base de données
     });
 });
 </script>

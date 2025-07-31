@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Document
+from entreprise.models import Entreprise
 from .forms import DocumentForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
@@ -79,30 +80,42 @@ def document_detail(request, pk):
         'document': document
     })
 
+
+
 @login_required
-def upload_document(request):
+def upload_document(request, entreprise_id=None):
     user = request.user
+    entreprise = None
+
+    if entreprise_id:
+        entreprise = get_object_or_404(Entreprise, id=entreprise_id)
 
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES, user=user)
         if form.is_valid():
             doc = form.save(commit=False)
             doc.auteur = user
+            if entreprise:
+                doc.entreprise = entreprise
 
             try:
+                # Règles de visibilité selon le rôle
                 if user.role == 'stagiaire':
                     if form.cleaned_data['visibilite'] not in ['prive', 'stagiaire', 'employe']:
                         doc.visibilite = 'prive'
                     doc.date_expiration_acces = None
                     doc.save()
-                    # Pas de m2m
+                    # pas de M2M pour les stagiaires
+
                 elif user.role == 'employe':
                     if form.cleaned_data['visibilite'] not in ['prive', 'employe']:
                         doc.visibilite = 'prive'
                     doc.date_expiration_acces = None
                     doc.save()
-                    form.save_m2m()
+                    form.save_m2m()  # si besoin de tags, catégories, etc.
+
                 else:
+                    # RH/Admin
                     doc.save()
                     form.save_m2m()
 
@@ -111,10 +124,31 @@ def upload_document(request):
                 return redirect('document-list')
 
             except Exception as e:
-                messages.error(request, f"❌ Une erreur est survenue lors de l'enregistrement : {e}")
+                messages.error(request, f"❌ Une erreur est survenue lors de l'enregistrement : {str(e)}")
         else:
             messages.warning(request, "⚠️ Le formulaire contient des erreurs. Veuillez vérifier les champs.")
     else:
         form = DocumentForm(user=user)
 
-    return render(request, 'documents/upload_document.html', {'form': form})
+    contexte = {
+        'form': form,
+        'entreprise': entreprise  # utile si tu veux afficher le nom dans le template
+    }
+    return render(request, 'documents/upload_document.html', contexte)
+
+
+@login_required
+@user_passes_test(has_upload_permission)
+def documents_entreprise(request, entreprise_id):
+    entreprise = get_object_or_404(Entreprise, id=entreprise_id)
+    user = request.user
+
+    documents = entreprise.documents.all()
+
+    # Appliquer la même logique de visibilité filtrée
+    documents = [doc for doc in documents if doc.peut_etre_vu_par(user)]
+
+    return render(request, 'documents/document_list_entreprise.html', {
+        'documents': documents,
+        'entreprise': entreprise,
+    })
