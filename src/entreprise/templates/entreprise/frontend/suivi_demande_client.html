@@ -1,0 +1,39 @@
+{% extends 'entreprise/frontend/base_entreprise.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mt-4">Suivi de vos propositions RH</h2>
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Service</th>
+                <th>Description</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for service in services %}
+            <tr>
+                <td>{{ service.nom_service }}</td>
+                <td>{{ service.description }}</td>
+                <td>{{ service.get_statut_display }}</td>
+                <td>
+                    {% if service.statut == 'proposition' %}
+                        <a href="{% url 'accepter-proposition' service.id %}" class="btn btn-success btn-sm">Accepter</a>
+                        <a href="{% url 'rejeter-proposition' service.id %}" class="btn btn-danger btn-sm">Rejeter</a>
+                        <a href="{% url 'faire-contre-proposition' service.id %}" class="btn btn-secondary btn-sm">Contre-proposition</a>
+                    {% elif service.statut == 'en_revue' %}
+                        <span class="text-info">En cours de révision</span>
+                    {% else %}
+                        <span class="text-muted">Aucune action possible</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4">Aucune proposition en attente.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

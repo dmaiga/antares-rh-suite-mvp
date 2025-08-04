@@ -36,8 +36,8 @@ urlpatterns = [
     path('notes/', include('notes.urls')),
     path('todo/', include('todo.urls')),
     path('statics/', include('statics.urls')),
-    path('antares-rh/', include('site_web.urls')),
-    path('antares-rh/entreprise/', include('entreprise.urls')),
+    path('antares/', include('site_web.urls')),
+    path('antares/entreprise/', include('entreprise.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:

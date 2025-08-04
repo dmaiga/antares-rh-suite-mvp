@@ -1,74 +1,135 @@
-{% extends 'authentication/base_client.html' %}
+{% extends 'entreprise/frontend/base_entreprise.html' %}
+{% load custom_tags %}
+
+{% block title %}Tableau de bord{% endblock %}
+
 {% block content %}
-<div class="container-fluid">
-    <!-- Statistiques rapides -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Services actifs</h5>
-                    <p class="h2">{{ services_actifs.count }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-dark">
-                <div class="card-body">
-                    <h5 class="card-title">Demandes en attente</h5>
-                    <p class="h2">{{ demandes_par_statut.en_attente.count }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-danger text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Factures impayées</h5>
-                    <p class="h2">{{ factures_impayees.count }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Notifications</h5>
-                    <p class="h2">{{ notifications.count }}</p>
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2 class="h4">Bienvenue, {{ request.user.entreprise.nom }}</h2>
+        <p class="text-muted mb-0">Voici un aperçu de votre activité</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        <a href="{% url 'demander-service' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Nouvelle demande
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Stat Cards -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-entreprise stat-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase text-muted mb-0">Demandes actives</h6>
+                        <div class="stat-value mt-2">{{ demandes_par_statut.en_cours }}</div>
+                    </div>
+                    <div class="icon-circle bg-primary-light">
+                        <i class="fas fa-tasks text-primary"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Dernières notifications -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>Dernières notifications</h5>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-entreprise stat-card h-100 border-start-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase text-muted mb-0">Services actifs</h6>
+                        <div class="stat-value mt-2">{{ services_actifs.count }}</div>
+                    </div>
+                    <div class="icon-circle bg-info-light">
+                        <i class="fas fa-check-circle text-info"></i>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            {% if notifications %}
-                <div class="list-group">
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-entreprise stat-card h-100 border-start-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase text-muted mb-0">Factures impayées</h6>
+                        <div class="stat-value mt-2">{{ factures_impayees }}</div>
+                    </div>
+                    <div class="icon-circle bg-warning-light">
+                        <i class="fas fa-file-invoice text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card card-entreprise stat-card h-100 border-start-danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase text-muted mb-0">Notifications</h6>
+                        <div class="stat-value mt-2">{{ notifications.count }}</div>
+                    </div>
+                    <div class="icon-circle bg-danger-light">
+                        <i class="fas fa-bell text-danger"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    
+    
+    <!-- Dernières Notifications -->
+    <div class="col-lg-6 mb-4">
+        <div class="card card-entreprise h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Notifications récentes</h6>
+                <a href="{% url 'notifications-client' %}" class="btn btn-sm btn-link">Voir tout</a>
+            </div>
+            <div class="card-body">
+                {% if notifications %}
+                <div class="list-group list-group-flush">
                     {% for notif in notifications %}
-                        <a href="#" class="list-group-item list-group-item-action {% if not notif.lu %}list-group-item-warning{% endif %}">
-                            <div class="d-flex justify-content-between">
-                                <h6>{{ notif.titre }}</h6>
-                                <small>{{ notif.date_envoi|timesince }}</small>
+                    <a href="#" class="list-group-item list-group-item-action border-0 px-0 py-2">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                                <i class="fas fa-{{ notif.niveau|notif_icon }} text-{{ notif.niveau }}"></i>
                             </div>
-                            <p class="mb-1">{{ notif.message|truncatewords:15 }}</p>
-                        </a>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ notif.titre }}</h6>
+                                <small class="text-muted">{{ notif.date_envoi|timesince }} ago</small>
+                            </div>
+                        </div>
+                    </a>
                     {% endfor %}
                 </div>
-            {% else %}
-                <p class="text-muted">Aucune notification récente</p>
-            {% endif %}
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Aucune notification pour le moment</p>
+                </div>
+                {% endif %}
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- Demandes en cours -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5>Demandes en cours</h5>
-            <a href="{% url 'demandes-client' %}" class="btn btn-sm btn-primary">Voir toutes</a>
-        </div>
-        <div class="card-body">
-            {% if demandes_par_statut.en_cours %}
+<div class="row">
+    <!-- Demandes Récentes -->
+    <div class="col-12">
+        <div class="card card-entreprise">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Dernières demandes</h6>
+                <a href="{% url 'demandes-client' %}" class="btn btn-sm btn-link">Voir tout</a>
+            </div>
+            <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -76,25 +137,42 @@
                                 <th>Service</th>
                                 <th>Date</th>
                                 <th>Statut</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for demande in demandes_par_statut.en_cours|slice:":5" %}
-                                <tr>
-                                    <td>{{ demande.service.nom }}</td>
-                                    <td>{{ demande.date_demande|date:"d/m/Y" }}</td>
-                                    <td>
-                                        <span class="badge bg-warning">{{ demande.get_statut_display }}</span>
-                                    </td>
-                                </tr>
+                            {% for demande in demandes_recentes %}
+                            <tr>
+                                <td>{{ demande.service.nom }}</td>
+                                <td>{{ demande.date_demande|date:"d/m/Y" }}</td>
+                                <td>
+                                    <span class="badge bg-{{ demande.statut|statut_color }}">
+                                        {{ demande.get_statut_display }}
+                                    </span>
+                                </td>
+                                
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    Aucune demande récente
+                                </td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-            {% else %}
-                <p class="text-muted">Aucune demande en cours</p>
-            {% endif %}
+            </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Toggle sidebar on mobile
+document.getElementById('sidebarToggle').addEventListener('click', function() {
+    document.querySelector('.main-content').classList.toggle('margin-left-0');
+});
+</script>
 {% endblock %}

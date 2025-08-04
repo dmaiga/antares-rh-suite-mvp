@@ -1,0 +1,205 @@
+{% extends 'authentication/base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Gestion des demandes de service</h1>
+    </div>
+
+    <ul class="nav nav-tabs mb-4" id="demandesTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="en-attente-tab" data-bs-toggle="tab" data-bs-target="#en-attente" type="button" role="tab">
+                En attente <span class="badge bg-primary">{{ demandes_en_attente.count }}</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="acceptees-tab" data-bs-toggle="tab" data-bs-target="#acceptees" type="button" role="tab">
+                Acceptées <span class="badge bg-success">{{ demandes_acceptees.count }}</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="refusees-tab" data-bs-toggle="tab" data-bs-target="#refusees" type="button" role="tab">
+                Refusées <span class="badge bg-danger">{{ demandes_refusees.count }}</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="en-cours-tab" data-bs-toggle="tab" data-bs-target="#en-cours" type="button" role="tab">
+                En cours <span class="badge bg-warning">{{ demandes_en_cours.count }}</span>
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="demandesTabContent">
+        <!-- Onglet Demandes en attente -->
+        <div class="tab-pane fade show active" id="en-attente" role="tabpanel">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    {% if demandes_en_attente %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Entreprise</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for demande in demandes_en_attente %}
+                                <tr>
+                                    <td>{{ demande.entreprise.nom }}</td>
+                                    <td>{{ demande.service.nom }}</td>
+                                    <td>{{ demande.date_demande|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <a href="{% url 'consulter-demande' demande.id %}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i> Consulter
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">Aucune demande en attente pour le moment.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Demandes acceptées -->
+        <div class="tab-pane fade" id="acceptees" role="tabpanel">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    {% if demandes_acceptees %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Entreprise</th>
+                                    <th>Service</th>
+                                    <th>Date acceptation</th>
+                                    <th>Service créé</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for demande in demandes_acceptees %}
+                                <tr>
+                                    <td>{{ demande.entreprise.nom }}</td>
+                                    <td>{{ demande.service.nom }}</td>
+                                    <td>{{ demande.date_modification|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        {% if demande.services_lies.exists %}
+                                        <span class="badge bg-success">Oui</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Non</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">Aucune demande acceptée pour le moment.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Demandes refusées -->
+        <div class="tab-pane fade" id="refusees" role="tabpanel">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    {% if demandes_refusees %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Entreprise</th>
+                                    <th>Service</th>
+                                    <th>Date refus</th>
+                                    <th>Motif</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for demande in demandes_refusees %}
+                                <tr>
+                                    <td>{{ demande.entreprise.nom }}</td>
+                                    <td>{{ demande.service.nom }}</td>
+                                    <td>{{ demande.date_modification|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        {% if demande.message %}
+                                        {{ demande.message|truncatechars:50 }}
+                                        {% else %}
+                                        Non précisé
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">Aucune demande refusée pour le moment.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglet Demandes en cours -->
+        <div class="tab-pane fade" id="en-cours" role="tabpanel">
+            <div class="card shadow mb-4">
+                <div class="card-body">
+                    {% if demandes_en_cours %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Entreprise</th>
+                                    <th>Service</th>
+                                    <th>Date début</th>
+                                    <th>Responsable</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for demande in demandes_en_cours %}
+                                <tr>
+                                    <td>{{ demande.entreprise.nom }}</td>
+                                    <td>{{ demande.service.nom }}</td>
+                                    <td>{{ demande.date_modification|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        {% if demande.services_lies.first.responsable_rh %}
+                                        {{ demande.services_lies.first.responsable_rh.get_full_name }}
+                                        {% else %}
+                                        Non assigné
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">Aucune demande en cours pour le moment.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+// Initialisation des tooltips Bootstrap
+document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+});
+</script>
+{% endblock %}

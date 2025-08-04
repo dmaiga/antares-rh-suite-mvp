@@ -1,45 +1,83 @@
-{% if factures %}
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>Titre</th>
-                    <th>Montant</th>
-                    <th>Date envoi</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for facture in factures %}
-                    <tr>
-                        <td>{{ facture.titre }}</td>
-                        <td>{{ facture.montant }} €</td>
-                        <td>{{ facture.date_envoi|date:"d/m/Y" }}</td>
-                        <td>
-                            <span class="badge 
-                                {% if facture.statut == 'payee' %}badge-success
-                                {% elif facture.statut == 'reçue' %}badge-info
-                                {% else %}badge-warning
-                                {% endif %}">
-                                {{ facture.get_statut_display }}
-                            </span>
-                        </td>
-                        <td>
-                            <a href="{{ facture.fichier_facture.url }}" class="btn btn-sm btn-info" download>
-                                <i class="fas fa-download"></i>
-                            </a>
-                            {% if facture.statut == 'reçue' %}
-                                <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#markAsPaidModal{{ facture.id }}">
-                                    <i class="fas fa-check-circle"></i> Marquer comme payée
-                                </button>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<div class="table-responsive">
+    <table class="table table-hover table-bordered">
+        <thead class="thead-light">
+            <tr>
+                <th>Référence</th>
+                <th>Description</th>
+                <th>Montant</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for facture in factures %}
+            <tr>
+                <td>#{{ facture.id|stringformat:"06d" }}</td>
+                <td>{{ facture.titre }}</td>
+                <td>{{ facture.montant|floatformat:2 }} FCFA</td>
+                <td>{{ facture.date_envoi|date:"d/m/Y" }}</td>
+                <td>
+                    <span class="badge badge-{% if facture.statut == 'envoyee' %}warning{% elif facture.statut == 'recue' %}info{% elif facture.statut == 'payee' %}success{% else %}secondary{% endif %}">
+                        {{ facture.get_statut_display }}
+                    </span>
+                </td>
+                <td>
+                    <a href="#" class="btn btn-sm btn-outline-primary" title="Télécharger" download>
+                        <i class="fas fa-download"></i>
+                    </a>
+                    <a href="#" class="btn btn-sm btn-outline-info" title="Détails">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                    {% if facture.statut != 'payee' %}
+                    <button class="btn btn-sm btn-outline-success" title="Marquer comme payée" data-toggle="modal" data-target="#paiementModal{{ facture.id }}">
+                        <i class="fas fa-check"></i>
+                    </button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center py-4 text-muted">
+                    <i class="fas fa-file-invoice-dollar fa-2x mb-2"></i><br>
+                    Aucune facture trouvée
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% for facture in factures %}
+<!-- Modal pour le paiement -->
+<div class="modal fade" id="paiementModal{{ facture.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmer le paiement</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="#" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>Confirmez-vous le paiement de la facture #{{ facture.id }} ?</p>
+                    <div class="form-group">
+                        <label>Date de paiement</label>
+                        <input type="date" class="form-control" name="date_paiement" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Preuve de paiement (optionnel)</label>
+                        <input type="file" class="form-control-file" name="preuve_paiement">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-success">Confirmer</button>
+                </div>
+            </form>
+        </div>
     </div>
-{% else %}
-    <div class="alert alert-info">Aucune facture dans cette catégorie.</div>
-{% endif %}
+</div>
+{% endfor %}

@@ -1,5 +1,5 @@
 {% extends 'authentication/base.html' %}
-{% load static %}
+{% load custom_tags %}
 
 {% block content %}
 <style>
@@ -228,28 +228,29 @@
                     <i class="fas fa-plus me-2"></i> Nouvelle entreprise
                 </a>
             </div>
+           
         </div>
         
         <!-- Navigation secondaire -->
         <ul class="nav nav-tabs nav-tabs-card">
             <li class="nav-item">
-                <a class="nav-link active" href="#">
+                <a class="nav-link active" href="{%url 'entreprise-dashboard'%}">
                     <i class="fas fa-chart-line me-2"></i> Vue d'ensemble
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'entreprise-liste' %}">
-                    <i class="fas fa-list me-2"></i> Toutes les entreprises
+                <a class="nav-link" href="{% url 'toutes-demandes-rh' %}">
+                    <i class="fas fa-list me-2"></i> Demandes Services
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'entreprise-actives' %}">
-                    <i class="fas fa-check-circle me-2"></i> Actives
+                <a class="nav-link" href="{% url 'liste-toutes-factures' %}">
+                    <i class="fas fa-check-circle me-2"></i> Factures
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'entreprise-en-attente' %}">
-                    <i class="fas fa-clock me-2"></i> En attente
+                <a class="nav-link" href="{% url 'liste-notifications' %}">
+                    <i class="fas fa-clock me-2"></i> Notification
                 </a>
             </li>
             <li class="nav-item">
@@ -328,7 +329,7 @@
       <strong>{{ n.entreprise.nom }}</strong> - 
       <span class="badge bg-{{ n.niveau }}">{{ n.niveau|title }}</span><br>
       <strong>{{ n.titre }}</strong><br>
-      {{ n.message|truncatechars:100 }}<br>
+      
       <small class="text-muted">Envoyé le {{ n.date_envoi|date:"d/m/Y H:i" }}</small>
     </li>
     {% empty %}
@@ -447,7 +448,7 @@
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="section-title">Entreprises en attente</h5>
+                        <h5 class="section-title"> <a href="{% url 'entreprise-en-attente' %}">Entreprises en attente</a></h5>
                         <a href="{% url 'entreprise-en-attente' %}" class="badge bg-warning text-dark">
                             {{ stats.entreprises_en_attente }}
                         </a>
@@ -498,7 +499,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="section-title">Demandes RH</h5>
+                        <h5 class="section-title"> <a href="{% url 'toutes-demandes-rh' %}">Demandes Services</a></h5>
                         <span class="badge bg-primary">{{ stats.demandes_rh }}</span>
                     </div>
                     

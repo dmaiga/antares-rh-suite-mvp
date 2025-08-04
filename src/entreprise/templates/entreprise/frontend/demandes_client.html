@@ -1,6 +1,21 @@
-{% extends 'authentication/base_client.html' %}
+{% extends 'entreprise/frontend/base_entreprise.html' %}
+{% load custom_tags %}
 
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active" aria-current="page">Tableau de bord</li>
+{% endblock %}
 {% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h4">
+        <i class="fas fa-book-open text-primary me-2"></i>Gestion des Services 
+    </h2>
+    <div>
+
+        <a href="{% url 'demander-service' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Nouvelle Demande
+        </a>
+    </div>
+</div>
 <div class="container-fluid">
     <div class="card shadow mb-4">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -49,7 +64,7 @@
                                 </td>
                                 <td>{{ demande.message|truncatewords:5 }}</td>
                                 <td>
-                                    <a href="#" class="btn btn-sm btn-primary">
+                                    <a href="{% url 'suivi-demande-client'%}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     {% if demande.statut == 'en_attente' %}

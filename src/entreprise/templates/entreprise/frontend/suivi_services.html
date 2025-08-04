@@ -1,0 +1,30 @@
+{% extends 'entreprise/frontend/base_entreprise.html' %}
+{% block content %}
+<h3>Suivi de vos services RH</h3>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Service</th>
+            <th>Statut</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for service in services %}
+        <tr>
+            <td>{{ service.nom }}</td>
+            <td>{{ service.get_statut_display }}</td>
+            <td>
+                {% if service.statut == 'proposition' %}
+                    <a href="{% url 'accepter_proposition' service.id %}" class="btn btn-success btn-sm">Accepter</a>
+                    <a href="{% url 'rejeter_proposition' service.id %}" class="btn btn-danger btn-sm">Rejeter</a>
+                {% elif service.statut == 'en_cours' %}
+                    <a href="{% url 'marquer_termine' service.id %}" class="btn btn-outline-primary btn-sm">Marquer terminé</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

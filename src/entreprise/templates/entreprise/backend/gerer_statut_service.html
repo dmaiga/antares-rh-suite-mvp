@@ -1,0 +1,11 @@
+<h3>Gérer le statut du service : {{ service.nom }}</h3>
+
+<form method="post">
+    {% csrf_token %}
+    <select name="statut" class="form-select mb-3">
+        {% for value, label in statuts %}
+            <option value="{{ value }}" {% if value == service.statut %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
+</form>

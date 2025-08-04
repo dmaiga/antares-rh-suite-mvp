@@ -1,0 +1,259 @@
+{% extends 'entreprise/frontend/base_entreprise.html' %}
+
+{% block title %}Envoyer une notification{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card card-entreprise">
+            <div class="card-header bg-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-paper-plane text-primary me-2"></i>Envoyer un message au service RH
+                    </h2>
+                    <a href="{% url 'notifications-client' %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Retour
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3 border-bottom pb-2">Contenu du message</h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.titre.id_for_label }}" class="form-label">
+                                <i class="fas fa-heading text-muted me-1"></i> {{ form.titre.label }}
+                            </label>
+                            {{ form.titre }}
+                            <div class="form-text">
+                                Soyez précis pour faciliter le traitement de votre demande
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.message.id_for_label }}" class="form-label">
+                                <i class="fas fa-align-left text-muted me-1"></i> {{ form.message.label }}
+                            </label>
+                            {{ form.message }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3 border-bottom pb-2">Paramètres du message</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.niveau.id_for_label }}" class="form-label">
+                                    <i class="fas fa-exclamation-triangle text-muted me-1"></i> Niveau d'importance
+                                </label>
+                                {{ form.niveau }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-bell text-muted me-1"></i> Options
+                                </label>
+                                <div class="form-check">
+                                    {{ form.action_requise }}
+                                    <label class="form-check-label" for="{{ form.action_requise.id_for_label }}">
+                                        Nécessite une action du service RH
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3 border-bottom pb-2">
+                            <i class="fas fa-paperclip text-muted me-1"></i> Pièces jointes
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <div class="file-upload-wrapper">
+                                {{ form.fichier }}
+                                <div class="form-text">
+                                    Formats acceptés : PDF, JPG, PNG, DOCX (max 10Mo)
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="filePreview" class="d-none mt-3 p-3 border rounded bg-light">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-file-pdf text-danger me-3 fa-2x"></i>
+                                    <div>
+                                        <div class="fw-bold" id="fileName">Aucun fichier sélectionné</div>
+                                        <small class="text-muted" id="fileSize">-</small>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger" id="removeFile">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between border-top pt-3">
+                        <button type="reset" class="btn btn-outline-secondary">
+                            <i class="fas fa-eraser me-1"></i> Effacer
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-1"></i> Envoyer le message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.file-upload-wrapper {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.file-upload-wrapper input[type="file"] {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    cursor: pointer;
+}
+
+.file-upload-wrapper::before {
+    content: 'Parcourir...';
+    display: inline-block;
+    background: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    border-radius: 5px;
+    padding: 8px 12px;
+    outline: none;
+    white-space: nowrap;
+    cursor: pointer;
+    font-weight: 400;
+    font-size: 0.875rem;
+    color: #495057;
+}
+
+.file-upload-wrapper:hover::before {
+    border-color: #adb5bd;
+}
+
+.file-upload-wrapper:active::before {
+    background-color: #e9ecef;
+}
+
+/* Style pour les champs de formulaire */
+.form-control, .form-select {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: 1px solid #e0e0e0;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+}
+
+/* Style spécifique pour le textarea */
+textarea.form-control {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* Style pour les options d'importance */
+.importance-option {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.importance-option:hover {
+    background-color: #f8f9fa;
+}
+
+.importance-option input {
+    margin-right: 10px;
+}
+
+.importance-option .badge {
+    margin-left: auto;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion de l'affichage du fichier sélectionné
+    const fileInput = document.querySelector('input[type="file"]');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const removeFileBtn = document.getElementById('removeFile');
+    
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            
+            // Changer l'icône selon le type de fichier
+            const fileIcon = filePreview.querySelector('i');
+            const fileType = file.type.split('/')[0];
+            
+            if (file.type.includes('pdf')) {
+                fileIcon.className = 'fas fa-file-pdf text-danger me-3 fa-2x';
+            } else if (file.type.includes('image')) {
+                fileIcon.className = 'fas fa-file-image text-success me-3 fa-2x';
+            } else if (file.type.includes('word') || file.type.includes('document')) {
+                fileIcon.className = 'fas fa-file-word text-primary me-3 fa-2x';
+            } else {
+                fileIcon.className = 'fas fa-file-alt me-3 fa-2x';
+            }
+            
+            filePreview.classList.remove('d-none');
+        }
+    });
+    
+    removeFileBtn.addEventListener('click', function() {
+        fileInput.value = '';
+        filePreview.classList.add('d-none');
+    });
+    
+    // Fonction pour formater la taille du fichier
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i]);
+    }
+    
+    // Validation avant envoi
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const titre = document.getElementById('{{ form.titre.id_for_label }}').value.trim();
+        const message = document.getElementById('{{ form.message.id_for_label }}').value.trim();
+        
+        if (!titre || !message) {
+            e.preventDefault();
+            alert('Veuillez remplir tous les champs obligatoires.');
+        }
+    });
+});
+</script>
+{% endblock %}

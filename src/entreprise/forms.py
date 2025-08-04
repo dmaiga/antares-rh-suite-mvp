@@ -2,7 +2,7 @@ from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django import forms
 from authentication.models import User
-from entreprise.models import Entreprise, ServiceEntreprise, NotificationEntreprise,FactureLibre
+from entreprise.models import Entreprise, ServiceEntreprise, NotificationEntreprise,FactureLibre,DemandeService,ServiceRH
 from django.utils import timezone
 
 class EntrepriseRegisterForm(forms.ModelForm):
@@ -200,14 +200,38 @@ class CreateEntrepriseForm(forms.ModelForm):
 class ServiceEntrepriseForm(forms.ModelForm):
     class Meta:
         model = ServiceEntreprise
-        fields = ['titre', 'description', 'prix', 'actif']
-        labels = {
-            'titre': "Titre du service",
-            'description': "Description du service",
-            'prix': "Prix (optionnel)",
-            'actif': "Service actif ?",
+        fields = ['titre', 'description', 'prix', 'conditions', 'periodicite_facturation']
+        widgets = {
+            'titre': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            
+            'conditions': forms.Textarea(attrs={'rows': 4}),
+            'prix': forms.NumberInput(attrs={'step': '0.01'}),
         }
 
+class DemandeServiceForm(forms.ModelForm):
+    class Meta:
+        model = DemandeService
+        fields = ['service', 'message', 'pieces_jointes']
+        widgets = {
+            'service': forms.Select(attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Sélectionnez un service...'
+            }),
+            'message': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': 'Décrivez votre besoin en détail...'
+            }),
+        }
+        labels = {
+            'service': "Type de service",
+            'message': "Détails de votre demande",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['service'].queryset = ServiceRH.objects.all().order_by('nom')
 
 class NotificationEntrepriseForm(forms.ModelForm):
     class Meta:
@@ -220,15 +244,70 @@ class NotificationEntrepriseForm(forms.ModelForm):
             'action_requise': "Nécessite une action ?",
             'fichier': "Pièce jointe (facultative)"
         }
+        widgets = {
+            'titre': forms.TextInput(attrs={'class': 'form-control'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'niveau': forms.Select(attrs={'class': 'form-select'}),
+            'action_requise': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'fichier': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
+    def clean_titre(self):
+        titre = self.cleaned_data.get('titre', '')
+        if titre.lower() in ['notification', 'info']:
+            raise forms.ValidationError("Merci de donner un titre plus spécifique.")
+        return titre
 
 
 class FactureLibreForm(forms.ModelForm):
     class Meta:
         model = FactureLibre
         fields = ['titre', 'description', 'montant', 'fichier_facture']
+        labels = {
+            'titre': "Titre de la facture",
+            'description': "Description",
+            'montant': "Montant total (FCFA)",
+            'fichier_facture': "Fichier de la facture (PDF ou scan)",
+        }
         widgets = {
             'titre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex : Facture Février 2025'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'montant': forms.NumberInput(attrs={'class': 'form-control'}),
             'fichier_facture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
+    def clean_montant(self):
+        montant = self.cleaned_data['montant']
+        if montant <= 0:
+            raise forms.ValidationError("Le montant doit être supérieur à zéro.")
+        return montant
+
+
+from django import forms
+from .models import DemandeService
+
+class DemandeEditForm(forms.ModelForm):
+    class Meta:
+        model = DemandeService
+        fields = ['statut', 'message']
+        widgets = {
+            'statut': forms.Select(attrs={'class': 'form-control'}),
+            'message': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Ajoutez un commentaire si nécessaire...'
+            }),
+        }
+
+
+class ContrePropositionForm(forms.ModelForm):
+    class Meta:
+        model = ServiceEntreprise
+        fields = ['contre_proposition']
+        widgets = {
+            'contre_proposition': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': "Décrivez votre contre-proposition ici..."
+            })
         }

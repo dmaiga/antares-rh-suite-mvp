@@ -2,8 +2,23 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
 from authentication.models import User
-from .models import DemandeService,NotificationEntreprise
-from .forms import EntrepriseRegisterForm,CreateEntrepriseForm,ServiceEntrepriseForm, NotificationEntrepriseForm,FactureLibreForm
+from .models import (
+                        DemandeService,
+                        NotificationEntreprise,
+                        ServiceEntreprise,
+                        ServiceRH,
+                        FactureLibre
+                    
+                    )
+
+from .forms import (EntrepriseRegisterForm,
+                    CreateEntrepriseForm,
+                    ServiceEntrepriseForm,
+                      NotificationEntrepriseForm,
+                      FactureLibreForm,
+                      DemandeServiceForm,
+                      DemandeEditForm
+                      )
                    
 from django.contrib import messages
 from django.utils import timezone
@@ -16,6 +31,12 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import timezone
 from django.db.models import Count, Q,Prefetch, Case, When, IntegerField, Value, Sum, ExpressionWrapper, F, FloatField
+from django.db.models import Max, Count, Sum, Case, When, Value, IntegerField
+from django.db.models.functions import Coalesce
+from django.db.models import Prefetch
+from django.utils import timezone
+from .forms import ContrePropositionForm
+
 
 #-------------------------------------------------------------------------------------
 #                                       PUBLIC
@@ -89,7 +110,8 @@ def dashboard_rh(request):
     ).select_related('entreprise', 'service').order_by('-date_demande')[:5]
     
     notifications = NotificationEntreprise.objects.select_related('entreprise')\
-        .order_by('-date_envoi')[:10]
+            .filter(source='client')\
+            .order_by('-date_envoi')[:5]
     
     context = {
         'stats': stats,
@@ -159,6 +181,8 @@ def detail_entreprise(request, entreprise_id):
         ),
         id=entreprise_id
     )
+    # Récupérez une demande spécifique si nécessaire
+    derniere_demande = entreprise.demandes.order_by('-date_demande').first()
     
     # Services souscrits avec état
     services_souscrits = entreprise.services.annotate(
@@ -217,6 +241,7 @@ def detail_entreprise(request, entreprise_id):
     
     context = {
         'entreprise': entreprise,
+        'demande': derniere_demande,
         'services_souscrits': services_souscrits,
         'demandes_par_statut': demandes_par_statut,
         'factures_par_statut': factures_par_statut,
@@ -225,7 +250,7 @@ def detail_entreprise(request, entreprise_id):
         'notification_form': notification_form,
         'facture_form': facture_form,
         'stats': {
-            'services_actifs': entreprise.services.filter(actif=True).count(),
+            'services_actifs': entreprise.services.filter(statut='actif').count(),
             'demandes_en_attente': entreprise.demandes.filter(statut='en_attente').count(),
             'factures_impayees': entreprise.factures_libres.exclude(statut='payee').count(),
             'notifications_non_lues': entreprise.notifications.filter(lu=False).count(),
@@ -233,6 +258,7 @@ def detail_entreprise(request, entreprise_id):
     }
     
     return render(request, 'entreprise/backend/entreprise_detail.html', context)
+
 #___________________________________________________________________________________
 #
 
@@ -313,7 +339,7 @@ def add_entreprise(request):
             user = form.save(commit=False)
             
             # 2. Génération du mot de passe
-            password = 'passer123'
+            password = get_random_string(length=10)
             user.set_password(password)
             user.is_active = True
             user.save()
@@ -486,17 +512,659 @@ def reset_password_entreprise(request, entreprise_id):
     messages.success(request, f"Le mot de passe de {user.username} a été réinitialisé : {new_password}")
     return redirect('entreprise-detail', entreprise_id=entreprise.id)
 
+#----------------------------------------------------------------------------------
+#_________________________________________________________________________________
+#__________________________________________________________________________________
 
+@login_required
+@user_passes_test(is_rh_or_admin)
+def creer_service(request, demande_id):
+    demande = get_object_or_404(DemandeService, id=demande_id)
+    if request.method == 'POST':
+        form = ServiceEntrepriseForm(request.POST)
+        if form.is_valid():
+            service = form.save(commit=False)
+            service.demande_origine = demande
+            service.save()
+            messages.success(request, "Service créé et envoyé à l'entreprise")
+            return redirect('entreprise-dashboard')
+    else:
+        form = ServiceEntrepriseForm(initial={
+            'titre': demande.service.nom,
+            'description': demande.message
+        })
+    return render(request, 'entreprise/backend/creer_service.html', {'form': form, 'demande': demande})
+#___________________________________________________________________________________
+#
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def detail_demande_client(request, demande_id):
+    demande = get_object_or_404(DemandeService, id=demande_id)
+    
+    context = {
+        'demande': demande,
+        'historique': demande.historique.all().order_by('-date'),
+    }
+    return render(request, 'entreprise/backend/detail_demande_client.html', context)
+#___________________________________________________________________________________
+#
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def demande_client_edit(request, demande_id):
+    demande = get_object_or_404(DemandeService, id=demande_id)
+    
+    if not demande.peut_etre_modifiee():
+        messages.warning(request, "Cette demande ne peut plus être modifiée")
+        return redirect('demande-client-detail', demande_id=demande.id)
+    
+    if request.method == 'POST':
+        form = DemandeEditForm(request.POST, instance=demande)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Demande mise à jour avec succès")
+            return redirect('demande-client-detail', demande_id=demande.id)
+    else:
+        form = DemandeEditForm(instance=demande)
+    
+    return render(request, 'entreprise/backend/demande_client_edit.html', {
+        'form': form,
+        'demande': demande
+    })
+
+#___________________________________________________________________________________
+#
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def consulter_demande(request, demande_id):
+    demande = get_object_or_404(DemandeService, id=demande_id)
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        message = request.POST.get('message', '')
+
+        if action == 'accepter' and demande.statut == 'en_attente':
+            demande.statut = 'acceptee'
+            demande.save()
+
+            service, created = ServiceEntreprise.objects.get_or_create(
+                entreprise=demande.entreprise,
+                titre=f"Service {demande.service.nom} - {demande.entreprise.nom}",
+                defaults={
+                    'description': demande.message,
+                    'statut': 'proposition',
+                    'responsable_rh': request.user
+                }
+            )
+            service.demandes.add(demande)
+
+            NotificationEntreprise.objects.create(
+                entreprise=demande.entreprise,
+                titre="Demande acceptée",
+                message=f"Votre demande '{demande.service.nom}' a été acceptée. {message}",
+                niveau='success'
+            )
+
+            messages.success(request, "Demande acceptée et service créé.")
+            return redirect('service-client-detail', pk=service.id)
+
+        elif action == 'refuser' and demande.statut == 'en_attente':
+           return redirect('refuser-demande-motif', demande_id=demande.id)
+
+    return render(request, 'entreprise/backend/consulter_demande.html', {'demande': demande})
+#___________________________________________________________________________________
+#
+@login_required
+@user_passes_test(is_rh_or_admin)
+def refuser_demande_motif(request, demande_id):
+    demande = get_object_or_404(DemandeService, id=demande_id)
+
+    if demande.statut != 'en_attente':
+        messages.error(request, "Cette demande ne peut plus être modifiée")
+        return redirect('toutes-demandes-rh')  # ou vers la liste souhaitée
+
+    if request.method == 'POST':
+        motif_refus = request.POST.get('message', '').strip()
+        if not motif_refus:
+            messages.error(request, "Veuillez indiquer un motif de refus")
+            return render(request, 'entreprise/backend/motif_refus_demande.html', {'demande': demande})
+
+        demande.statut = 'refusee'
+        demande.save()
+
+        NotificationEntreprise.objects.create(
+            entreprise=demande.entreprise,
+            titre="Demande refusée",
+            message=f"Votre demande '{demande.service.nom}' a été refusée. Motif : {motif_refus}",
+            niveau='danger',
+            action_requise=True
+        )
+
+        messages.success(request, "La demande a été refusée avec succès")
+        return redirect('toutes-demandes-rh')
+
+    return render(request, 'entreprise/backend/motif_refus_demande.html', {'demande': demande})
+
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def facture_libre_create(request, entreprise_id):
+    entreprise = get_object_or_404(Entreprise, id=entreprise_id)
+    
+    if request.method == 'POST':
+        form = FactureLibreForm(request.POST, request.FILES)
+        if form.is_valid():
+            facture = form.save(commit=False)
+            facture.entreprise = entreprise
+            facture.envoyee_par = request.user
+            facture.save()
+            
+            # Envoyer une notification à l'entreprise
+            NotificationEntreprise.objects.create(
+                entreprise=entreprise,
+                titre=f"Nouvelle facture disponible",
+                message=f"Une nouvelle facture '{facture.titre}' est disponible dans votre espace.",
+                niveau='info',
+                fichier=facture.fichier_facture
+            )
+            
+            messages.success(request, "La facture a été créée et envoyée à l'entreprise.")
+            return redirect('liste-entreprises')
+    else:
+        form = FactureLibreForm()
+    
+    return render(request, 'entreprise/backend/facture_libre_create.html', {
+        'form': form,
+        'entreprise': entreprise
+    })
+
+#___________________________________________________________________________________
+#
+@login_required
+@user_passes_test(is_rh_or_admin)
+def liste_demandes_client(request, entreprise_id):
+    entreprise = get_object_or_404(Entreprise, id=entreprise_id)
+    demandes = DemandeService.objects.filter(entreprise=entreprise).order_by('-date_demande')
+    context = {
+        'demandes_en_attente': demandes.filter(statut='en_attente'),
+        'demandes_acceptees': demandes.filter(statut='acceptee'),
+        'demandes_refusees': demandes.filter(statut='refusee'),
+        'demandes_en_cours': demandes.filter(statut='en_cours'),
+    }
+    return render(request, 'entreprise/backend/liste_demandes_client.html', context)
+#___________________________________________________________________________________
+#
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def consulter_demande(request, demande_id):
+    demande = get_object_or_404(DemandeService, id=demande_id)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'accepter':
+            # Créer un service à partir de la demande
+            service = ServiceEntreprise.creer_depuis_demande(demande)
+            
+            # Envoyer une notification à l'entreprise
+            NotificationEntreprise.objects.create(
+                entreprise=demande.entreprise,
+                titre=f"Votre demande de service a été acceptée",
+                message=f"Votre demande concernant '{demande.service.nom}' a été acceptée. Nous vous contacterons bientôt.",
+                niveau='info'
+            )
+            
+            # Mettre à jour le statut de la demande
+            demande.statut = 'acceptee'
+            demande.save()
+            
+            messages.success(request, "La demande a été acceptée et un service a été créé.")
+            return redirect('liste-demandes-client')
+            
+        elif action == 'refuser':
+            demande.statut = 'refusee'
+            demande.save()
+            
+            # Envoyer une notification à l'entreprise
+            NotificationEntreprise.objects.create(
+                entreprise=demande.entreprise,
+                titre=f"Votre demande de service a été refusée",
+                message=f"Votre demande concernant '{demande.service.nom}' a été refusée. Contactez-nous pour plus d'informations.",
+                niveau='info'
+            )
+            
+            messages.success(request, "La demande a été refusée.")
+            return redirect('liste-demandes-client')
+    
+    return render(request, 'entreprise/backend/consulter_demande.html', {'demande': demande})
+
+#___________________________________________________________________________________
+#
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def creer_facture_libre(request, entreprise_id):
+    entreprise = get_object_or_404(Entreprise, id=entreprise_id)
+    
+    if request.method == 'POST':
+        form = FactureLibreForm(request.POST, request.FILES)
+        if form.is_valid():
+            facture = form.save(commit=False)
+            facture.entreprise = entreprise
+            facture.envoyee_par = request.user
+            facture.save()
+            
+            # Envoyer une notification à l'entreprise
+            NotificationEntreprise.objects.create(
+                entreprise=entreprise,
+                titre=f"Nouvelle facture disponible",
+                message=f"Une nouvelle facture '{facture.titre}' est disponible dans votre espace.",
+                niveau='info',
+                fichier=facture.fichier_facture
+            )
+            
+            messages.success(request, "La facture a été créée et envoyée à l'entreprise.")
+            return redirect('liste-entreprises')
+    else:
+        form = FactureLibreForm()
+    
+    return render(request, 'entreprise/backend/creer_facture_libre.html', {
+        'form': form,
+        'entreprise': entreprise
+    })
+
+#___________________________________________________________________________________
+#
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def detail_service_client(request, service_id):
+    service = get_object_or_404(ServiceEntreprise, id=service_id)
+
+    if request.method == 'POST':
+        if 'retour' in request.POST:
+            return redirect('services-par-entreprise', entreprise_id=service.entreprise.id)
+
+        form = ServiceEntrepriseForm(request.POST, instance=service)
+
+        if form.is_valid():
+            form.save()
+
+            if 'envoyer' in request.POST:
+                service.activer()
+                facture = service.generer_facture()
+                messages.success(request, "Service activé et facture générée.")
+                return redirect('services-par-entreprise', entreprise_id=service.entreprise.id)
+
+    else:
+        form = ServiceEntrepriseForm(instance=service)
+
+    return render(request, 'entreprise/backend/detail_service_client.html', {
+        'service': service,
+        'form': form
+    })
+
+
+#___________________________________________________________________________________
+#
+
+#___________________________________________________________________________________
+#
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def demande_client_accepter(request, pk):
+    demande = get_object_or_404(DemandeService, pk=pk)
+
+    if demande.statut != 'en_attente':
+        messages.warning(request, "Cette demande a déjà été traitée.")
+        return redirect('liste-demandes-client', entreprise_id=demande.entreprise.id)
+
+    if request.method == 'POST':
+        message_rh = request.POST.get('message', '')
+
+        demande.statut = 'acceptee'
+        demande.save()
+
+        NotificationEntreprise.objects.create(
+            entreprise=demande.entreprise,
+            titre="Demande acceptée",
+            message=f"Votre demande pour le service « {demande.service.nom} » a été acceptée. {message_rh}",
+            niveau='success',
+            action_requise=False
+        )
+
+        messages.success(request, "Demande acceptée et notification envoyée.")
+        return redirect('liste-demandes-client', entreprise_id=demande.entreprise.id)
+
+    # Si ce n’est pas un POST, rediriger proprement
+    return redirect('liste-demandes-client', entreprise_id=demande.entreprise.id)
+
+#___________________________________________________________________________________
+#
+from django.shortcuts import render
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def demande_client_refuser(request, pk):
+    demande = get_object_or_404(DemandeService, pk=pk)
+
+    if demande.statut != 'en_attente':
+        messages.error(request, "Cette demande ne peut plus être modifiée")
+        return redirect('toutes-demandes-rh')
+
+    if request.method == 'POST':
+        motif_refus = request.POST.get('message', '').strip()
+        if not motif_refus:
+            messages.error(request, "Veuillez indiquer un motif de refus")
+            return render(request, 'entreprise/motif_refus_demande.html', {'demande': demande})
+
+        demande.statut = 'refusee'
+        demande.save()
+
+        NotificationEntreprise.objects.create(
+            entreprise=demande.entreprise,
+            titre="Votre demande a été refusée",
+            message=f"Votre demande de service « {demande.service.nom} » a été refusée. Motif : {motif_refus}",
+            niveau='danger',
+            action_requise=True
+        )
+
+        messages.success(request, "La demande a été refusée avec succès")
+        return redirect('toutes-demandes-rh')
+
+    # Si GET : afficher le formulaire de refus
+    return render(request, 'entreprise/motif_refus_demande.html', {'demande': demande})
+
+
+#___________________________________________________________________________________
+# 04_08_2025
+#
+from django.core.paginator import Paginator
+
+from django.db.models import Q
+from django.utils.dateparse import parse_date
+@login_required
+@user_passes_test(is_rh_or_admin)
+def gerer_statut_service(request, service_id):
+    service = get_object_or_404(ServiceEntreprise, id=service_id)
+
+    if request.method == 'POST':
+        statut = request.POST.get('statut')
+        if statut in dict(ServiceEntreprise.STATUT_CHOICES):
+            service.statut = statut
+            service.save()
+            messages.success(request, "Statut mis à jour.")
+        return redirect('services-par-entreprise', entreprise_id=service.entreprise.id)
+
+    return render(request, 'entreprise/backend/gerer_statut_service.html', {
+        'service': service,
+        'statuts': ServiceEntreprise.STATUT_CHOICES,
+    })
+
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def toutes_les_demandes_rh(request):
+    demandes = DemandeService.objects.select_related('entreprise', 'service').all().order_by('-date_demande')
+    
+    nom_entreprise = request.GET.get('entreprise')
+    statut = request.GET.get('statut')
+    date_debut = request.GET.get('date_debut')
+    date_fin = request.GET.get('date_fin')
+    type_service = request.GET.get('type_service')
+
+    if nom_entreprise:
+        demandes = demandes.filter(entreprise__nom__icontains=nom_entreprise)
+
+    if statut:
+        demandes = demandes.filter(statut=statut)
+
+    if date_debut:
+        demandes = demandes.filter(date_demande__gte=parse_date(date_debut))
+    
+    if date_fin:
+        demandes = demandes.filter(date_demande__lte=parse_date(date_fin))
+    
+    if type_service:
+        demandes = demandes.filter(service__nom__icontains=type_service)
+
+    context = {
+        'demandes': demandes,
+        'statuts': ['en_attente', 'acceptee', 'refusee', 'en_cours', 'terminee'],
+    }
+    return render(request, 'entreprise/backend/toutes_les_demandes_rh.html', context)
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def liste_services_par_entreprise(request, entreprise_id):
+    entreprise = get_object_or_404(Entreprise, id=entreprise_id)
+    services = ServiceEntreprise.objects.filter(entreprise=entreprise)
+
+    # Filtrage par statut
+    statut = request.GET.get('statut')
+    if statut:
+        services = services.filter(statut=statut)
+
+    # Tri et pagination
+    services = services.select_related('entreprise', 'responsable_rh').prefetch_related('demandes')
+    paginator = Paginator(services.order_by('-date_creation'), 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'entreprise/backend/services_liste.html', {
+        'entreprise': entreprise,
+        'page_obj': page_obj,
+        'services': page_obj.object_list, 
+        'statut_filtre': statut,
+        'STATUT_CHOICES': ServiceEntreprise.STATUT_CHOICES,
+    })
+
+
+@login_required
+@user_passes_test(is_rh_or_admin)  
+def liste_toutes_factures(request):
+    factures = FactureLibre.objects.all().order_by('-date_envoi')
+
+    # Filtrage par statut facultatif via GET ?statut=
+    statut = request.GET.get('statut')
+    if statut in ['envoyee', 'reçue', 'payee']:
+        factures = factures.filter(statut=statut)
+
+    # Pagination (10 factures par page)
+    paginator = Paginator(factures, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'page_obj': page_obj,
+        'statut_filtre': statut,
+    }
+    return render(request, 'entreprise/backend/factures_liste.html', context)
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def liste_factures_par_entreprise(request, entreprise_id):
+    entreprise = get_object_or_404(Entreprise, id=entreprise_id)
+    factures = FactureLibre.objects.filter(entreprise=entreprise)
+
+    # Filtrage par statut
+    statut = request.GET.get('statut')
+    if statut:
+        factures = factures.filter(statut=statut)
+
+    # Pagination
+    paginator = Paginator(factures.order_by('-date_envoi'), 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'entreprise/backend/factures_liste_entreprise.html', {
+        'entreprise': entreprise,
+        'page_obj': page_obj,
+        'statut_filtre': statut,
+    })
+
+
+@login_required
+@user_passes_test(is_rh_or_admin)  
+def liste_notifications(request):
+    notifications = NotificationEntreprise.objects.all().order_by('-date_envoi')
+
+    # Pagination (10 par page)
+    paginator = Paginator(notifications, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'entreprise/backend/notifications_liste.html', {
+        'page_obj': page_obj,
+    })
+
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def liste_notifications_par_entreprise(request, entreprise_id):
+    entreprise = get_object_or_404(Entreprise, id=entreprise_id)
+    notifications = NotificationEntreprise.objects.filter(entreprise=entreprise)
+
+    # Filtrage par niveau
+    niveau = request.GET.get('niveau')
+    if niveau:
+        notifications = notifications.filter(niveau=niveau)
+
+    # Filtrage par lecture
+    lu = request.GET.get('lu')
+    if lu == 'oui':
+        notifications = notifications.filter(lu=True)
+    elif lu == 'non':
+        notifications = notifications.filter(lu=False)
+
+    # Pagination
+    paginator = Paginator(notifications.order_by('-date_envoi'), 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'entreprise/backend/notification_liste_entreprise.html', {
+        'entreprise': entreprise,
+        'page_obj': page_obj,
+        'niveau_filtre': niveau,
+        'lu_filtre': lu,
+    })
+
+
+from django.shortcuts import render, get_object_or_404
+from .models import FactureLibre
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def facture_detail(request, facture_id):
+    facture = get_object_or_404(FactureLibre, id=facture_id)
+
+    if request.method == 'POST' and not facture.envoyee:
+        # Logique d’envoi réelle ici (email, stockage, etc.)
+        facture.envoyee = True
+        facture.date_envoi = timezone.now()
+        facture.save()
+
+        messages.success(request, "📨 Facture envoyée avec succès.")
+        return redirect('services-par-entreprise', entreprise_id=facture.entreprise.id)
+
+    return render(request, 'entreprise/backend/facture_detail.html', {'facture': facture})
+
+
+
+def notification_detail(request, notification_id):
+    notification = get_object_or_404(NotificationEntreprise, id=notification_id)
+    return render(request, 'notifications/detail.html', {'notification': notification})
 
 #-------------------------------------------------------------------------------------
 #                                       FRONTEND
 #_____________________________________________________________________________________
 
 
+
+
+
+# Fonction utilitaire pour vérifier les droits entreprise
 def entreprise_right(user):
     return user.is_authenticated and user.role in ['entreprise']
 
+#04_08_2025
 
+@login_required
+@user_passes_test(entreprise_right)
+def suivi_demande_client(request):
+    entreprise = request.user.entreprise
+    services = ServiceEntreprise.objects.filter(
+        entreprise=entreprise,
+        statut__in=['proposition', 'en_revue']
+    ).order_by('-date_creation')
+
+
+    context = {
+        'services': services,
+    }
+    return render(request, 'entreprise/frontend/suivi_demande_client.html', context)
+
+
+@login_required
+@user_passes_test(entreprise_right)
+def accepter_proposition(request, service_id):
+    service = get_object_or_404(ServiceEntreprise, id=service_id, entreprise__user=request.user)
+    if service.statut == 'proposition':
+        service.statut = 'en_attente_activation'
+        service.save()
+        messages.success(request, "Vous avez accepté la proposition RH. En attente d'activation.")
+    else:
+        messages.warning(request, "Action non autorisée.")
+    return redirect('services-client')
+
+
+@login_required
+@user_passes_test(entreprise_right)
+def rejeter_proposition(request, service_id):
+    service = get_object_or_404(ServiceEntreprise, id=service_id, entreprise__user=request.user)
+    if service.statut == 'proposition':
+        service.statut = 'rejete'
+        service.save()
+        messages.info(request, "Vous avez rejeté la proposition RH.")
+    else:
+        messages.warning(request, "Action non autorisée.")
+    return redirect('services-client')
+
+
+@login_required
+@user_passes_test(entreprise_right)
+def faire_contre_proposition(request, service_id):
+    service = get_object_or_404(ServiceEntreprise, id=service_id, entreprise=request.user.entreprise)
+
+    if request.method == 'POST':
+        form = ContrePropositionForm(request.POST, instance=service)
+        if form.is_valid():
+            service = form.save(commit=False)
+            service.statut = 'en_revue'  # repasse au backoffice pour traitement
+            service.save()
+            return redirect('suivi-demande-client')
+    else:
+        form = ContrePropositionForm(instance=service)
+
+    return render(request, 'entreprise/frontend/contre_proposition_form.html', {'form': form, 'service': service})
+
+
+@login_required
+@user_passes_test(entreprise_right)
+def suivi_service_entreprise(request):
+    entreprise = get_object_or_404(Entreprise, user=request.user)
+    services = ServiceEntreprise.objects.filter(entreprise=entreprise).order_by('-date_debut')
+
+    return render(request, 'entreprise/frontend/suivi_services.html', {
+        'services': services
+    })
+
+
+# Vues principales
 @login_required
 @user_passes_test(entreprise_right)
 def dashboard_client(request):
@@ -504,19 +1172,21 @@ def dashboard_client(request):
     
     context = {
         'entreprise': entreprise,
-        'services_actifs': entreprise.services.filter(actif=True).annotate(
+        'services_actifs': entreprise.services.filter(statut='actif').annotate(
             nb_demandes=Count('demandes')
         ),
         'demandes_par_statut': {
-            'en_attente': entreprise.demandes.filter(statut='en_attente'),
-            'en_cours': entreprise.demandes.filter(statut='en_cours'),
-            'terminees': entreprise.demandes.filter(statut='terminee'),
+            'en_attente': entreprise.demandes.filter(statut='en_attente').count(),
+            'en_cours': entreprise.demandes.filter(statut='en_cours').count(),
+            'terminees': entreprise.demandes.filter(statut='terminee').count(),
         },
         'notifications': entreprise.notifications.filter(lu=False).order_by('-date_envoi')[:5],
         'factures_impayees': entreprise.factures_libres.exclude(
-            Q(statut='payee') | Q(statut='annulee'))
+            Q(statut='payee') | Q(statut='annulee')).count(),
+        'demandes_recentes': entreprise.demandes.order_by('-date_demande')[:5]
     }
     return render(request, 'entreprise/frontend/dashboard_client.html', context)
+
 
 @login_required
 @user_passes_test(entreprise_right)
@@ -532,12 +1202,13 @@ def services_client(request):
         'services': services
     })
 
+# Vues pour les demandes de service
 @login_required
 @user_passes_test(entreprise_right)
 def demandes_client(request):
     entreprise = get_object_or_404(Entreprise, user=request.user)
     
-    statut = request.GET.get('statut', None)
+    statut = request.GET.get('statut')
     demandes = entreprise.demandes.select_related('service')
     
     if statut:
@@ -547,4 +1218,169 @@ def demandes_client(request):
         'entreprise': entreprise,
         'demandes': demandes.order_by('-date_demande'),
         'filtre_statut': statut
+    })
+
+@login_required
+@user_passes_test(entreprise_right)
+def demander_service(request):
+    entreprise = get_object_or_404(Entreprise, user=request.user)
+    
+    if request.method == 'POST':
+        form = DemandeServiceForm(request.POST, request.FILES)
+        if form.is_valid():
+            demande = form.save(commit=False)
+            demande.entreprise = entreprise
+            demande.statut = 'en_attente'
+            demande.save()
+            messages.success(request, "Demande envoyée avec succès")
+            return redirect('demandes-client')
+    else:
+        form = DemandeServiceForm()
+    
+    return render(request, 'entreprise/frontend/demander_service.html', {
+        'form': form
+    })
+
+@login_required
+@user_passes_test(entreprise_right)
+def annuler_demande(request, demande_id):
+    demande = get_object_or_404(DemandeService, id=demande_id, entreprise__user=request.user)
+    
+    if not demande.peut_etre_annulee():
+        messages.error(request, "Cette demande ne peut plus être annulée.")
+        return redirect('demandes-client')
+    
+    if request.method == 'POST':
+        demande.delete()
+        messages.success(request, "La demande a été annulée avec succès.")
+        return redirect('demandes-client')
+    
+    return render(request, 'entreprise/frontend/confirmation_annulation.html', {
+        'demande': demande
+    })
+
+# Vues pour les factures
+@login_required
+@user_passes_test(entreprise_right)
+def factures_client(request):
+    entreprise = get_object_or_404(Entreprise, user=request.user)
+    statut = request.GET.get('statut')
+    
+    factures = entreprise.factures_libres.all()
+    if statut:
+        factures = factures.filter(statut=statut)
+    
+    return render(request, 'entreprise/frontend/factures_client.html', {
+        'factures': factures.order_by('-date_envoi'),
+        'filtre_statut': statut
+    })
+
+@login_required
+@user_passes_test(entreprise_right)
+def upload_preuve_paiement(request, facture_id):
+    facture = get_object_or_404(FactureLibre, id=facture_id, entreprise__user=request.user)
+    
+    if request.method == 'POST' and 'preuve_paiement' in request.FILES:
+        facture.preuve_paiement = request.FILES['preuve_paiement']
+        facture.statut = 'payee'
+        facture.save()
+        messages.success(request, "La preuve de paiement a été envoyée.")
+        return redirect('factures-client')
+    
+    return render(request, 'entreprise/frontend/upload_preuve.html', {
+        'facture': facture
+    })
+
+# Vues pour les notifications
+@login_required
+@user_passes_test(entreprise_right)
+def notifications_client(request):
+    entreprise = get_object_or_404(Entreprise, user=request.user)
+    
+    notifications = entreprise.notifications.all().order_by('-date_envoi')
+    non_lues = notifications.filter(lu=False)
+    
+    if request.method == 'POST':
+        # Marquer toutes les notifications comme lues
+        non_lues.update(lu=True)
+        messages.success(request, "Toutes les notifications ont été marquées comme lues.")
+        return redirect('notifications-client')
+    
+    return render(request, 'entreprise/frontend/notifications_client.html', {
+        'notifications': notifications,
+        'nombre_non_lues': non_lues.count()
+    })
+
+@login_required
+@user_passes_test(entreprise_right)
+def envoyer_notification(request, entreprise_id):
+    entreprise = get_object_or_404(Entreprise, id=entreprise_id)
+    
+    if request.method == 'POST':
+        form = NotificationEntrepriseForm(request.POST, request.FILES)
+        if form.is_valid():
+            notification = form.save(commit=False)
+            notification.entreprise = entreprise
+            notification.envoyee_par = request.user
+            notification.save()
+            
+            messages.success(request, "La notification a été envoyée avec succès.")
+            return redirect('consulter-demande', demande_id=request.GET.get('demande_id'))
+    else:
+        initial = {}
+        if 'demande_id' in request.GET:
+            demande = get_object_or_404(DemandeService, id=request.GET['demande_id'])
+            initial['titre'] = f"Re: Demande #{demande.id} - {demande.service.nom}"
+        
+        form = NotificationEntrepriseForm(initial=initial)
+    
+    context = {
+        'form': form,
+        'entreprise': entreprise,
+        'demande_id': request.GET.get('demande_id')
+    }
+    return render(request, 'entreprise/backend/envoyer_notification.html', context)
+
+@login_required
+@user_passes_test(entreprise_right)
+def modifier_service(request, service_id):
+    entreprise = get_object_or_404(Entreprise, user=request.user)
+    service = get_object_or_404(ServiceEntreprise, id=service_id, entreprise=entreprise)
+    
+    if request.method == 'POST':
+        form = ServiceEntrepriseForm(request.POST, instance=service)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Service modifié avec succès.")
+            return redirect('services-client')
+    else:
+        form = ServiceEntrepriseForm(instance=service)
+    
+    return render(request, 'entreprise/frontend/modifier_service.html', {
+        'form': form,
+        'service': service
+    })
+
+@login_required
+@user_passes_test(entreprise_right)
+def toggle_service(request, service_id):
+    entreprise = get_object_or_404(Entreprise, user=request.user)
+    service = get_object_or_404(ServiceEntreprise, id=service_id, entreprise=entreprise)
+    
+    service.actif = not service.actif
+    service.save()
+    
+    status = "activé" if service.actif else "désactivé"
+    messages.success(request, f"Le service a été {status} avec succès.")
+    return redirect('services-client')
+
+# Vue pour le catalogue des services RH
+@login_required
+@user_passes_test(entreprise_right)
+def catalogue_services(request):
+    services = ServiceRH.objects.annotate(
+        entreprises_utilisatrices=Count('demandeservice__entreprise', distinct=True)
+    )
+    return render(request, 'entreprise/frontend/catalogue_services.html', {
+        'services': services
     })

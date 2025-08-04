@@ -1,0 +1,16 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<h2>Notification : {{ notification.titre }}</h2>
+<p><strong>Entreprise :</strong> {{ notification.entreprise.nom }}</p>
+<p><strong>Niveau :</strong> {{ notification.get_niveau_display }}</p>
+<p><strong>Message :</strong></p>
+<p>{{ notification.message }}</p>
+<p><strong>Date :</strong> {{ notification.date_envoi }}</p>
+{% if notification.fichier %}
+    <p><a href="{{ notification.fichier.url }}">Télécharger le fichier joint</a></p>
+{% endif %}
+{% if notification.action_requise %}
+    <p style="color: red;"><strong>Action requise !</strong></p>
+{% endif %}
+{% endblock %}

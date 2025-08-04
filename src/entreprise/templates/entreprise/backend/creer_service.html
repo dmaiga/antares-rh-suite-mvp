@@ -1,0 +1,201 @@
+{% extends 'authentication/base.html' %}
+{% load custom_tags %}
+{% block title %}Créer un Service{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-entreprise">
+            <div class="card-header bg-white border-bottom-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-plus-circle text-primary me-2"></i>Créer un nouveau service
+                    </h2>
+                    <a href="{% url 'services-client' %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Retour
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card-body">
+                <form method="post" id="serviceForm">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3 border-bottom pb-2">Informations de base</h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.titre.id_for_label }}" class="form-label">
+                                <i class="fas fa-heading text-muted me-1"></i> {{ form.titre.label }}
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.titre }}
+                            <div class="form-text">
+                                Donnez un nom clair et descriptif à votre service
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">
+                                <i class="fas fa-align-left text-muted me-1"></i> {{ form.description.label }}
+                            </label>
+                            {{ form.description }}
+                            <div class="form-text">
+                                Décrivez en détail ce que ce service propose
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-3 border-bottom pb-2">Configuration</h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.prix.id_for_label }}" class="form-label">
+                                    <i class="fas fa-tag text-muted me-1"></i> {{ form.prix.label }}
+                                </label>
+                                <div class="input-group">
+                                    {{ form.prix }}
+                                    <span class="input-group-text">FCFA</span>
+                                </div>
+                                <div class="form-text">
+                                    Laissez vide si le prix est variable ou à discuter
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-power-off text-muted me-1"></i> Statut
+                                </label>
+                                <div class="form-check form-switch">
+                                    {{ form.actif }}
+                                    <label class="form-check-label" for="{{ form.actif.id_for_label }}">
+                                        Activer ce service
+                                    </label>
+                                </div>
+                                <div class="form-text">
+                                    Vous pourrez modifier ceci plus tard
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between border-top pt-3">
+                        <button type="reset" class="btn btn-outline-secondary">
+                            <i class="fas fa-eraser me-1"></i> Réinitialiser
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Enregistrer le service
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Style personnalisé pour le formulaire */
+#serviceForm .form-control, 
+#serviceForm .form-select {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: 1px solid #e0e0e0;
+}
+
+#serviceForm .form-control:focus, 
+#serviceForm .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+}
+
+/* Style spécifique pour le textarea */
+#serviceForm textarea.form-control {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* Style pour le switch */
+.form-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+    cursor: pointer;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Style pour les sections */
+.card-body h5 {
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.border-bottom {
+    border-bottom: 2px solid #f0f0f0 !important;
+}
+
+/* Style pour les labels */
+.form-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Style pour les icônes dans les labels */
+.form-label i {
+    width: 20px;
+    text-align: center;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validation du formulaire
+    const form = document.getElementById('serviceForm');
+    const titreInput = document.getElementById('{{ form.titre.id_for_label }}');
+    
+    form.addEventListener('submit', function(e) {
+        if (titreInput.value.trim() === '') {
+            e.preventDefault();
+            titreInput.focus();
+            
+            // Ajouter un feedback visuel
+            titreInput.classList.add('is-invalid');
+            
+            // Créer un message d'erreur
+            let errorDiv = titreInput.nextElementSibling;
+            if (!errorDiv.classList.contains('invalid-feedback')) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback';
+                titreInput.parentNode.insertBefore(errorDiv, titreInput.nextElementSibling);
+            }
+            errorDiv.textContent = 'Veuillez saisir un titre pour ce service';
+        }
+    });
+    
+    // Supprimer le message d'erreur lors de la saisie
+    titreInput.addEventListener('input', function() {
+        if (this.classList.contains('is-invalid')) {
+            this.classList.remove('is-invalid');
+            const errorDiv = this.nextElementSibling;
+            if (errorDiv.classList.contains('invalid-feedback')) {
+                errorDiv.textContent = '';
+            }
+        }
+    });
+    
+    // Formater automatiquement le prix
+    const prixInput = document.getElementById('{{ form.prix.id_for_label }}');
+    prixInput.addEventListener('blur', function() {
+        if (this.value) {
+            this.value = parseFloat(this.value).toFixed(2);
+        }
+    });
+});
+</script>
+{% endblock %}

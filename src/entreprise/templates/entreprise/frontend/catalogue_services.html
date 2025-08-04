@@ -1,0 +1,116 @@
+{% extends 'entreprise/frontend/base_entreprise.html' %}
+
+{% block title %}Catalogue des Services RH{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h4">
+        <i class="fas fa-book-open text-primary me-2"></i>Catalogue des Services RH
+    </h2>
+    <div>
+        <a href="{% url 'demandes-client' %}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-list me-1"></i> Mes Demandes
+        </a>
+        <a href="{% url 'demander-service' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Nouvelle Demande
+        </a>
+    </div>
+</div>
+
+<div class="card card-entreprise">
+    <div class="card-body">
+        {% if services %}
+        <div class="row">
+            {% for service in services %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card service-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h3 class="h5 card-title mb-0">{{ service.nom }}</h3>
+                        
+                        </div>
+                        
+                        <p class="card-text text-muted mb-4">
+                            {{ service.description|default:"Description non disponible" }}
+                        </p>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="#" 
+                               class="btn btn-sm btn-primary">
+                                <i class="fas fa-paper-plane me-1"></i> Demander ce service
+                            </a>
+                            
+                            <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                    data-bs-toggle="modal" data-bs-target="#serviceModal{{ service.id }}">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Détails Service -->
+            <div class="modal fade" id="serviceModal{{ service.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ service.nom }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <h6 class="text-muted">Description</h6>
+                                <p>{{ service.description|default:"Aucune description détaillée disponible." }}</p>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                            <a href="{% url 'creer-service'  %}" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-1"></i> Faire une demande
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">Aucun service disponible</h5>
+            <p class="text-muted">Le catalogue des services RH est actuellement vide.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.service-card {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+.badge {
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 10px;
+}
+</style>
+{% endblock %}

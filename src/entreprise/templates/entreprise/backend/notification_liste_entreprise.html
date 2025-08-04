@@ -1,0 +1,24 @@
+{% extends 'authentication/base.html' %}
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">🔔 Notifications de {{ entreprise.nom }}</h2>
+    {% if notifications %}
+        <div class="list-group">
+            {% for notif in notifications %}
+                <div class="list-group-item {% if not notif.lu %}list-group-item-warning{% else %}list-group-item-light{% endif %}">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ notif.titre }}</h5>
+                        <small>{{ notif.date_envoi|date:"d M Y H:i" }}</small>
+                    </div>
+                    <p class="mb-1">{{ notif.message|linebreaks }}</p>
+                    <small>Niveau : <strong>{{ notif.get_niveau_display }}</strong> | Action requise : {{ notif.action_requise|yesno:"Oui,Non" }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Aucune notification pour le moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

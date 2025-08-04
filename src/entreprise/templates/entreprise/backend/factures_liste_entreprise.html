@@ -1,0 +1,42 @@
+{% extends 'authentication/base.html' %}
+{% block title %}Liste des factures{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">💰 Factures liées à {{ entreprise.nom }}</h2>
+    {% if factures %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Titre</th>
+                        <th>Description</th>
+                        <th>Montant</th>
+                        <th>Date</th>
+                        <th>Document</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for facture in factures %}
+                        <tr>
+                            <td>{{ facture.titre }}</td>
+                            <td>{{ facture.description|truncatechars:50 }}</td>
+                            <td>{{ facture.montant }} €</td>
+                            <td>{{ facture.created_at|date:"d M Y" }}</td>
+                            <td>
+                                {% if facture.fichier %}
+                                    <a href="{{ facture.fichier.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">Télécharger</a>
+                                {% else %}
+                                    Aucun fichier
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Aucune facture disponible.</p>
+    {% endif %}
+</div>
+{% endblock %}

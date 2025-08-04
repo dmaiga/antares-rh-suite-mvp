@@ -1,0 +1,13 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<h2>Détail de la facture : {{ facture.titre }}</h2>
+<p><strong>Entreprise :</strong> {{ facture.entreprise.nom }}</p>
+<p><strong>Description :</strong> {{ facture.description }}</p>
+<p><strong>Montant :</strong> {{ facture.montant }} FCFA</p>
+<p><strong>Statut :</strong> {{ facture.get_statut_display }}</p>
+<p><strong>Date d'envoi :</strong> {{ facture.date_envoi }}</p>
+{% if facture.fichier_facture %}
+    <p><a href="{{ facture.fichier_facture.url }}">Télécharger la facture</a></p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,171 @@
+{% extends 'authentication/base.html' %}
+{% load custom_tags %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Détails de la demande</h1>
+        <a href="{% url 'toutes-demandes-rh' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        Demande #{{ demande.id }} - {{ demande.service.nom }}
+                    </h6>
+                    <span class="badge bg-{% if demande.statut == 'en_attente' %}warning{% elif demande.statut == 'acceptee' %}success{% elif demande.statut == 'refusee' %}danger{% else %}info{% endif %}">
+                        {{ demande.get_statut_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Informations entreprise</h5>
+                            <p>
+                                <strong>{{ demande.entreprise.nom }}</strong><br>
+                                Secteur: {{ demande.entreprise.secteur_activite }}<br>
+                                Taille: {{ demande.entreprise.get_taille_entreprise_display }}<br>
+                                Contact: {{ demande.entreprise.user.get_full_name }}<br>
+                                Email: {{ demande.entreprise.user.email }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Détails demande</h5>
+                            <p>
+                                <strong>Date:</strong> {{ demande.date_demande|date:"d/m/Y H:i" }}<br>
+                                <strong>Dernière modification:</strong> {{ demande.date_modification|date:"d/m/Y H:i" }}<br>
+                                <strong>Service:</strong> {{ demande.service.nom }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>Message de l'entreprise</h5>
+                        <div class="border p-3 bg-light rounded">
+                            {{ demande.message|linebreaks }}
+                        </div>
+                    </div>
+
+                    {% if demande.pieces_jointes %}
+                    <div class="mb-4">
+                        <h5>Pièce jointe</h5>
+                        <a href="{{ demande.pieces_jointes.url }}" class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-download"></i> Télécharger le fichier
+                        </a>
+                        <small class="text-muted d-block mt-1">{{ demande.pieces_jointes.name|cut:"demandes/pieces_jointes/" }}</small>
+                    </div>
+                    {% endif %}
+
+                  {% if demande.statut == 'en_attente' %}
+<div class="mt-4 pt-3 border-top">
+    <h5>Actions</h5>
+
+    <!-- Formulaire POST pour Accepter -->
+    <form method="post" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" name="action" value="accepter" class="btn btn-success mr-2">
+            <i class="fas fa-check"></i> Accepter la demande
+        </button>
+    </form>
+
+    <!-- Lien vers le formulaire pour Refuser -->
+    <a href="{% url 'refuser-demande-motif' demande_id=demande.id %}" class="btn btn-danger">
+        <i class="fas fa-times"></i> Refuser la demande
+    </a>
+</div>
+{% endif %}
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Historique</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        {% for event in demande.historique.all|slice:":5" %}
+                        <div class="timeline-item">
+                            <div class="timeline-item-marker">
+                                <div class="timeline-item-marker-indicator bg-{% if event.action == 'creation' %}primary{% elif event.action == 'modification' %}info{% elif event.action == 'acceptation' %}success{% else %}danger{% endif %}"></div>
+                            </div>
+                            <div class="timeline-item-content">
+                                <small class="text-muted">{{ event.date|date:"d/m/Y H:i" }}</small>
+                                <p class="mb-0">{{ event.get_action_display }}</p>
+                                {% if event.notes %}
+                                <small class="text-muted">{{ event.notes }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">Aucun historique disponible.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            {% if demande.services_lies.exists %}
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Services liés</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for service in demande.services_lies.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ service.titre }}
+                            <span class="badge bg-{% if service.statut == 'actif' %}success{% elif service.statut == 'proposition' %}warning{% else %}secondary{% endif %}">
+                                {{ service.get_statut_display }}
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 1rem;
+    margin: 0 0 0 1rem;
+    border-left: 1px solid #e3e6f0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-item-marker {
+    position: absolute;
+    left: -1.5rem;
+    top: 0;
+}
+
+.timeline-item-marker-indicator {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 100%;
+    border: 3px solid #fff;
+}
+
+.timeline-item-content {
+    padding-left: 0.5rem;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,45 @@
+<header class="bg-white shadow-sm p-3 mb-4 rounded">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <button class="btn btn-outline-secondary me-3 d-lg-none" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="h4 mb-0 text-gray-800">{% block page_title %}{% endblock %}</h1>
+        </div>
+        
+        <div class="d-flex align-items-center">
+            <div class="dropdown me-3">
+                <button class="btn btn-light dropdown-toggle" type="button" id="notifDropdown" data-bs-toggle="dropdown">
+                    <i class="fas fa-bell"></i>
+                   
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <h6 class="dropdown-header">Notifications récentes</h6>
+                    <a class="dropdown-item" href="#">Nouvelle facture disponible</a>
+                    <a class="dropdown-item" href="#">Votre demande a été acceptée</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item text-center text-primary" href="#">Voir toutes</a>
+                </div>
+            </div>
+            
+            <div class="dropdown">
+                <button class="btn btn-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                    <i class="fas fa-user-circle me-1"></i>
+                    {{ request.user.get_full_name|default:request.user.username }}
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item" href="#">
+                        <i class="fas fa-user me-2"></i> Profil
+                    </a>
+                    <a class="dropdown-item" href="#">
+                        <i class="fas fa-cog me-2"></i> Paramètres
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt me-2"></i> Déconnexion
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

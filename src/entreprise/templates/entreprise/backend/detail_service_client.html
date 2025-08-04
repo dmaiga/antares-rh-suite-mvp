@@ -1,0 +1,19 @@
+{% extends 'authentication/base.html' %}
+{% block title %}Détail du service{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2>Traitement du service : {{ service.titre }}</h2>
+    <p><strong>Entreprise :</strong> {{ service.entreprise.nom }}</p>
+
+    <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" name="envoyer" class="btn btn-success">✅ Envoyer</button>
+    <button type="submit" name="retour" class="btn btn-secondary">↩️ Retour</button>
+</form>
+
+</div>
+{% endblock %}
+

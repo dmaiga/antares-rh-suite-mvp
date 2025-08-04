@@ -1,0 +1,61 @@
+{% extends 'entreprise/frontend/base_entreprise.html' %}
+
+{% block title %}Nouvelle demande{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card card-entreprise">
+            <div class="card-header">
+                <h2 class="h5 mb-0">Formulaire de demande</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <div class="mb-3">
+                            <label for="{{ form.service.id_for_label }}" class="form-label">
+                                <i class="fas fa-concierge-bell me-1"></i>
+                                Service demandé
+                            </label>
+                            {{ form.service }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.message.id_for_label }}" class="form-label">
+                                <i class="fas fa-comment-dots me-1"></i>
+                                Description de votre besoin
+                            </label>
+                            {{ form.message }}
+                            <div class="form-text">
+                                Soyez aussi précis que possible pour une réponse adaptée
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.pieces_jointes.id_for_label }}" class="form-label">
+                                <i class="fas fa-paperclip me-1"></i>
+                                Documents complémentaires
+                            </label>
+                            {{ form.pieces_jointes }}
+                            <div class="form-text">
+                                Formats acceptés : PDF, JPG, PNG (max 5Mo)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end border-top pt-3">
+                        <a href="{% url 'demandes-client' %}" class="btn btn-outline-secondary me-2">
+                            Annuler
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-1"></i> Envoyer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends 'authentication/base.html' %}
+{% load custom_tags %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Créer une facture libre</h1>
+        <a href="{% url 'liste-entreprises' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Destinataire</h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>{{ entreprise.nom }}</strong><br>
+                        {{ entreprise.adresse }}<br>
+                        {{ entreprise.ville }}, {{ entreprise.pays }}<br>
+                        Contact: {{ entreprise.user.get_full_name }} ({{ entreprise.user.email }})
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Détails de la facture</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.titre.id_for_label }}" class="form-label">Titre de la facture*</label>
+                                {{ form.titre }}
+                                {% if form.titre.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.titre.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.montant.id_for_label }}" class="form-label">Montant (FCFA)*</label>
+                                <div class="input-group">
+                                    {{ form.montant }}
+                                    <span class="input-group-text">FCFA</span>
+                                </div>
+                                {% if form.montant.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.montant.errors.0 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors.0 }}
+                            </div>
+                            {% endif %}
+                            <small class="text-muted">Décrivez les prestations facturées</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.fichier_facture.id_for_label }}" class="form-label">Fichier de la facture*</label>
+                            {{ form.fichier_facture }}
+                            {% if form.fichier_facture.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.fichier_facture.errors.0 }}
+                            </div>
+                            {% endif %}
+                            <small class="text-muted">Format PDF recommandé</small>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Envoyer la facture
+                            </button>
+                            <a href="{% url 'liste-entreprises' %}" class="btn btn-secondary">Annuler</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Conseils</h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Important</h6>
+                        <ul class="mb-0">
+                            <li>Vérifiez bien les informations avant envoi</li>
+                            <li>Le fichier doit être lisible et professionnel</li>
+                            <li>Une notification sera envoyée automatiquement à l'entreprise</li>
+                        </ul>
+                    </div>
+
+                    <h6>Bonnes pratiques :</h6>
+                    <ul>
+                        <li>Nommer clairement le fichier (ex: "Facture_2023-05_EntrepriseX.pdf")</li>
+                        <li>Inclure tous les détails nécessaires dans le PDF</li>
+                        <li>Vérifier le montant et les coordonnées</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Dernières factures</h6>
+                </div>
+                <div class="card-body">
+                    {% if entreprise.factures_libres.all %}
+                    <div class="list-group">
+                        {% for facture in entreprise.factures_libres.all|slice:":3" %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ facture.titre }}</h6>
+                                <small>{{ facture.date_envoi|date:"d/m/Y" }}</small>
+                            </div>
+                            <p class="mb-1">{{ facture.montant }} FCFA</p>
+                            <small class="text-{% if facture.statut == 'payee' %}success{% elif facture.statut == 'envoyee' %}warning{% else %}danger{% endif %}">
+                                {{ facture.get_statut_display }}
+                            </small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Aucune facture précédente pour cette entreprise.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Formatage automatique du montant
+    const montantField = document.getElementById('{{ form.montant.id_for_label }}');
+    montantField.addEventListener('blur', function() {
+        const value = parseFloat(this.value);
+        if (!isNaN(value)) {
+            this.value = value.toFixed(2);
+        }
+    });
+});
+</script>
+{% endblock %}

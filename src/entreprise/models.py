@@ -74,46 +74,160 @@ class Entreprise(models.Model):
 
 
 class ServiceRH(models.Model):
-    nom = models.CharField(max_length=100)
+    SERVICE_CHOICES = [
+        ('recrutement', 'Recrutement - Trouvez les talents qui feront la différence dans votre organisation'),
+        ('formation', 'Formation - Développez les compétences de vos équipes avec nos programmes sur mesure'),
+        ('conseil_rh', 'Conseil RH - Optimisez votre gestion des ressources humaines avec notre expertise'),
+        ('externalisation', 'Externalisation - Confiez-nous la gestion administrative de vos RH'),
+        ('coaching', 'Coaching - Accompagnement personnalisé pour vos managers et talents'),
+        ('audit_rh', 'Audit RH - Évaluez et améliorez vos processus RH'),
+    ]
+
+    code = models.CharField(max_length=50, choices=SERVICE_CHOICES, unique=True)
+    nom = models.CharField(max_length=100, blank=True)
     description = models.TextField(blank=True)
+
+    def save(self, *args, **kwargs):
+        # Auto-remplir le nom à partir du choix
+        if not self.nom:
+            self.nom = dict(self.SERVICE_CHOICES).get(self.code, '').split(' - ')[0]
+        if not self.description:
+            self.description = dict(self.SERVICE_CHOICES).get(self.code, '').split(' - ')[1]
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.nom
 
+    @classmethod
+    def initialize_services(cls):
+        """Méthode pour initialiser les services en base de données"""
+        for code, full_text in cls.SERVICE_CHOICES:
+            cls.objects.get_or_create(code=code)
 
 class DemandeService(models.Model):
-    entreprise = models.ForeignKey(Entreprise, on_delete=models.CASCADE, related_name='demandes')
-    service = models.ForeignKey(ServiceRH, on_delete=models.CASCADE)
-    message = models.TextField()
-    date_demande = models.DateTimeField(auto_now_add=True)
-    statut = models.CharField(max_length=30, choices=[
+    STATUT_CHOICES = [
         ('en_attente', 'En attente'),
         ('acceptee', 'Acceptée'),
-        ('refusee', 'Refusée'),
+        ('refusee', 'Refusée'), 
         ('en_cours', 'En cours'),
         ('terminee', 'Terminée'),
-    ], default='en_attente')
-    
+    ]
+
+    entreprise = models.ForeignKey(Entreprise, on_delete=models.CASCADE, related_name='demandes')
+    service = models.ForeignKey(ServiceRH, on_delete=models.CASCADE)
+    message = models.TextField(verbose_name="Détails de votre demande")
+    pieces_jointes = models.FileField(upload_to='demandes/pieces_jointes/', blank=True, null=True)
+    date_demande = models.DateTimeField(auto_now_add=True)
+    date_modification = models.DateTimeField(auto_now=True)
+    statut = models.CharField(max_length=30, choices=STATUT_CHOICES, default='en_attente')
+
+    class Meta:
+        ordering = ['-date_demande']
+        verbose_name = "Demande de service"
+        verbose_name_plural = "Demandes de service"
+
     def peut_etre_modifiee(self):
         return self.statut in ['en_attente', 'en_cours']
-    
+
     def __str__(self):
-        return f"{self.entreprise.nom} - {self.service.nom}"
+        return f"{self.entreprise.nom} - {self.service.nom} ({self.get_statut_display()})"
 
 class ServiceEntreprise(models.Model):
+    STATUT_CHOICES = [
+        ('en_cours', 'En cours de prestation'),
+        ('proposition', 'Proposition RH'),
+        ('rejete', 'Rejeté par l\'entreprise'),
+        ('en_revue', 'En revue par l\'entreprise'),
+
+        ('accepte', 'Accepté par l\'entreprise'),
+        ('actif', 'Actif'),
+        ('termine', 'Terminé'),
+        ('suspendu', 'Suspendu'),
+    ]
+
+    # Lien vers l'entreprise cliente
     entreprise = models.ForeignKey(Entreprise, on_delete=models.CASCADE, related_name='services')
+    
+    # Lien vers la demande initiale (optionnel)
+    demandes = models.ManyToManyField(
+        'DemandeService', 
+        related_name='services_lies',
+        blank=True
+    )
+    # Informations de base
     titre = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    prix = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    actif = models.BooleanField(default=True)
+    conditions = models.TextField(blank=True, verbose_name="Conditions particulières")
+    
+    # Paramètres financiers
+    prix = models.DecimalField(max_digits=10, decimal_places=2)
+    tva = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
+    periodicite_facturation = models.CharField(max_length=20, choices=[
+        ('mensuelle', 'Mensuelle'),
+        ('trimestrielle', 'Trimestrielle'),
+        ('ponctuelle', 'Ponctuelle')
+    ], default='mensuelle')
+    
+    # Statut et dates
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='proposition')
     date_creation = models.DateTimeField(auto_now_add=True)
-    demandes = models.ManyToManyField('DemandeService', related_name='services_entreprise', blank=True)
+    date_activation = models.DateTimeField(null=True, blank=True)
+    date_expiration = models.DateTimeField(null=True, blank=True)
+    
+    # Gestion RH
+    responsable_rh = models.ForeignKey(User, on_delete=models.SET_NULL, 
+                                     null=True, related_name='services_geres')
+    notes_interne = models.TextField(blank=True)
+    contre_proposition = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Service personnalisé"
+        verbose_name_plural = "Services personnalisés"
+        ordering = ['-date_activation']
+
     def __str__(self):
-        return f"{self.titre} ({self.entreprise.nom})"
+        return f"{self.titre} - {self.entreprise.nom} ({self.get_statut_display()})"
+
+    def activer(self):
+        """Activer le service après acceptation par l'entreprise"""
+        self.statut = 'actif'
+        self.date_activation = timezone.now()
+        premiere_demande = self.demandes.first()
+        if premiere_demande:
+            premiere_demande.statut = 'acceptee'
+            premiere_demande.save()        
+        self.save()
+
+    def generer_facture(self):
+        """Générer une facture pour ce service"""
+        facture = FactureLibre.objects.create(
+            entreprise=self.entreprise,
+            titre=f"Facture {self.titre}",
+            description=f"Service {self.titre} ({self.periodicite_facturation})",
+            montant=self.prix * (1 + self.tva/100),
+            statut='envoyee'
+        )
+        return facture
+
+    @classmethod
+    def creer_depuis_demande(cls, demande):
+        service = cls.objects.create(
+            entreprise=demande.entreprise,
+            titre=f"[PROPOSITION] {demande.service.nom}",
+            description=demande.message,
+            statut='proposition',
+            prix=0
+        )
+        service.demandes.add(demande)  # Ajout de la relation
+        return service
     
 
 
 class NotificationEntreprise(models.Model):
+    SOURCE_CHOICES = [
+        ('client', 'Entreprise'),
+        ('backoffice', 'Antares'),
+    ]
     entreprise = models.ForeignKey(Entreprise, on_delete=models.CASCADE, related_name='notifications')
     titre = models.CharField(max_length=255)
     message = models.TextField()
@@ -126,7 +240,8 @@ class NotificationEntreprise(models.Model):
     lu = models.BooleanField(default=False)
     date_envoi = models.DateTimeField(auto_now_add=True)
     action_requise = models.BooleanField(default=False)
-
+    source = models.CharField(max_length=10, choices=SOURCE_CHOICES, default='client')
+    
     def __str__(self):
         return f"Notification pour {self.entreprise.nom} - {self.titre} - ({self.niveau})"
 

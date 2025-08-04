@@ -1,0 +1,38 @@
+{% extends 'authentication/base.html' %}
+{% block title %}Liste des services{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">🛠️ Services liés à {{ entreprise.nom }}</h2>
+    {% if services %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>Statut</th>
+                        <th>Date de création</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for service in services %}
+                        <tr>
+                            <td>{{ service.titre }}</td>
+                            <td>{{ service.description|truncatechars:50 }}</td>
+                            <td>{{ service.get_statut_display }}</td>
+                            <td>{{ service.created_at|date:"d M Y" }}</td>
+                            <td>
+                                <a href="{% url 'service-client-detail' service.id %}" class="btn btn-sm btn-primary">Voir</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>Aucun service trouvé.</p>
+    {% endif %}
+</div>
+{% endblock %}

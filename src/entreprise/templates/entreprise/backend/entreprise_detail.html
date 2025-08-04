@@ -185,39 +185,34 @@
             </div>
             
             <!-- Onglets -->
-            <ul class="nav nav-tabs mt-4" id="entrepriseTabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="services-tab" data-toggle="tab" href="#services" role="tab">
-                        Services ({{ services_souscrits.count }})
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="demandes-tab" data-toggle="tab" href="#demandes" role="tab">
-                        Demandes ({{ demandes_par_statut.en_attente.count|add:demandes_par_statut.acceptees.count|add:demandes_par_statut.refusees.count|add:demandes_par_statut.en_cours.count|add:demandes_par_statut.terminees.count }})
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="factures-tab" data-toggle="tab" href="#factures" role="tab">
-                        Factures ({{ factures_par_statut.envoyees.count|add:factures_par_statut.recues.count|add:factures_par_statut.payees.count }})
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="notifications-tab" data-toggle="tab" href="#notifications" role="tab">
-                        Notifications ({{ notifications.count }})
-                    </a>
-                </li>
-                <li class="nav-item ml-auto">
-                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addServiceModal">
-                        <i class="fas fa-plus"></i> Ajouter un service
-                    </button>
-                    <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#sendNotificationModal">
-                        <i class="fas fa-bell"></i> Envoyer une notification
-                    </button>
-                    <button class="btn btn-sm btn-success" data-toggle="modal" data-target="#sendInvoiceModal">
-                        <i class="fas fa-file-invoice"></i> Envoyer une facture
-                    </button>
-                </li>
-            </ul>
+            <ul class="nav nav-tabs mt-4">
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'services-par-entreprise' %}active{% endif %}" 
+           href="{% url 'services-par-entreprise' entreprise.id %}">
+            Services ({{ services_souscrits.count }})
+        </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link {% if request.resolver_match.url_name == 'liste-demandes-client' %}active{% endif %}" 
+   href="{% url 'liste-demandes-client' entreprise.id %}">
+     
+            Demandes ({{ demandes_par_statut.en_attente.count|add:demandes_par_statut.acceptees.count|add:demandes_par_statut.refusees.count|add:demandes_par_statut.en_cours.count|add:demandes_par_statut.terminees.count }})
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'factures-par-entreprise' %}active{% endif %}" 
+           href="{% url 'factures-par-entreprise' entreprise.id %}">
+            Factures ({{ factures_par_statut.envoyees.count|add:factures_par_statut.recues.count|add:factures_par_statut.payees.count }})
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'notifications-par-entreprise' %}active{% endif %}" 
+           href="{% url 'notifications-par-entreprise' entreprise.id %}">
+            Notifications ({{ notifications.count }})
+        </a>
+    </li>
+</ul>
+
             
             <!-- Contenu des onglets -->
             <div class="tab-content pt-3" id="entrepriseTabsContent">
@@ -229,7 +224,7 @@
                                 <div class="col-md-4 mb-4">
                                     <div class="card h-100">
                                         <div class="card-body">
-                                            <h5 class="card-title">{{ service.titre }}</h5>
+                                            <h5 class="card-title"><a href="{% url 'gerer-statut-service' service.id %}" service.titre }}</h5>
                                             <p class="card-text">{{ service.description|truncatewords:20 }}</p>
                                             <div class="progress mb-2">
                                                 <div class="progress-bar bg-{% if service.progression == 100 %}success{% elif service.progression > 0 %}warning{% else %}danger{% endif %}" 
