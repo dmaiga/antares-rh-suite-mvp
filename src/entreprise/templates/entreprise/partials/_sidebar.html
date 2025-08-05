@@ -19,6 +19,12 @@
                     
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{% url 'liste-propositions-services' %}" class="nav-link {% if 'liste-propositions-services' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="fas fa-clipboard-list me-2"></i> Suivi
+                    
+                </a>
+            </li>
            
             <li class="nav-item">
                 <a href="{% url 'factures-client' %}" class="nav-link {% if 'factures' in request.resolver_match.url_name %}active{% endif %}">

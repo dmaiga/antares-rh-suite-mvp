@@ -2,12 +2,14 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="mt-4">Suivi de vos propositions RH</h2>
-    <table class="table table-bordered mt-3">
-        <thead>
+    <h2 class="mt-4">Vos propositions de services RH</h2>
+
+    <table class="table table-hover mt-4">
+        <thead class="table-light">
             <tr>
-                <th>Service</th>
-                <th>Description</th>
+                <th>Service proposé</th>
+                <th>Demandes liées</th>
+                <th>Conditions / Prix</th>
                 <th>Statut</th>
                 <th>Actions</th>
             </tr>
@@ -15,23 +17,43 @@
         <tbody>
         {% for service in services %}
             <tr>
-                <td>{{ service.nom_service }}</td>
-                <td>{{ service.description }}</td>
-                <td>{{ service.get_statut_display }}</td>
+                <td><strong>{{ service.titre }}</strong></td>
+
+                <td>
+                    {% for demande in service.demandes.all %}
+                        <div class="mb-1">
+                            <span class="badge bg-secondary">{{ demande.service.nom }}</span><br>
+                            <small>{{ demande.message|truncatechars:60 }}</small><br>
+                            <a href="{% url 'detail-demande-service' demande.id %}" class="btn btn-sm btn-outline-primary mt-1">📄 Voir la demande</a>
+                        </div>
+                        {% if not forloop.last %}<hr>{% endif %}
+                    {% endfor %}
+                </td>
+
+                <td>
+                    <p><strong>Prix :</strong> {{ service.prix }} FCFA</p>
+                    <p><strong>TVA :</strong> {{ service.tva }}%</p>
+                    <p><strong>Périodicité :</strong> {{ service.get_periodicite_facturation_display }}</p>
+                    {% if service.conditions %}
+                        <p><strong>Conditions :</strong> {{ service.conditions|linebreaksbr }}</p>
+                    {% endif %}
+                </td>
+
+                <td><span class="badge bg-info">{{ service.get_statut_display }}</span></td>
+
                 <td>
                     {% if service.statut == 'proposition' %}
-                        <a href="{% url 'accepter-proposition' service.id %}" class="btn btn-success btn-sm">Accepter</a>
-                        <a href="{% url 'rejeter-proposition' service.id %}" class="btn btn-danger btn-sm">Rejeter</a>
-                        <a href="{% url 'faire-contre-proposition' service.id %}" class="btn btn-secondary btn-sm">Contre-proposition</a>
+                        <a href="{% url 'accepter-proposition-service' service.id %}" class="btn btn-success btn-sm mb-1">✅ Accepter</a>
+                        <a href="{% url 'contre-proposition-service' service.id %}" class="btn btn-warning btn-sm">💬 Contre-proposition</a>
                     {% elif service.statut == 'en_revue' %}
-                        <span class="text-info">En cours de révision</span>
+                        <span class="text-muted">En cours de révision RH</span>
                     {% else %}
                         <span class="text-muted">Aucune action possible</span>
                     {% endif %}
                 </td>
             </tr>
         {% empty %}
-            <tr><td colspan="4">Aucune proposition en attente.</td></tr>
+            <tr><td colspan="5" class="text-center text-muted">Aucune proposition actuellement.</td></tr>
         {% endfor %}
         </tbody>
     </table>

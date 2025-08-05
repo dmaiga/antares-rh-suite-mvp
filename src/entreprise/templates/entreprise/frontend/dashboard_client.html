@@ -141,25 +141,33 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for demande in demandes_recentes %}
-                            <tr>
-                                <td>{{ demande.service.nom }}</td>
-                                <td>{{ demande.date_demande|date:"d/m/Y" }}</td>
-                                <td>
-                                    <span class="badge bg-{{ demande.statut|statut_color }}">
-                                        {{ demande.get_statut_display }}
-                                    </span>
-                                </td>
-                                
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">
-                                    Aucune demande récente
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
+    {% for demande in demandes_recentes %}
+    <tr>
+        <td>
+            <strong>{{ demande.service.nom }}</strong><br>
+            <small class="text-muted">{{ demande.objet|truncatechars:50 }}</small>
+        </td>
+        <td>{{ demande.date_demande|date:"d/m/Y" }}</td>
+        <td>
+            <span class="badge" >
+                {{ demande.get_statut_display }}
+            </span>
+        </td>
+        <td>
+            <a href="{% url 'detail-demande-service' demande.id %}" class="btn btn-sm btn-outline-primary">
+                Voir en détail
+            </a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="4" class="text-center py-4 text-muted">
+            Aucune demande récente
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
+
                     </table>
                 </div>
             </div>

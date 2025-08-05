@@ -63,16 +63,17 @@
                                     </span>
                                 </td>
                                 <td>{{ demande.message|truncatewords:5 }}</td>
-                                <td>
-                                    <a href="{% url 'suivi-demande-client'%}" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    {% if demande.statut == 'en_attente' %}
-                                        <a href="#" class="btn btn-sm btn-danger">
-                                            <i class="fas fa-times"></i> Annuler
-                                        </a>
-                                    {% endif %}
-                                </td>
+                               <td>
+    <a href="{% url 'detail-demande-service' demande.id %}" class="btn btn-sm btn-primary">
+        <i class="fas fa-eye"></i> Suivi
+    </a>
+    {% if demande.statut == 'en_attente' %}
+        <a href="#" class="btn btn-sm btn-danger">
+            <i class="fas fa-times"></i> Annuler
+        </a>
+    {% endif %}
+</td>
+
                             </tr>
                         {% empty %}
                             <tr>

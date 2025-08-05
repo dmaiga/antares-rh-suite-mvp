@@ -17,16 +17,22 @@ urlpatterns = [
     # Dashboard et vues principales
     path('', views.dashboard_client, name='dashboard-client'),
     path('services_client/', views.services_client, name='services-client'),
-    path('services/<int:service_id>/accepter/', views.accepter_proposition, name='accepter-proposition'),
-    path('services/<int:service_id>/rejeter/', views.rejeter_proposition, name='rejeter-proposition'),
-    path('services/<int:service_id>/contre-proposition/', views.faire_contre_proposition, name='faire-contre-proposition'),
-
+    
     # Gestion des demandes
     path('demandes/', views.demandes_client, name='demandes-client'),
     path('demandes/nouvelle/', views.demander_service, name='demander-service'),
     path('demandes/<int:demande_id>/annuler/', views.annuler_demande, name='annuler-demande'),
-    path('mes-demandes/', views.suivi_demande_client, name='suivi-demande-client'),
+    #-----------------------------------------------------------------------------------------
+    #05_08_2025 
+    path('propositions/', views.liste_propositions_services, name='liste-propositions-services'),
+    path('proposition/<int:service_id>/accepter/', views.accepter_proposition_service, name='accepter-proposition-service'),
+    path('proposition/<int:service_id>/contre/', views.contre_proposition_service, name='contre-proposition-service'),
+    path('demande/<int:demande_id>/', views.detail_demande_service, name='detail-demande-service'),
+    path('services/', views.liste_services_entreprise, name='liste-services-entreprise'),
 
+
+
+    #________________________________________________________________________________________
     # Factures
     path('factures/', views.factures_client, name='factures-client'),
     path('factures/<int:facture_id>/paiement/', views.upload_preuve_paiement, name='upload-preuve'),

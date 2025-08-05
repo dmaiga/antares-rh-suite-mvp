@@ -138,11 +138,14 @@ class ServiceEntreprise(models.Model):
         ('proposition', 'Proposition RH'),
         ('rejete', 'Rejeté par l\'entreprise'),
         ('en_revue', 'En revue par l\'entreprise'),
-
+        ('en_attente_activation', 'En attente activation'),
         ('accepte', 'Accepté par l\'entreprise'),
         ('actif', 'Actif'),
         ('termine', 'Terminé'),
-        ('suspendu', 'Suspendu'),
+        ('suspendu', 'Suspendu'), 
+        ('contre_proposition', 'Contre-proposition reçue'),
+        ('valide', 'Validé'),
+        ('refuse', 'Refusé'),
     ]
 
     # Lien vers l'entreprise cliente
@@ -158,22 +161,22 @@ class ServiceEntreprise(models.Model):
     titre = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     conditions = models.TextField(blank=True, verbose_name="Conditions particulières")
-    
+    reponse_entreprise = models.TextField(blank=True)
     # Paramètres financiers
     prix = models.DecimalField(max_digits=10, decimal_places=2)
     tva = models.DecimalField(max_digits=4, decimal_places=2, default=0.0)
-    periodicite_facturation = models.CharField(max_length=20, choices=[
+    periodicite_facturation = models.CharField(max_length=45, choices=[
         ('mensuelle', 'Mensuelle'),
         ('trimestrielle', 'Trimestrielle'),
         ('ponctuelle', 'Ponctuelle')
     ], default='mensuelle')
     
     # Statut et dates
-    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='proposition')
+    statut = models.CharField(max_length=50, choices=STATUT_CHOICES, default='proposition')
     date_creation = models.DateTimeField(auto_now_add=True)
     date_activation = models.DateTimeField(null=True, blank=True)
     date_expiration = models.DateTimeField(null=True, blank=True)
-    
+    date_validation = models.DateTimeField(null=True, blank=True)
     # Gestion RH
     responsable_rh = models.ForeignKey(User, on_delete=models.SET_NULL, 
                                      null=True, related_name='services_geres')
@@ -199,15 +202,26 @@ class ServiceEntreprise(models.Model):
         self.save()
 
     def generer_facture(self):
-        """Générer une facture pour ce service"""
+        montant_total = self.prix * (1 + self.tva / 100)
         facture = FactureLibre.objects.create(
             entreprise=self.entreprise,
             titre=f"Facture {self.titre}",
             description=f"Service {self.titre} ({self.periodicite_facturation})",
-            montant=self.prix * (1 + self.tva/100),
+            montant=montant_total,
             statut='envoyee'
         )
+        NotificationEntreprise.objects.create(
+            entreprise=self.entreprise,
+            service=self,
+            facture=facture,
+            titre=f"Facture émise pour le service {self.titre}",
+            message=f"Une facture de {montant_total} FCFA a été générée pour le service '{self.titre}'. Merci de procéder au paiement.",
+            niveau='info',
+            action_requise=True,
+            source='backoffice'
+        )
         return facture
+
 
     @classmethod
     def creer_depuis_demande(cls, demande):
@@ -229,8 +243,25 @@ class NotificationEntreprise(models.Model):
         ('backoffice', 'Antares'),
     ]
     entreprise = models.ForeignKey(Entreprise, on_delete=models.CASCADE, related_name='notifications')
+    service = models.ForeignKey(
+        'ServiceEntreprise',
+        on_delete=models.CASCADE,
+        related_name='notifications',
+        null=True,
+        blank=True
+        )
+    facture = models.ForeignKey(
+        'FactureLibre',
+        on_delete=models.CASCADE,
+        related_name='notifications',
+        null=True,
+        blank=True
+        )
+
     titre = models.CharField(max_length=255)
     message = models.TextField()
+    reponse_entreprise = models.TextField(blank=True, null=True)
+    date_reponse = models.DateTimeField(blank=True, null=True)
     niveau = models.CharField(
         max_length=20,
         choices=[('info', 'Info'), ('alerte', 'Alerte'), ('urgent', 'Urgent')],
@@ -244,6 +275,8 @@ class NotificationEntreprise(models.Model):
     
     def __str__(self):
         return f"Notification pour {self.entreprise.nom} - {self.titre} - ({self.niveau})"
+
+
 
 class FactureLibre(models.Model):
     entreprise = models.ForeignKey(Entreprise, on_delete=models.CASCADE, related_name='factures_libres')

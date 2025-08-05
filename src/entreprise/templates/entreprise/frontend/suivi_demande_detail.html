@@ -1,0 +1,51 @@
+<h2>📋 Suivi de votre demande</h2>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <h5>Objet :</h5>
+    <p>{{ demande.objet }}</p>
+
+    <h5>Date :</h5>
+    <p>{{ demande.date_soumission|date:"d/m/Y à H:i" }}</p>
+  </div>
+</div>
+
+{% if services %}
+  <h3>🛠 Propositions RH</h3>
+  {% for service in services %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5>{{ service.titre }}</h5>
+        <p><strong>Description :</strong> {{ service.description }}</p>
+        <p><strong>Conditions :</strong> {{ service.conditions }}</p>
+        <p><strong>Prix :</strong> {{ service.prix }} FCFA</p>
+        <p><strong>Statut :</strong>
+          <span class="badge bg-secondary">{{ service.get_statut_display }}</span>
+        </p>
+
+        {% if service.reponse_entreprise %}
+          <p><strong>Votre réponse :</strong> {{ service.reponse_entreprise }}</p>
+        {% endif %}
+
+        {% if service.statut == 'proposition' or service.statut == 'contre_proposition' %}
+          <form method="post" class="mt-3">
+            {% csrf_token %}
+            <input type="hidden" name="service_id" value="{{ service.id }}">
+
+            <div class="mb-2">
+              <label for="reponse-{{ service.id }}">Message (optionnel)</label>
+              <textarea name="reponse" id="reponse-{{ service.id }}" class="form-control"></textarea>
+            </div>
+
+            <button name="action" value="accepter" class="btn btn-success">✅ Accepter</button>
+            <button name="action" value="contre_proposition" class="btn btn-warning">↩️ Contre-proposition</button>
+          </form>
+          
+
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <div class="alert alert-info">Aucune proposition de service n’a encore été faite par l’équipe RH.</div>
+{% endif %}

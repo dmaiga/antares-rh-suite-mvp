@@ -608,7 +608,7 @@ def consulter_demande(request, demande_id):
             )
 
             messages.success(request, "Demande acceptée et service créé.")
-            return redirect('service-client-detail', pk=service.id)
+            return redirect('liste-toutes-factures')
 
         elif action == 'refuser' and demande.statut == 'en_attente':
            return redirect('refuser-demande-motif', demande_id=demande.id)
@@ -696,50 +696,6 @@ def liste_demandes_client(request, entreprise_id):
     return render(request, 'entreprise/backend/liste_demandes_client.html', context)
 #___________________________________________________________________________________
 #
-
-@login_required
-@user_passes_test(is_rh_or_admin)
-def consulter_demande(request, demande_id):
-    demande = get_object_or_404(DemandeService, id=demande_id)
-    
-    if request.method == 'POST':
-        action = request.POST.get('action')
-        
-        if action == 'accepter':
-            # Créer un service à partir de la demande
-            service = ServiceEntreprise.creer_depuis_demande(demande)
-            
-            # Envoyer une notification à l'entreprise
-            NotificationEntreprise.objects.create(
-                entreprise=demande.entreprise,
-                titre=f"Votre demande de service a été acceptée",
-                message=f"Votre demande concernant '{demande.service.nom}' a été acceptée. Nous vous contacterons bientôt.",
-                niveau='info'
-            )
-            
-            # Mettre à jour le statut de la demande
-            demande.statut = 'acceptee'
-            demande.save()
-            
-            messages.success(request, "La demande a été acceptée et un service a été créé.")
-            return redirect('liste-demandes-client')
-            
-        elif action == 'refuser':
-            demande.statut = 'refusee'
-            demande.save()
-            
-            # Envoyer une notification à l'entreprise
-            NotificationEntreprise.objects.create(
-                entreprise=demande.entreprise,
-                titre=f"Votre demande de service a été refusée",
-                message=f"Votre demande concernant '{demande.service.nom}' a été refusée. Contactez-nous pour plus d'informations.",
-                niveau='info'
-            )
-            
-            messages.success(request, "La demande a été refusée.")
-            return redirect('liste-demandes-client')
-    
-    return render(request, 'entreprise/backend/consulter_demande.html', {'demande': demande})
 
 #___________________________________________________________________________________
 #
@@ -1079,6 +1035,30 @@ def notification_detail(request, notification_id):
     notification = get_object_or_404(NotificationEntreprise, id=notification_id)
     return render(request, 'notifications/detail.html', {'notification': notification})
 
+
+
+#___________________________________________________________________________________
+# 05_08_2025
+#
+
+
+def traiter_demande(request, pk):
+    demande = get_object_or_404(DemandeService, pk=pk)
+
+    if request.method == 'POST':
+        form = DemandeEditForm(request.POST, instance=demande)
+        if form.is_valid():
+            form.save()
+            # Proposer un service ?
+            if 'proposer_service' in request.POST:
+                ServiceEntreprise.creer_depuis_demande(demande)
+                messages.success(request, "Service personnalisé créé à partir de la demande.")
+            return redirect('liste_demandes')
+    else:
+        form = DemandeEditForm(instance=demande)
+
+    return render(request, 'rh/traiter_demande.html', {'form': form, 'demande': demande})
+
 #-------------------------------------------------------------------------------------
 #                                       FRONTEND
 #_____________________________________________________________________________________
@@ -1091,78 +1071,122 @@ def notification_detail(request, notification_id):
 def entreprise_right(user):
     return user.is_authenticated and user.role in ['entreprise']
 
-#04_08_2025
+def get_entreprise_user(request):
+    return request.user.entreprise
+
+#--------------------------------------------------------------------------------------------------------
+#05_08_2025
 
 @login_required
 @user_passes_test(entreprise_right)
-def suivi_demande_client(request):
-    entreprise = request.user.entreprise
+def liste_propositions_services(request):
+    entreprise = get_entreprise_user(request)
     services = ServiceEntreprise.objects.filter(
         entreprise=entreprise,
         statut__in=['proposition', 'en_revue']
-    ).order_by('-date_creation')
+    ).prefetch_related('demandes').order_by('-date_creation')
 
-
-    context = {
+    return render(request, 'entreprise/frontend/suivi_demande_client.html', {
         'services': services,
-    }
-    return render(request, 'entreprise/frontend/suivi_demande_client.html', context)
+    })
 
 
 @login_required
 @user_passes_test(entreprise_right)
-def accepter_proposition(request, service_id):
-    service = get_object_or_404(ServiceEntreprise, id=service_id, entreprise__user=request.user)
+def detail_demande_service(request, demande_id):
+    entreprise = get_entreprise_user(request)
+    demande = get_object_or_404(DemandeService, pk=demande_id, entreprise=entreprise)
+    services = ServiceEntreprise.objects.filter(demandes=demande).order_by('date_creation')
+
+    if request.method == "POST":
+        service_id = request.POST.get("service_id")
+        action = request.POST.get("action")
+        reponse = request.POST.get("reponse")
+
+        service = get_object_or_404(ServiceEntreprise, id=service_id, entreprise=entreprise)
+
+        if action == "accepter":
+            service.statut = "accepte"
+            service.reponse_entreprise = reponse or ''
+            service.save()
+        elif action == "contre_proposition":
+            # Créer une nouvelle contreproposition à partir du service original
+            nouveau_service = ServiceEntreprise.objects.create(
+                entreprise=entreprise,
+                titre=service.titre,
+                description=service.description,
+                conditions=service.conditions,
+                prix=service.prix,
+                tva=service.tva,
+                periodicite_facturation=service.periodicite_facturation,
+                statut='contre_proposition',
+                reponse_entreprise=reponse or '',
+                responsable_rh=service.responsable_rh,
+            )
+            nouveau_service.demandes.set(service.demandes.all())
+
+        return redirect('detail_demande_service', demande_id=demande.id)
+
+    return render(request, 'entreprise/frontend/suivi_demande_detail.html', {
+        'demande': demande,
+        'services': services,
+    })
+
+
+
+
+
+
+@login_required
+@user_passes_test(entreprise_right)
+def accepter_proposition_service(request, service_id):
+    service = get_object_or_404(ServiceEntreprise, id=service_id, entreprise=request.user.entreprise)
+
     if service.statut == 'proposition':
         service.statut = 'en_attente_activation'
         service.save()
         messages.success(request, "Vous avez accepté la proposition RH. En attente d'activation.")
     else:
-        messages.warning(request, "Action non autorisée.")
-    return redirect('services-client')
+        messages.warning(request, "Cette proposition n'est plus modifiable.")
 
-
-@login_required
-@user_passes_test(entreprise_right)
-def rejeter_proposition(request, service_id):
-    service = get_object_or_404(ServiceEntreprise, id=service_id, entreprise__user=request.user)
-    if service.statut == 'proposition':
-        service.statut = 'rejete'
-        service.save()
-        messages.info(request, "Vous avez rejeté la proposition RH.")
-    else:
-        messages.warning(request, "Action non autorisée.")
-    return redirect('services-client')
-
+    return redirect('liste_propositions_services')
 
 @login_required
 @user_passes_test(entreprise_right)
-def faire_contre_proposition(request, service_id):
+def contre_proposition_service(request, service_id):
     service = get_object_or_404(ServiceEntreprise, id=service_id, entreprise=request.user.entreprise)
 
     if request.method == 'POST':
         form = ContrePropositionForm(request.POST, instance=service)
         if form.is_valid():
             service = form.save(commit=False)
-            service.statut = 'en_revue'  # repasse au backoffice pour traitement
+            service.statut = 'en_revue'  # Repasse au backoffice pour étude
             service.save()
-            return redirect('suivi-demande-client')
+            messages.success(request, "Contre-proposition envoyée à l'équipe RH.")
+            return redirect('liste_propositions_services')
     else:
         form = ContrePropositionForm(instance=service)
 
-    return render(request, 'entreprise/frontend/contre_proposition_form.html', {'form': form, 'service': service})
+    return render(request, 'entreprise/frontend/contre_proposition_form.html', {
+        'form': form,
+        'service': service
+    })
 
 
 @login_required
 @user_passes_test(entreprise_right)
-def suivi_service_entreprise(request):
-    entreprise = get_object_or_404(Entreprise, user=request.user)
-    services = ServiceEntreprise.objects.filter(entreprise=entreprise).order_by('-date_debut')
+def liste_services_entreprise(request):
+    entreprise = get_entreprise_user(request)
+    services = ServiceEntreprise.objects.filter(
+        entreprise=entreprise
+    ).exclude(statut__in=['proposition', 'en_revue', 'rejete'])  # filtrer que les actifs / en cours
 
     return render(request, 'entreprise/frontend/suivi_services.html', {
         'services': services
     })
 
+#05_08_2025
+#_______________________________________________________________________________________________________________
 
 # Vues principales
 @login_required
