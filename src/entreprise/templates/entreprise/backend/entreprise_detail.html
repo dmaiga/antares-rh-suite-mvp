@@ -185,20 +185,32 @@
             </div>
             
             <!-- Onglets -->
-            <ul class="nav nav-tabs mt-4">
+<ul class="nav nav-tabs mt-4">
     <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'services-par-entreprise' %}active{% endif %}" 
            href="{% url 'services-par-entreprise' entreprise.id %}">
             Services ({{ services_souscrits.count }})
         </a>
-    </li>
+    </li>    
+
     <li class="nav-item">
-      <a class="nav-link {% if request.resolver_match.url_name == 'liste-demandes-client' %}active{% endif %}" 
-   href="{% url 'liste-demandes-client' entreprise.id %}">
-     
+        <a class="nav-link {% if request.resolver_match.url_name == 'liste-demandes-client' %}active{% endif %}" 
+           href="{% url 'liste-demandes-client' entreprise.id %}">
             Demandes ({{ demandes_par_statut.en_attente.count|add:demandes_par_statut.acceptees.count|add:demandes_par_statut.refusees.count|add:demandes_par_statut.en_cours.count|add:demandes_par_statut.terminees.count }})
         </a>
     </li>
+
+    <!-- Nouvel onglet -->
+    <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'liste-services-traitement' %}active{% endif %}" 
+           href="{% url 'liste-services-traitement' %}">
+            Propositions à traiter
+            {% if services_a_traiter_count > 0 %}
+            <span class="badge badge-danger ml-1">{{ services_a_traiter_count }}</span>
+            {% endif %}
+        </a>
+    </li>
+
     <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'factures-par-entreprise' %}active{% endif %}" 
            href="{% url 'factures-par-entreprise' entreprise.id %}">
@@ -212,7 +224,6 @@
         </a>
     </li>
 </ul>
-
             
             <!-- Contenu des onglets -->
             <div class="tab-content pt-3" id="entrepriseTabsContent">
@@ -224,7 +235,7 @@
                                 <div class="col-md-4 mb-4">
                                     <div class="card h-100">
                                         <div class="card-body">
-                                            <h5 class="card-title"><a href="{% url 'gerer-statut-service' service.id %}" service.titre }}</h5>
+                                            <h5 class="card-title"><a href="{% url 'gerer-statut-service' service.id %}" >{{service.titre }}</a></h5>
                                             <p class="card-text">{{ service.description|truncatewords:20 }}</p>
                                             <div class="progress mb-2">
                                                 <div class="progress-bar bg-{% if service.progression == 100 %}success{% elif service.progression > 0 %}warning{% else %}danger{% endif %}" 
@@ -249,110 +260,7 @@
                     {% endif %}
                 </div>
                 
-                <!-- Onglet Demandes -->
-                <div class="tab-pane fade" id="demandes" role="tabpanel">
-                    <ul class="nav nav-pills mb-3" id="demandes-tab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-toggle="pill" href="#demandes-en-attente">En attente ({{ demandes_par_statut.en_attente.count }})</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="pill" href="#demandes-acceptees">Acceptées ({{ demandes_par_statut.acceptees.count }})</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="pill" href="#demandes-refusees">Refusées ({{ demandes_par_statut.refusees.count }})</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="pill" href="#demandes-en-cours">En cours ({{ demandes_par_statut.en_cours.count }})</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="pill" href="#demandes-terminees">Terminées ({{ demandes_par_statut.terminees.count }})</a>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="demandes-en-attente">
-                            {% include 'entreprise/partials/demandes_table.html' with demandes=demandes_par_statut.en_attente %}
-                        </div>
-                        <div class="tab-pane fade" id="demandes-acceptees">
-                            {% include 'entreprise/partials/demandes_table.html' with demandes=demandes_par_statut.acceptees %}
-                        </div>
-                        <div class="tab-pane fade" id="demandes-refusees">
-                            {% include 'entreprise/partials/demandes_table.html' with demandes=demandes_par_statut.refusees %}
-                        </div>
-                        <div class="tab-pane fade" id="demandes-en-cours">
-                            {% include 'entreprise/partials/demandes_table.html' with demandes=demandes_par_statut.en_cours %}
-                        </div>
-                        <div class="tab-pane fade" id="demandes-terminees">
-                            {% include 'entreprise/partials/demandes_table.html' with demandes=demandes_par_statut.terminees %}
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Onglet Factures -->
-                <div class="tab-pane fade" id="factures" role="tabpanel">
-                    <ul class="nav nav-pills mb-3" id="factures-tab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-toggle="pill" href="#factures-envoyees">Envoyées ({{ factures_par_statut.envoyees.count }})</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="pill" href="#factures-recues">Reçues ({{ factures_par_statut.recues.count }})</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="pill" href="#factures-payees">Payées ({{ factures_par_statut.payees.count }})</a>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="factures-envoyees">
-                            {% include 'entreprise/partials/factures_table.html' with factures=factures_par_statut.envoyees %}
-                        </div>
-                        <div class="tab-pane fade" id="factures-recues">
-                            {% include 'entreprise/partials/factures_table.html' with factures=factures_par_statut.recues %}
-                        </div>
-                        <div class="tab-pane fade" id="factures-payees">
-                            {% include 'entreprise/partials/factures_table.html' with factures=factures_par_statut.payees %}
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Onglet Notifications -->
-                <div class="tab-pane fade" id="notifications" role="tabpanel">
-                    {% if notifications %}
-                        <div class="list-group">
-                            {% for notification in notifications %}
-                                <div class="list-group-item list-group-item-action flex-column align-items-start 
-                                    {% if notification.lu %}list-group-item-light{% else %}list-group-item-warning{% endif %}">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">
-                                            {{ notification.titre }}
-                                            <span class="badge badge-{% if notification.niveau == 'urgent' %}danger{% elif notification.niveau == 'alerte' %}warning{% else %}info{% endif %}">
-                                                {{ notification.get_niveau_display }}
-                                            </span>
-                                        </h5>
-                                        <small>{{ notification.date_envoi|timesince }}</small>
-                                    </div>
-                                    <p class="mb-1">{{ notification.message }}</p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        {% if notification.action_requise %}
-                                            <small class="text-danger"><i class="fas fa-exclamation-circle"></i> Action requise</small>
-                                        {% endif %}
-                                        {% if notification.fichier %}
-                                            <a href="{{ notification.fichier.url }}" class="btn btn-sm btn-info" download>
-                                                <i class="fas fa-download"></i> Télécharger
-                                            </a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="alert alert-info">Aucune notification.</div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+               
 
 <!-- Modals -->
 <div class="modal fade" id="addServiceModal" tabindex="-1" role="dialog" aria-labelledby="addServiceModalLabel" aria-hidden="true">

@@ -1,11 +1,172 @@
-<h3>Gérer le statut du service : {{ service.nom }}</h3>
+{% extends 'authentication/base.html' %}
 
-<form method="post">
-    {% csrf_token %}
-    <select name="statut" class="form-select mb-3">
-        {% for value, label in statuts %}
-            <option value="{{ value }}" {% if value == service.statut %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
-</form>
+{% load custom_tags %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Gestion du service: {{ service.titre }}</h1>
+        <a href="{% url 'services-par-entreprise' service.entreprise.id %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour aux services
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Colonne de gauche - Informations et statut -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Statut du service</h6>
+                    <span class="badge badge-{% if service.statut == 'actif' %}success
+                                          {% elif service.statut == 'termine' %}info
+                                          {% elif service.statut == 'suspendu' %}warning
+                                          {% else %}secondary{% endif %}">
+                        {{ service.get_statut_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="changer_statut">
+                        <div class="form-group">
+                            <label>Modifier le statut:</label>
+                            <select name="statut" class="form-control">
+                                {% for value, label in statuts %}
+                                    <option value="{{ value }}" 
+                                        {% if value == service.statut %}selected{% endif %}
+                                        {% if value == 'proposition' and service.statut != 'proposition' %}disabled{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Mettre à jour
+                        </button>
+                    </form>
+
+                    <hr>
+
+                    <div class="service-details mt-4">
+                        <h5>Détails du service</h5>
+                        <p><strong>Entreprise:</strong> {{ service.entreprise.nom }}</p>
+                        <p><strong>Prix:</strong> {{ service.prix }} FCFA (HT)</p>
+                        <p><strong>TVA:</strong> {{ service.tva }}%</p>
+<div class="form-group">
+    <label>Total TTC:</label>
+    <div id="ttc-display" class="font-weight-bold">0.00 FCFA</div>
+</div>
+                        <p><strong>Périodicité:</strong> {{ service.get_periodicite_facturation_display }}</p>
+                        <p><strong>Date activation:</strong> {{ service.date_activation|default:"Non activé" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne de droite - Actions -->
+        <div class="col-lg-6">
+            <!-- Génération de facture -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Facturation</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="generer_facture">
+                        <button type="submit" class="btn btn-success mb-3">
+                            <i class="fas fa-file-invoice-dollar"></i> Générer une facture
+                        </button>
+                    </form>
+
+                    {% if factures %}
+                    <h6>Historique des factures</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Référence</th>
+                                    <th>Montant</th>
+                                    <th>Statut</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for facture in factures %}
+                                <tr>
+<td>
+    {% if facture.fichier_facture and facture.fichier_facture.url %}
+        <a href="{{ facture.fichier_facture.url }}" target="_blank" class="btn btn-sm btn-primary">
+            <i class="fas fa-file-pdf"></i> Télécharger
+        </a>
+    {% else %}
+        <span class="text-muted">Fichier non disponible</span>
+    {% endif %}
+</td>                           <td>{{ facture.montant }} FCFA</td>
+                                    <td>
+                                        <span class="badge badge-{% if facture.statut == 'payee' %}success
+                                                              {% elif facture.statut == 'envoyee' %}warning
+                                                              {% else %}info{% endif %}">
+                                            {{ facture.get_statut_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ facture.date_envoi|date:"d/m/Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Notification à l'entreprise -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Communication</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="envoyer_notification">
+                        <div class="form-group">
+                            <label>Message à envoyer:</label>
+                            <textarea name="message" class="form-control" rows="3" 
+                                      placeholder="Informez l'entreprise des modifications..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-paper-plane"></i> Envoyer notification
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section notes et historique -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Notes internes</h6>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="sauvegarder_notes">
+                <div class="form-group">
+                    <textarea name="notes" class="form-control" rows="5">{{ service.notes_interne }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-secondary">
+                    <i class="fas fa-save"></i> Enregistrer les notes
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+function calculateTTC() {
+    const ht = parseFloat(document.getElementById('id_montant_ht').value) || 0;
+    const tva = parseFloat(document.getElementById('id_tva').value) || 0;
+    const ttc = ht * (1 + tva/100);
+    document.getElementById('ttc-display').innerText = ttc.toFixed(2) + ' FCFA';
+}
+</script>
+{% endblock %}

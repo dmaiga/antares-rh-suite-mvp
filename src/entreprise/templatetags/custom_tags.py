@@ -70,3 +70,13 @@ def historique_action_color(action):
         'annulation': 'secondary'
     }
     return color_map.get(action, 'secondary')
+
+@register.filter
+def multiply(value, arg):
+    """Multiplie la valeur par l'argument"""
+    return float(value) * float(arg)
+
+@register.filter
+def calculate_ttc(price, tva):
+    """Calcule le TTC à partir du prix HT et du taux de TVA"""
+    return float(price) * (1 + float(tva)/100)

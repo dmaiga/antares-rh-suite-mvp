@@ -49,12 +49,16 @@ urlpatterns = [
     #=======================================================================================
     #                                     BACKEND
     #=======================================================================================
-     
+    #06_08_2025
+    path('propositions/creer/<int:service_id>/', views.creer_proposition_financiere, name='creer-proposition-financiere'),
+    path('propositions/traiter/<int:service_id>/', views.traiter_reponse_proposition, name='traiter-reponse-proposition'),
+    path('propositions/a-traiter/', views.liste_services_pour_traitement, name='liste-services-traitement'),
+    
     #04_08_2025
     path('services/<int:service_id>/gerer-statut/', views.gerer_statut_service, name='gerer-statut-service'),
     path('entreprise/demandes/<int:demande_id>/refuser/', views.refuser_demande_motif, name='refuser-demande-motif'),
 
-    path('entreprise/<int:entreprise_id>/services/', views.liste_services_par_entreprise, name='services-par-entreprise'),
+    path('entrelisterprise/<int:entreprise_id>/services/', views.liste_services_par_entreprise, name='services-par-entreprise'),
     path('entreprise/<int:entreprise_id>/factures/', views.liste_factures_par_entreprise, name='factures-par-entreprise'),
     path('entreprise/<int:entreprise_id>/notifications/', views.liste_notifications_par_entreprise, name='notifications-par-entreprise'),
     # Facture et notification - détails

@@ -181,6 +181,11 @@ def detail_entreprise(request, entreprise_id):
         ),
         id=entreprise_id
     )
+    services_a_traiter_count = ServiceEntreprise.objects.filter(
+        entreprise=entreprise,
+        statut='contre_proposition'
+    ).count()
+    
     # Récupérez une demande spécifique si nécessaire
     derniere_demande = entreprise.demandes.order_by('-date_demande').first()
     
@@ -242,6 +247,7 @@ def detail_entreprise(request, entreprise_id):
     context = {
         'entreprise': entreprise,
         'demande': derniere_demande,
+        'services_a_traiter_count': services_a_traiter_count,
         'services_souscrits': services_souscrits,
         'demandes_par_statut': demandes_par_statut,
         'factures_par_statut': factures_par_statut,
@@ -339,7 +345,7 @@ def add_entreprise(request):
             user = form.save(commit=False)
             
             # 2. Génération du mot de passe
-            password = get_random_string(length=10)
+            password = 'passer123'
             user.set_password(password)
             user.is_active = True
             user.save()
@@ -516,6 +522,129 @@ def reset_password_entreprise(request, entreprise_id):
 #_________________________________________________________________________________
 #__________________________________________________________________________________
 
+#----------------------------------------------------------------------------------
+#06_08
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def creer_proposition_financiere(request, service_id):
+    service = get_object_or_404(ServiceEntreprise, id=service_id)
+    
+    if request.method == 'POST':
+        form = ServiceEntrepriseForm(request.POST, instance=service)
+        if form.is_valid():
+            service = form.save(commit=False)
+            service.statut = 'proposition'
+            service.responsable_rh = request.user
+            
+            # Calcul automatique du TTC si seulement le HT est fourni
+            if not service.prix and service.prix_ht:
+                service.prix = service.prix_ht * (1 + service.tva/100)
+            
+            service.save()
+            
+            # Notification avec les détails financiers complets
+            NotificationEntreprise.objects.create(
+                entreprise=service.entreprise,
+                service=service,
+                titre=f"Proposition financière pour {service.titre}",
+                message=(
+                    f"Montant HT: {service.prix_ht} FCFA\n"
+                    f"TVA ({service.tva}%): {service.prix_ht * service.tva/100} FCFA\n"
+                    f"Montant TTC: {service.prix} FCFA"
+                ),
+                niveau='info',
+                action_requise=True,
+                source='backoffice'
+            )
+            
+            messages.success(request, "Proposition envoyée avec détails TVA")
+            return redirect('liste-demandes-client', entreprise_id=service.entreprise.id)
+    else:
+        form = ServiceEntrepriseForm(instance=service)
+    
+    return render(request, 'entreprise/backend/creer_proposition_financiere.html', {
+        'form': form,
+        'service': service
+    })
+
+#___________________________________________________________________________________
+#
+@login_required
+@user_passes_test(is_rh_or_admin)
+def liste_services_pour_traitement(request):
+    services = ServiceEntreprise.objects.filter(
+        statut='contre_proposition'
+    ).select_related('entreprise')
+    
+    return render(request, 'entreprise/backend/liste_services_traitement.html', {
+        'services': services
+    })
+
+@login_required
+@user_passes_test(is_rh_or_admin)
+def traiter_reponse_proposition(request, service_id):
+    try:
+        service = ServiceEntreprise.objects.get(id=service_id)
+    except ServiceEntreprise.DoesNotExist:
+        messages.error(request, "Le service demandé n'existe pas")
+        return redirect('liste-services-traitement') 
+    
+    # Vérification supplémentaire que le service est bien en statut contre_proposition
+    if service.statut != 'contre_proposition':
+        messages.warning(request, "Cette proposition n'est pas en état de contre-proposition")
+        return redirect('liste-demandes-client', entreprise_id=service.entreprise.id)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'accepter_contre_proposition':
+            service.statut = 'accepte'
+            service.save()
+            service.activer()
+            
+            NotificationEntreprise.objects.create(
+                entreprise=service.entreprise,
+                service=service,
+                titre=f"Contre-proposition acceptée pour {service.titre}",
+                message=f"Votre contre-proposition a été acceptée. Le service est maintenant actif.",
+                niveau='success',
+                action_requise=False,
+                source='backoffice'
+            )
+            
+            messages.success(request, "Contre-proposition acceptée et service activé")
+            return redirect('liste-demandes-client', entreprise_id=service.entreprise.id)
+            
+        elif action == 'refuser_contre_proposition':
+            service.statut = 'refuse'
+            service.save()
+            
+            NotificationEntreprise.objects.create(
+                entreprise=service.entreprise,
+                service=service,
+                titre=f"Contre-proposition refusée pour {service.titre}",
+                message=f"Votre contre-proposition a été refusée. Le service ne sera pas activé.",
+                niveau='warning',
+                action_requise=False,
+                source='backoffice'
+            )
+            
+            messages.warning(request, "Contre-proposition refusée")
+            return redirect('liste-demandes-client', entreprise_id=service.entreprise.id)
+            
+        elif action == 'nouvelle_proposition':
+            return redirect('creer-proposition-financiere', service_id=service.id)
+    
+    return render(request, 'entreprise/backend/traiter_reponse_proposition.html', {
+        'service': service
+    })
+
+#06_08
+#__________________________________________________________________________________
+
+
+
 @login_required
 @user_passes_test(is_rh_or_admin)
 def creer_service(request, demande_id):
@@ -580,39 +709,21 @@ def demande_client_edit(request, demande_id):
 @user_passes_test(is_rh_or_admin)
 def consulter_demande(request, demande_id):
     demande = get_object_or_404(DemandeService, id=demande_id)
-
+    
     if request.method == 'POST':
         action = request.POST.get('action')
         message = request.POST.get('message', '')
-
+        
         if action == 'accepter' and demande.statut == 'en_attente':
-            demande.statut = 'acceptee'
-            demande.save()
-
-            service, created = ServiceEntreprise.objects.get_or_create(
-                entreprise=demande.entreprise,
-                titre=f"Service {demande.service.nom} - {demande.entreprise.nom}",
-                defaults={
-                    'description': demande.message,
-                    'statut': 'proposition',
-                    'responsable_rh': request.user
-                }
-            )
-            service.demandes.add(demande)
-
-            NotificationEntreprise.objects.create(
-                entreprise=demande.entreprise,
-                titre="Demande acceptée",
-                message=f"Votre demande '{demande.service.nom}' a été acceptée. {message}",
-                niveau='success'
-            )
-
-            messages.success(request, "Demande acceptée et service créé.")
-            return redirect('liste-toutes-factures')
-
+            # Créer une proposition financière (ServiceEntreprise)
+            service = ServiceEntreprise.creer_depuis_demande(demande)
+            
+            # Rediriger vers la page de création de proposition financière
+            return redirect('creer-proposition-financiere', service_id=service.id)
+            
         elif action == 'refuser' and demande.statut == 'en_attente':
-           return redirect('refuser-demande-motif', demande_id=demande.id)
-
+            return redirect('refuser-demande-motif', demande_id=demande.id)
+    
     return render(request, 'entreprise/backend/consulter_demande.html', {'demande': demande})
 #___________________________________________________________________________________
 #
@@ -845,22 +956,61 @@ from django.db.models import Q
 from django.utils.dateparse import parse_date
 @login_required
 @user_passes_test(is_rh_or_admin)
+@login_required
+@user_passes_test(is_rh_or_admin)
 def gerer_statut_service(request, service_id):
     service = get_object_or_404(ServiceEntreprise, id=service_id)
+    factures = FactureLibre.objects.filter(
+            service=service,
+            fichier_facture__isnull=False
+        ).exclude(fichier_facture='').order_by('-date_envoi')
 
     if request.method == 'POST':
-        statut = request.POST.get('statut')
-        if statut in dict(ServiceEntreprise.STATUT_CHOICES):
-            service.statut = statut
-            service.save()
-            messages.success(request, "Statut mis à jour.")
-        return redirect('services-par-entreprise', entreprise_id=service.entreprise.id)
-
+        action = request.POST.get('action')
+        
+        if action == 'changer_statut':
+            statut = request.POST.get('statut')
+            if statut in dict(ServiceEntreprise.STATUT_CHOICES):
+                service.statut = statut
+                
+                # Gestion des dates importantes
+                if statut == 'actif':
+                    service.date_activation = timezone.now()
+                elif statut == 'termine':
+                    service.date_expiration = timezone.now()
+                
+                service.save()
+                messages.success(request, f"Statut du service mis à jour: {service.get_statut_display()}")
+        
+        elif action == 'generer_facture':
+            facture = service.generer_facture()
+            messages.success(request, f"Facture générée: {facture.titre}")
+            
+        elif action == 'envoyer_notification':
+            message = request.POST.get('message', '')
+            NotificationEntreprise.objects.create(
+                entreprise=service.entreprise,
+                service=service,
+                titre=f"Mise à jour du service {service.titre}",
+                message=message,
+                niveau='info',
+                action_requise=False,
+                source='backoffice'
+            )
+            messages.success(request, "Notification envoyée à l'entreprise")
+        
+        return redirect('gerer-statut-service', service_id=service.id)
+    
+    # Récupérer l'historique des factures liées à ce service
+    factures = FactureLibre.objects.filter(service=service).order_by('-date_envoi')
+    
     return render(request, 'entreprise/backend/gerer_statut_service.html', {
         'service': service,
         'statuts': ServiceEntreprise.STATUT_CHOICES,
+        'factures': factures,
+        'form_facture': FactureLibreForm(),
+        'form_notification': NotificationEntrepriseForm()
     })
-
 
 @login_required
 @user_passes_test(is_rh_or_admin)
@@ -1057,7 +1207,7 @@ def traiter_demande(request, pk):
     else:
         form = DemandeEditForm(instance=demande)
 
-    return render(request, 'rh/traiter_demande.html', {'form': form, 'demande': demande})
+    return render(request, 'entreprise/backend/traiter_demande.html', {'form': form, 'demande': demande})
 
 #-------------------------------------------------------------------------------------
 #                                       FRONTEND
@@ -1132,9 +1282,8 @@ def detail_demande_service(request, demande_id):
         'services': services,
     })
 
-
-
-
+#-----------------------------------------------------------------------------------------------------------------
+#06_08
 
 
 @login_required
@@ -1143,13 +1292,12 @@ def accepter_proposition_service(request, service_id):
     service = get_object_or_404(ServiceEntreprise, id=service_id, entreprise=request.user.entreprise)
 
     if service.statut == 'proposition':
-        service.statut = 'en_attente_activation'
-        service.save()
-        messages.success(request, "Vous avez accepté la proposition RH. En attente d'activation.")
+        service.accepter_proposition()
+        messages.success(request, "Proposition acceptée. Le service sera activé.")
     else:
-        messages.warning(request, "Cette proposition n'est plus modifiable.")
+        messages.warning(request, "Action non autorisée sur ce statut de service.")
 
-    return redirect('liste_propositions_services')
+    return redirect('dashboard-client')
 
 @login_required
 @user_passes_test(entreprise_right)
@@ -1160,10 +1308,9 @@ def contre_proposition_service(request, service_id):
         form = ContrePropositionForm(request.POST, instance=service)
         if form.is_valid():
             service = form.save(commit=False)
-            service.statut = 'en_revue'  # Repasse au backoffice pour étude
-            service.save()
+            service.soumettre_contre_proposition(form.cleaned_data['contre_proposition'])
             messages.success(request, "Contre-proposition envoyée à l'équipe RH.")
-            return redirect('liste_propositions_services')
+            return redirect('liste-services-entreprise')
     else:
         form = ContrePropositionForm(instance=service)
 
@@ -1172,6 +1319,9 @@ def contre_proposition_service(request, service_id):
         'service': service
     })
 
+
+#06_08
+#____________________________________________________________________________________________________________________________
 
 @login_required
 @user_passes_test(entreprise_right)

@@ -21,7 +21,7 @@ from todo.views import get_planning_context
 from datetime import date, timedelta,datetime
 from django.core.paginator import Paginator
 
-from statics.utils import generate_graphs 
+from statistiques.utils import generate_graphs 
 from django.core.cache import cache
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page

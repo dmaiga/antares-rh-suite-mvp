@@ -23,7 +23,7 @@ import authentication.views
 import documents.views
 import notes.views
 import todo.views
-import statics.views
+import statistiques.views
 import site_web.views
 import entreprise.views
 urlpatterns = [
@@ -35,7 +35,7 @@ urlpatterns = [
     path('logs/', include('logs.urls')),
     path('notes/', include('notes.urls')),
     path('todo/', include('todo.urls')),
-    path('statics/', include('statics.urls')),
+    path('statics/', include('statistiques.urls')),
     path('antares/', include('site_web.urls')),
     path('antares/entreprise/', include('entreprise.urls')),
 ]

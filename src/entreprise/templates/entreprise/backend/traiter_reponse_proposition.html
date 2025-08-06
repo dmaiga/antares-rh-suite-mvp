@@ -1,0 +1,48 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Traiter la réponse à la proposition</h3>
+        <a href="{% url 'liste-demandes-client' entreprise_id=service.entreprise.id %}" 
+           class="btn btn-sm btn-secondary float-right">
+           Retour aux demandes
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="mb-4">
+            <h4>{{ service.titre }}</h4>
+            <p><strong>Entreprise:</strong> {{ service.entreprise.nom }}</p>
+            <p><strong>Statut:</strong> <span class="badge badge-info">{{ service.get_statut_display }}</span></p>
+            <p><strong>Prix proposé:</strong> {{ service.prix }} FCFA</p>
+        </div>
+        
+        {% if service.contre_proposition %}
+        <div class="alert alert-warning mb-4">
+            <h5><i class="fas fa-exchange-alt"></i> Contre-proposition de l'entreprise:</h5>
+            <div class="p-3 bg-light rounded">
+                {{ service.contre_proposition|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+        
+        <form method="post" class="mt-4">
+            {% csrf_token %}
+            <div class="btn-group btn-group-lg">
+                <button type="submit" name="action" value="accepter_contre_proposition" 
+                        class="btn btn-success">
+                    <i class="fas fa-check"></i> Accepter
+                </button>
+                <button type="submit" name="action" value="refuser_contre_proposition" 
+                        class="btn btn-danger">
+                    <i class="fas fa-times"></i> Refuser
+                </button>
+                <button type="submit" name="action" value="nouvelle_proposition" 
+                        class="btn btn-primary">
+                    <i class="fas fa-redo"></i> Nouvelle proposition
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

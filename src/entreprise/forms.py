@@ -258,11 +258,10 @@ class NotificationEntrepriseForm(forms.ModelForm):
             raise forms.ValidationError("Merci de donner un titre plus spécifique.")
         return titre
 
-
 class FactureLibreForm(forms.ModelForm):
     class Meta:
         model = FactureLibre
-        fields = ['titre', 'description', 'montant', 'fichier_facture']
+        fields = ['titre', 'service', 'description', 'montant_ht', 'tva', 'fichier_facture']
         labels = {
             'titre': "Titre de la facture",
             'description': "Description",
@@ -270,10 +269,33 @@ class FactureLibreForm(forms.ModelForm):
             'fichier_facture': "Fichier de la facture (PDF ou scan)",
         }
         widgets = {
-            'titre': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex : Facture Février 2025'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'montant': forms.NumberInput(attrs={'class': 'form-control'}),
-            'fichier_facture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'titre': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ex : Facture Février 2025'
+            }),
+            'service': forms.Select(attrs={
+                'class': 'form-control',
+                'disabled': True 
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Détails des prestations...'
+            }),
+            'tva': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'onchange': 'calculateTTC()'  # Pour calcul automatique en JS
+            }),
+            'montant_ht': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'onchange': 'calculateTTC()'
+            }),
+            'fichier_facture': forms.ClearableFileInput(attrs={
+                'class': 'form-control',
+                'accept': '.pdf,.jpg,.png'  # Limite les types de fichiers
+            }),
         }
 
     def clean_montant(self):
@@ -281,6 +303,13 @@ class FactureLibreForm(forms.ModelForm):
         if montant <= 0:
             raise forms.ValidationError("Le montant doit être supérieur à zéro.")
         return montant
+
+    def clean_fichier_facture(self):
+        fichier = self.cleaned_data.get('fichier_facture', False)
+        if fichier:
+            if fichier.size > 5*1024*1024:  # 5MB max
+                raise forms.ValidationError("Le fichier est trop volumineux (> 5MB)")
+            return fichier
 
 
 from django import forms
