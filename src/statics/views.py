@@ -173,7 +173,7 @@ def historique_par_mois(request):
         'user_display_name': user.get_full_name() or user.username ,
         'is_rh_view': is_rh_view,
     }
-    return render(request, 'statics/historique_mois.html', context)
+    return render(request, 'statistiques/historique_mois.html', context)
 
 @login_required
 def historique_jour(request, date_str):
@@ -220,7 +220,7 @@ def historique_jour(request, date_str):
          },
         'is_rh_view': is_rh_view,
     }
-    return render(request, 'statics/historique_jour.html', context)
+    return render(request, 'statistiques/historique_jour.html', context)
 
 
 
@@ -249,7 +249,7 @@ def export_statistiques(request, date):
         }
     }
 
-    html = render_to_string("statics/pdf_export.html", context)
+    html = render_to_string("statistiques/pdf_export.html", context)
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="journee_{date}.pdf"'
 
@@ -306,7 +306,7 @@ def statistique_globale(request):
         'mois_fr': mois_fr,
         'annees': reversed(annees),  # Affichage des années récentes en premier
     }
-    return render(request, 'statics/statistique.html', context)
+    return render(request, 'statistiques/statistique.html', context)
 
 
 
@@ -347,7 +347,7 @@ def export_semaine(request, format, start_date_str):
         appreciation = "Excellent"
 
     if format == 'pdf':
-        html = render_to_string("statics/semaine_pdf.html", {
+        html = render_to_string("statistiques/semaine_pdf.html", {
             'historique': dict(historique),
             'start_date': start_date,
             'end_date': end_date,
@@ -434,7 +434,7 @@ def historique_user(request, user_id):
         'employe': employe,
         'semaines': semaines,
     }
-    return render(request, 'statics/historique_employe.html', context)
+    return render(request, 'statistiques/historique_employe.html', context)
 
 @login_required
 @user_passes_test(is_rh_or_admin)
@@ -462,7 +462,7 @@ def historique_detail_user(request, user_id, semaine, jour):
         'css_class': css_class,
         'appreciation': appreciation,
     }
-    return render(request, 'statics/historique_detail_user.html', context)
+    return render(request, 'statistiques/historique_detail_user.html', context)
 
 
 def get_performance_class(percentage):

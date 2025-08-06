@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'notes',
     'channels',
     'todo',
-    'statics',
+    'statistiques',
     'site_web',
     'entreprise',
     
