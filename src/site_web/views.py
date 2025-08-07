@@ -3,16 +3,99 @@ from authentication.models import User
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from jobs.models import JobOffer
+from django.shortcuts import render, get_object_or_404
+
+#07_08
+
+from django.core.paginator import Paginator
+from django.db.models import Q
+
+def jobs(request):
+    # Récupération des paramètres
+    search_query = request.GET.get('q', '')
+    location = request.GET.get('location', '')
+    sector = request.GET.get('sector', '')
+    contract_type = request.GET.get('contract_type', '')
+    page_number = request.GET.get('page', 1)
+    
+    # Filtrage de base
+    jobs = JobOffer.objects.filter(
+        visible_sur_site=True,
+        statut='publie'
+    ).order_by('-date_publication')
+    
+    # Filtres supplémentaires
+    if search_query:
+        jobs = jobs.filter(
+            Q(titre__icontains=search_query) |
+            Q(description_poste__icontains=search_query) |
+            Q(profil_recherche__icontains=search_query) |
+            Q(societe__icontains=search_query)
+        )
+    
+    if location:
+        jobs = jobs.filter(lieu__icontains=location)
+    
+    if sector:
+        jobs = jobs.filter(secteur__icontains=sector)
+    
+    if contract_type:
+        jobs = jobs.filter(type_offre=contract_type)
+    
+    # Pagination - 10 éléments par page
+    paginator = Paginator(jobs, 10)
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'jobs': page_obj,
+        'search_query': search_query,
+        'location': location,
+        'sector': sector,
+        'contract_type': contract_type,
+    }
+    
+    return render(request, 'site_web/public_jobs.html', context)
+
+def public_job_offer_detail(request, pk):
+    job = get_object_or_404(
+        JobOffer, 
+        pk=pk, 
+        visible_sur_site=True,
+        statut='publie'
+    )
+    
+    # Suggestions d'autres offres
+    related_jobs = JobOffer.objects.filter(
+        visible_sur_site=True,
+        statut='publie',
+        secteur=job.secteur
+    ).exclude(pk=pk).order_by('-date_publication')[:3]
+    
+    context = {
+        'job': job,
+        'related_jobs': related_jobs
+    }
+    
+    return render(request, 'site_web/public_job_detail.html', context)
 
 def home(request):
-    return render(request, 'site_web/index.html')
-
+    featured_jobs = JobOffer.objects.filter(
+        visible_sur_site=True,
+        statut='publie'
+    ).order_by('-date_publication')[:5]
+    
+    context = {
+        'featured_jobs': featured_jobs
+    }
+    
+    return render(request, 'site_web/index.html', context)
+   
+#07_08
+#______________________________________________________________________________
 def about(request):
     return render(request, 'site_web/about.html')
 
-
-def jobs(request):
-    return render(request, 'site_web/jobs.html')
 
 def contact(request):
     return render(request, 'site_web/contact.html')

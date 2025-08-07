@@ -2,6 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    #07_08
+    path('emplois/<int:pk>/', views.public_job_offer_detail, name='public-job-offer-detail'),
+    #07_08
+    #_____________________________________________________
     path('home', views.home, name='home'),
     path('about/', views.about, name='about'),
 

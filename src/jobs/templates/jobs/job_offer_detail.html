@@ -1,32 +1,392 @@
-{% extends 'authentication/base.html' %}
+{% extends 'site_web/layout.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .job-header {
+        background: linear-gradient(135deg, rgba(248, 249, 250, 0.9) 0%, rgba(233, 236, 239, 0.9) 100%);
+        border-left: 4px solid var(--secondary-blue);
+        padding: 2.5rem 0;
+    }
+    
+    .job-section {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 15px rgba(13, 59, 102, 0.05);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(13, 59, 102, 0.05);
+    }
+    
+    .job-section h5 {
+        color: var(--primary-blue);
+        position: relative;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .job-section h5::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 60px;
+        height: 3px;
+        background: var(--accent-orange);
+    }
+    
+    .job-content {
+        line-height: 1.8;
+    }
+    
+    .job-content p {
+        margin-bottom: 1rem;
+    }
+    
+    .job-content ul,
+    .job-content ol {
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .job-content a {
+        color: var(--secondary-blue);
+        text-decoration: underline;
+    }
+    
+    .job-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.25rem;
+        margin: 1rem 0;
+    }
+    
+    .pdf-preview {
+        border: 1px solid var(--light-blue);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .pdf-preview:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(13, 59, 102, 0.1);
+        border-color: var(--secondary-blue);
+    }
+    
+    .badge-icon {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .action-btn {
+        min-width: 150px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        border-radius: 0.5rem;
+    }
+    
+    .info-card {
+        background-color: rgba(13, 59, 102, 0.03);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    
+    .info-item i {
+        color: var(--accent-orange);
+        margin-right: 1rem;
+        margin-top: 0.2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .job-header {
+            padding: 1.5rem 0;
+        }
+        
+        .job-section {
+            padding: 1rem;
+        }
+        
+        .action-btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<h2>{{ offer.titre }}</h2>
+<!-- Job Header -->
+<section class="job-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center mb-3">
+                    <h1 class="mb-0 me-3">{{ job.titre }}</h1>
+                    <span class="badge rounded-pill {{ job.get_status_badge_class }} text-white">
+                        {{ job.get_statut_display }}
+                    </span>
+                </div>
+                
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    <span class="badge bg-primary bg-opacity-10 text-primary badge-icon">
+                        <i class="bi bi-briefcase"></i> {{ job.get_type_offre_display }}
+                    </span>
+                    <span class="badge bg-primary bg-opacity-10 text-primary badge-icon">
+                        <i class="bi bi-building"></i> {{ job.societe }}
+                    </span>
+                    {% if job.lieu %}
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary badge-icon">
+                        <i class="bi bi-geo-alt"></i> {{ job.lieu }}
+                    </span>
+                    {% endif %}
+                    {% if job.salaire %}
+                    <span class="badge bg-success bg-opacity-10 text-success badge-icon">
+                        <i class="bi bi-cash-stack"></i> {{ job.salaire }}
+                    </span>
+                    {% endif %}
+                </div>
+                
+                {% if job.date_limite %}
+                <div class="alert alert-warning d-inline-flex align-items-center">
+                    <i class="bi bi-clock-history me-2 fs-5"></i>
+                    <div>
+                        <strong>Date limite :</strong> {{ job.date_limite|date:"d/m/Y" }}
+                        {% if job.est_expire %}
+                        <span class="badge bg-danger ms-2">Expiré</span>
+                        {% else %}
+                        (dans {{ job.date_limite|timeuntil }})
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-4 text-md-end mt-4 mt-md-0">
+                {% if job.contact and not job.est_expire %}
+                <a href="mailto:{{ job.contact }}?subject=Candidature pour {{ job.titre|urlencode }}" 
+                   class="btn btn-orange px-4">
+                    <i class="bi bi-send me-2"></i>Postuler maintenant
+                </a>
+                {% elif job.est_expire %}
+                <button class="btn btn-secondary px-4" disabled>
+                    <i class="bi bi-clock-history me-2"></i>Offre expirée
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
 
-<p><strong>Référence :</strong> {{ offer.reference }}</p>
-<p><strong>Type :</strong> {{ offer.get_type_offre_display }}</p>
-<p><strong>Statut :</strong> {{ offer.get_statut_display }}</p>
-<p><strong>Mission Principale :</strong><br>{{ offer.mission_principale|linebreaks }}</p>
-<p><strong>Tâches :</strong><br>{{ offer.taches|linebreaks }}</p>
-<p><strong>Profil Recherché :</strong><br>{{ offer.profil_recherche|linebreaks }}</p>
-<p><strong>Conditions :</strong><br>{{ offer.conditions|linebreaks }}</p>
-<p><strong>Autres Infos :</strong><br>{{ offer.autres_infos|linebreaks }}</p>
-<p><strong>Date de publication :</strong> {{ offer.date_publication }}</p>
-<p><strong>Date limite :</strong> {{ offer.date_limite }}</p>
-<p><strong>Auteur :</strong> {{ offer.auteur }}</p>
+<!-- Job Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8 pe-lg-4">
+                <!-- Description du poste -->
+                <div class="job-section">
+                    <h5><i class="bi bi-card-text text-primary me-2"></i>Description du poste</h5>
+                    <div class="job-content mt-3">
+                        {{ job.get_clean_description|safe }}
+                    </div>
+                </div>
+                
+                <!-- Missions principales -->
+                {% if job.mission_principale %}
+                <div class="job-section">
+                    <h5><i class="bi bi-list-task text-primary me-2"></i>Missions principales</h5>
+                    <div class="job-content mt-3">
+                        {{ job.get_missions_liste|safe }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Tâches spécifiques -->
+                {% if job.taches %}
+                <div class="job-section">
+                    <h5><i class="bi bi-check2-square text-primary me-2"></i>Tâches spécifiques</h5>
+                    <div class="job-content mt-3">
+                        {{ job.get_taches_liste|safe }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Profil recherché -->
+                {% if job.profil_recherche %}
+                <div class="job-section">
+                    <h5><i class="bi bi-person-badge text-primary me-2"></i>Profil recherché</h5>
+                    <div class="job-content mt-3">
+                        {{ job.get_clean_profil|safe }}
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <!-- Compétences requises -->
+                        {% if job.competences_qualifications %}
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h6><i class="bi bi-award text-primary me-2"></i>Compétences requises</h6>
+                                <div class="mt-3">
+                                    {{ job.get_competences_liste|safe }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Qualifications -->
+                        <div class="col-md-6">
+                            <div class="info-card">
+                                <h6><i class="bi bi-book text-primary me-2"></i>Qualifications</h6>
+                                <div class="mt-3">
+                                    <div class="info-item">
+                                        <i class="bi bi-mortarboard"></i>
+                                        <div>
+                                            <strong>Niveau d'étude :</strong><br>
+                                            {{ job.niveau_etude|default:"Non spécifié" }}
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="bi bi-person-workspace"></i>
+                                        <div>
+                                            <strong>Expérience requise :</strong><br>
+                                            {{ job.experience_requise|default:"Non spécifiée" }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Conditions -->
+                {% if job.conditions %}
+                <div class="job-section">
+                    <h5><i class="bi bi-file-earmark-text text-primary me-2"></i>Conditions</h5>
+                    <div class="job-content mt-3">
+                        {{ job.get_conditions_liste|safe }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="col-lg-4 mt-5 mt-lg-0">
+                <!-- Informations clés -->
+                <div class="job-section">
+                    <h5><i class="bi bi-info-circle text-primary me-2"></i>Informations clés</h5>
+                    <div class="mt-3">
+                        <div class="info-item">
+                            <i class="bi bi-journal-text"></i>
+                            <div>
+                                <strong>Référence :</strong><br>
+                                {{ job.reference }}
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi bi-calendar-event"></i>
+                            <div>
+                                <strong>Publication :</strong><br>
+                                {{ job.date_publication|date:"d/m/Y" }}
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi bi-clock-history"></i>
+                            <div>
+                                <strong>Date limite :</strong><br>
+                                {% if job.date_limite %}
+                                    {{ job.date_limite|date:"d/m/Y" }}
+                                {% else %}
+                                    Non spécifiée
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi bi-cash-coin"></i>
+                            <div>
+                                <strong>Salaire :</strong><br>
+                                {{ job.salaire|default:"Non communiqué" }}
+                            </div>
+                        </div>
+                        {% if job.auteur %}
+                        <div class="info-item">
+                            <i class="bi bi-person"></i>
+                            <div>
+                                <strong>Auteur :</strong><br>
+                                {{ job.auteur.get_full_name|default:job.auteur.username }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- PDF Preview -->
+                {% if job.fichier_pdf %}
+                <div class="job-section">
+                    <h5><i class="bi bi-file-earmark-pdf text-primary me-2"></i>Document joint</h5>
+                    <div class="mt-3">
+                        <a href="{{ job.fichier_pdf.url }}" target="_blank" class="d-inline-block pdf-preview">
+                            <i class="bi bi-file-earmark-pdf text-danger" style="font-size: 3rem;"></i>
+                            <div class="mt-2">Télécharger le PDF</div>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Comment postuler -->
+                <div class="job-section">
+                    <h5><i class="bi bi-send text-primary me-2"></i>Comment postuler</h5>
+                    <div class="job-content mt-3">
+                        {{ job.get_clean_how_to_apply|safe }}
+                    </div>
+                    {% if job.contact %}
+                    <div class="mt-4">
+                        <a href="mailto:{{ job.contact }}?subject=Candidature pour {{ job.titre|urlencode }}" 
+                           class="btn btn-orange w-100">
+                            <i class="bi bi-envelope me-2"></i> Envoyer votre candidature
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions (pour les administrateurs) -->
+        {% if user.is_staff %}
+        <div class="d-flex flex-wrap gap-3 mt-5">
+            <a href="{% url 'job-offer-update' job.pk %}" class="btn btn-primary action-btn">
+                <i class="bi bi-pencil"></i> Modifier
+            </a>
+            
+            {% if job.statut != "publie" %}
+                <a href="{% url 'job-offer-publish' job.pk %}" class="btn btn-success action-btn">
+                    <i class="bi bi-megaphone"></i> Publier
+                </a>
+            {% else %}
+                <a href="{% url 'job-offer-unpublish' job.pk %}" class="btn btn-warning action-btn">
+                    <i class="bi bi-megaphone-mute"></i> Dépublier
+                </a>
+            {% endif %}
 
-{% if offer.fichier_pdf %}
-<p><a href="{{ offer.fichier_pdf.url }}" target="_blank">Voir le PDF joint</a></p>
-{% endif %}
+            <a href="{% url 'job-offer-delete' job.pk %}" class="btn btn-danger action-btn">
+                <i class="bi bi-trash"></i> Supprimer
+            </a>
 
-<a href="{% url 'job-offer-update' offer.pk %}" class="btn btn-primary">Modifier</a>
-<a href="{% url 'job-offer-delete' offer.pk %}" class="btn btn-danger">Supprimer</a>
-
-{% if offer.statut != "publie" %}
-  <a href="{% url 'job-offer-publish' offer.pk %}" class="btn btn-success">Publier</a>
-{% else %}
-  <a href="{% url 'job-offer-unpublish' offer.pk %}" class="btn btn-warning">Dépublier</a>
-{% endif %}
-
-<a href="{% url 'job-offer-list' %}" class="btn btn-secondary">Retour à la liste</a>
+            <a href="{% url 'job-offer-list' %}" class="btn btn-outline-secondary action-btn">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}

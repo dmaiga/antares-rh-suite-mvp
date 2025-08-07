@@ -35,6 +35,8 @@ urlpatterns = [
     path('antares/', include('site_web.urls')),
     path('antares/entreprise/', include('entreprise.urls')),
     path('antares/jobs/', include('jobs.urls')),
+
+     path('summernote/', include('django_summernote.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:

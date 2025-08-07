@@ -3,17 +3,52 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponseForbidden
 
 from .forms import JobOfferForm
-from .models import JobOffer
+from .models import JobOffer,JobStatus,JobType
 
 def is_rh_or_admin(user):
     return user.is_authenticated and user.role in ['admin', 'rh']
 
 # --- LISTE DES OFFRES ---
+from django.core.paginator import Paginator
+from django.db.models import Q
+
 @login_required
 @user_passes_test(is_rh_or_admin)
 def job_offer_list(request):
+    # Récupération des paramètres
+    status_filter = request.GET.get('status', 'all')
+    search_query = request.GET.get('q', '')
+    page_number = request.GET.get('page', 1)
+    
+    # Filtrage de base
     offers = JobOffer.objects.all().order_by('-date_publication')
-    return render(request, 'jobs/job_offer_list.html', {'offers': offers})
+    
+    # Filtre par statut
+    if status_filter != 'all':
+        offers = offers.filter(statut=status_filter)
+    
+    # Recherche texte
+    if search_query:
+        offers = offers.filter(
+            Q(titre__icontains=search_query) |
+            Q(reference__icontains=search_query) |
+            Q(societe__icontains=search_query) |
+            Q(description_poste__icontains=search_query)
+        )
+    
+    # Pagination - 10 éléments par page
+    paginator = Paginator(offers, 10)
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'offers': page_obj,
+        'status_filter': status_filter,
+        'search_query': search_query,
+        'status_choices': JobStatus.choices,
+    }
+    
+    return render(request, 'jobs/job_offer_list.html', context)
+
 
 # --- DETAIL D'UNE OFFRE ---
 @login_required

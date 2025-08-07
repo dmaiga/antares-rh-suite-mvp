@@ -44,62 +44,111 @@
 </section>
 
 <!-- Section Offres -->
-<section class="jobs-section py-5" style="background-color: #F4F4F9;">
+<section class="py-5 bg-light">
   <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-5">
-      <h2 class="mb-0" style="color: #0D3B66;">Offres</h2>
-      <a href="{% url 'jobs' %}" class="btn btn-link" style="color: #F46036;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Nos dernières offres</h2>
+      <a href="{% url 'jobs' %}" class="btn btn-link text-decoration-none">
         Voir toutes <i class="bi bi-arrow-right ms-2"></i>
       </a>
     </div>
+    
     <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm">
+      {% for job in featured_jobs %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
           <div class="card-body">
-            <span class="badge mb-2" style="background-color: #2D76B6; color: white;">Nouveau</span>
-            <h3 class="h5" style="color: #0D3B66;">Responsable Logistique</h3>
-            <p class="text-muted small mb-2"><i class="bi bi-geo-alt me-1"></i> Bamako, Mali</p>
-            <p class="small mb-3">CDI dans le secteur minier avec avantages compétitifs</p>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="card-title mb-0">{{ job.titre }}</h5>
+              <span class="badge rounded-pill {{ job.get_status_badge_class }} text-white ms-2">
+                {{ job.get_statut_display }}
+              </span>
+            </div>
+            
+            <p class="card-text text-muted small mb-3">
+              <i class="bi bi-building text-primary"></i> {{ job.societe }}
+              {% if job.lieu %}
+              <span class="ms-3"><i class="bi bi-geo-alt text-primary"></i> {{ job.lieu }}</span>
+              {% endif %}
+            </p>
+            
+            <div class="card-text mb-3 text-truncate-container" style="--lines:3;">
+              {{ job.get_clean_description|striptags|truncatewords:30 }}
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span class="badge bg-primary bg-opacity-10 text-primary">
+                {{ job.get_type_offre_display }}
+              </span>
+              <a href="{% url 'public-job-offer-detail' job.pk %}" class="btn btn-sm btn-primary stretched-link">
+                Voir détails
+              </a>
+            </div>
+          </div>
+          
+          <div class="card-footer bg-transparent border-top-0 pt-0">
             <div class="d-flex justify-content-between align-items-center">
-              <span class="badge bg-light text-dark small">Emploi</span>
-              <a href="{% url 'jobs' %}" class="btn btn-sm" style="background-color: #F46036; color: white;">Postuler</a>
+              <small class="text-muted">
+                <i class="bi bi-clock text-primary"></i> Publiée {{ job.date_publication|timesince }}
+              </small>
+              {% if job.date_limite %}
+              <small class="text-muted">
+                <i class="bi bi-calendar-check text-primary"></i> Clôture {{ job.date_limite|date:"d/m/Y" }}
+              </small>
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
-      
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body">
-            <span class="badge mb-2" style="background-color: #2D76B6; color: white;">Nouveau</span>
-            <h3 class="h5" style="color: #0D3B66;">Appel d'offres: Fournitures</h3>
-            <p class="text-muted small mb-2"><i class="bi bi-calendar me-1"></i> Clôture: 15/09/2023</p>
-            <p class="small mb-3">Fourniture de matériel informatique pour projet gouvernemental</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="badge bg-light text-dark small">Appel d'offres</span>
-              <a href="{% url 'jobs' %}" class="btn btn-sm" style="background-color: #F46036; color: white;">Voir</a>
-            </div>
-          </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="alert alert-info mb-0">
+          <i class="bi bi-info-circle me-2"></i> Aucune offre disponible pour le moment.
         </div>
       </div>
-      
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body">
-            <span class="badge mb-2" style="background-color: #2D76B6; color: white;">Nouveau</span>
-            <h3 class="h5" style="color: #0D3B66;">Expert Comptable</h3>
-            <p class="text-muted small mb-2"><i class="bi bi-geo-alt me-1"></i> Bamako, Mali</p>
-            <p class="small mb-3">Mission de 6 mois pour audit financier</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="badge bg-light text-dark small">Emploi</span>
-              <a href="{% url 'jobs' %}" class="btn btn-sm" style="background-color: #F46036; color: white;">Postuler</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      {% endfor %}
     </div>
   </div>
 </section>
+
+<style>
+  /* Styles personnalisés */
+  :root {
+    --secondary-blue: #2D76B6;
+    --light-gray: #F4F4F9;
+    --dark-gray: #333333;
+    --light-blue: #E6F0FA; 
+    --accent-orange: #E04B1A;
+    --primary-blue: #0A2E4E;
+  }
+  
+  .hover-shadow {
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .hover-shadow:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+  }
+  
+  .text-truncate-container {
+    display: -webkit-box;
+    -webkit-line-clamp: var(--lines, 3);
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  
+  .badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+  }
+</style>
+
 
 <!-- Dual Content Grid - Version enrichie -->
 <section class="dual-grid-section py-5 bg-light">

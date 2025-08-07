@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'statistiques',
     'site_web',
     'entreprise',
+    'django_summernote',
     'jobs',
 ]
 
@@ -192,3 +193,21 @@ CHANNEL_LAYERS = {
     },
 }
 
+
+SUMMERNOTE_CONFIG = {
+    'attachment_model': 'jobs.SummernoteAttachment',
+    'attachment_require_authentication': True,
+    
+    'attachment_filesize_limit': 1024 * 1024 * 5,  # 5MB
+    'summernote': {
+        'width': '100%',
+        'height': '480px',
+        'toolbar': [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['codeview', 'help']],
+        ],
+    },
+}
