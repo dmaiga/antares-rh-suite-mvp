@@ -20,12 +20,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 import authentication.views
-import documents.views
-import notes.views
-import todo.views
-import statistiques.views
 import site_web.views
-import entreprise.views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',site_web.views.home,name='home'),
@@ -38,6 +34,7 @@ urlpatterns = [
     path('statics/', include('statistiques.urls')),
     path('antares/', include('site_web.urls')),
     path('antares/entreprise/', include('entreprise.urls')),
+    path('antares/jobs/', include('jobs.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:

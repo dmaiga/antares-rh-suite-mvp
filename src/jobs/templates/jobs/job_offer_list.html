@@ -1,0 +1,40 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<h2>Liste des Offres</h2>
+
+<a href="{% url 'job-offer-create' %}" class="btn btn-primary mb-3">Nouvelle Offre</a>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Référence</th>
+      <th>Titre</th>
+      <th>Type</th>
+      <th>Statut</th>
+      <th>Date</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for offer in offers %}
+    <tr>
+      <td>{{ offer.reference }}</td>
+      <td>{{ offer.titre }}</td>
+      <td>{{ offer.get_type_offre_display }}</td>
+      <td>{{ offer.get_statut_display }}</td>
+      <td>{{ offer.date_publication }}</td>
+      <td>
+        <a href="{% url 'job-offer-detail' offer.pk %}" class="btn btn-sm btn-outline-secondary">Voir</a>
+        <a href="{% url 'job-offer-update' offer.pk %}" class="btn btn-sm btn-outline-primary">Modifier</a>
+        <a href="{% url 'job-offer-delete' offer.pk %}" class="btn btn-sm btn-outline-danger">Supprimer</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="6">Aucune offre pour le moment.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

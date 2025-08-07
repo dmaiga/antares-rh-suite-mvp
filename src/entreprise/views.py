@@ -7,7 +7,7 @@ from .models import (
                         NotificationEntreprise,
                         ServiceEntreprise,
                         ServiceRH,
-                        FactureLibre
+                        
                     
                     )
 
@@ -15,7 +15,7 @@ from .forms import (EntrepriseRegisterForm,
                     CreateEntrepriseForm,
                     ServiceEntrepriseForm,
                       NotificationEntrepriseForm,
-                      FactureLibreForm,
+                     
                       DemandeServiceForm,
                       DemandeEditForm
                       )
@@ -522,6 +522,136 @@ def reset_password_entreprise(request, entreprise_id):
 #_________________________________________________________________________________
 #__________________________________________________________________________________
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.utils import timezone
+
+@user_passes_test(is_rh_or_admin)
+def generer_facture(request, service_id):
+    service = get_object_or_404(ServiceEntreprise, id=service_id)
+    
+    if service.statut != 'accepte':
+        messages.error(request, "Le service doit être accepté avant facturation")
+        return redirect('gerer-statut-service', service_id=service.id)
+    
+    if request.method == 'POST':
+        form = FactureLibreForm(request.POST, request.FILES, service=service)
+        if form.is_valid():
+            try:
+                facture = form.save(commit=False)
+                facture.entreprise = service.entreprise
+                facture.service = service
+                facture.envoyee_par = request.user
+                facture.statut = 'a_payer'
+                facture.date_envoi = timezone.now()
+                
+                # Génération automatique du PDF si aucun fichier fourni
+                if not facture.fichier_facture:
+                    facture.generer_pdf()
+                
+                facture.save()
+                
+                # Notification
+                NotificationEntreprise.objects.create(
+                    entreprise=service.entreprise,
+                    service=service,
+                    facture=facture,
+                    titre=f"Nouvelle facture: {facture.titre}",
+                    message=f"Une facture de {facture.montant_ttc} FCFA a été émise",
+                    niveau='important',
+                    action_requise=True
+                )
+                
+                messages.success(request, f"Facture {facture.titre} générée avec succès")
+                return redirect('detail-facture', facture_id=facture.id)
+                
+            except Exception as e:
+                messages.error(request, f"Erreur lors de la génération: {str(e)}")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = FactureLibreForm(service=service, initial={
+            'titre': f"Facture {service.titre}",
+            'description': f"Facture pour le service {service.titre}"
+        })
+    
+    context = {
+        'form': form,
+        'service': service,
+        'montant_ttc': service.prix * (1 + service.tva/100) if service else 0
+    }
+    return render(request, 'entreprise/factures/generer_facture.html', context)
+
+from django.core.paginator import Paginator
+
+from django.db.models import Q
+from django.utils.dateparse import parse_date
+@user_passes_test(is_rh_or_admin)
+def gerer_statut_service(request, service_id):
+    service = get_object_or_404(ServiceEntreprise, id=service_id)
+    factures = FactureLibre.objects.filter(service=service).order_by('-date_envoi')
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'changer_statut':
+            statut = request.POST.get('statut')
+            if statut in dict(ServiceEntreprise.STATUT_CHOICES):
+                service.statut = statut
+                
+                if statut == 'actif':
+                    service.date_activation = timezone.now()
+                elif statut == 'termine':
+                    service.date_expiration = timezone.now()
+                
+                service.save()
+                messages.success(request, f"Statut mis à jour: {service.get_statut_display()}")
+        
+        elif action == 'generer_facture':
+            form = FactureLibreForm(request.POST, request.FILES, service=service)
+            if form.is_valid():
+                facture = form.save(commit=False)
+                facture.service = service
+                facture.entreprise = service.entreprise
+                facture.envoyee_par = request.user
+                facture.save()
+                
+                messages.success(request, f"Facture {facture.titre} créée avec succès")
+            else:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        messages.error(request, f"{field}: {error}")
+        
+        elif action == 'envoyer_notification':
+            message = request.POST.get('message', '')
+            if message:
+                NotificationEntreprise.objects.create(
+                    entreprise=service.entreprise,
+                    service=service,
+                    titre=f"Mise à jour du service {service.titre}",
+                    message=message,
+                    niveau='info',
+                    action_requise=False,
+                    source='backoffice'
+                )
+                messages.success(request, "Notification envoyée")
+            else:
+                messages.error(request, "Le message ne peut pas être vide")
+        
+        return redirect('gerer-statut-service', service_id=service.id)
+    
+    return render(request, 'entreprise/backend/gerer_statut_service.html', {
+        'service': service,
+        'statuts': ServiceEntreprise.STATUT_CHOICES,
+        'factures': factures,
+        'form_facture': FactureLibreForm(service=service),
+        'form_notification': NotificationEntrepriseForm()
+    })
+
+
+#07_08
 #----------------------------------------------------------------------------------
 #06_08
 
@@ -950,67 +1080,7 @@ def demande_client_refuser(request, pk):
 #___________________________________________________________________________________
 # 04_08_2025
 #
-from django.core.paginator import Paginator
 
-from django.db.models import Q
-from django.utils.dateparse import parse_date
-@login_required
-@user_passes_test(is_rh_or_admin)
-@login_required
-@user_passes_test(is_rh_or_admin)
-def gerer_statut_service(request, service_id):
-    service = get_object_or_404(ServiceEntreprise, id=service_id)
-    factures = FactureLibre.objects.filter(
-            service=service,
-            fichier_facture__isnull=False
-        ).exclude(fichier_facture='').order_by('-date_envoi')
-
-    if request.method == 'POST':
-        action = request.POST.get('action')
-        
-        if action == 'changer_statut':
-            statut = request.POST.get('statut')
-            if statut in dict(ServiceEntreprise.STATUT_CHOICES):
-                service.statut = statut
-                
-                # Gestion des dates importantes
-                if statut == 'actif':
-                    service.date_activation = timezone.now()
-                elif statut == 'termine':
-                    service.date_expiration = timezone.now()
-                
-                service.save()
-                messages.success(request, f"Statut du service mis à jour: {service.get_statut_display()}")
-        
-        elif action == 'generer_facture':
-            facture = service.generer_facture()
-            messages.success(request, f"Facture générée: {facture.titre}")
-            
-        elif action == 'envoyer_notification':
-            message = request.POST.get('message', '')
-            NotificationEntreprise.objects.create(
-                entreprise=service.entreprise,
-                service=service,
-                titre=f"Mise à jour du service {service.titre}",
-                message=message,
-                niveau='info',
-                action_requise=False,
-                source='backoffice'
-            )
-            messages.success(request, "Notification envoyée à l'entreprise")
-        
-        return redirect('gerer-statut-service', service_id=service.id)
-    
-    # Récupérer l'historique des factures liées à ce service
-    factures = FactureLibre.objects.filter(service=service).order_by('-date_envoi')
-    
-    return render(request, 'entreprise/backend/gerer_statut_service.html', {
-        'service': service,
-        'statuts': ServiceEntreprise.STATUT_CHOICES,
-        'factures': factures,
-        'form_facture': FactureLibreForm(),
-        'form_notification': NotificationEntrepriseForm()
-    })
 
 @login_required
 @user_passes_test(is_rh_or_admin)
@@ -1275,7 +1345,7 @@ def detail_demande_service(request, demande_id):
             )
             nouveau_service.demandes.set(service.demandes.all())
 
-        return redirect('detail_demande_service', demande_id=demande.id)
+        return redirect('dashboard-client')
 
     return render(request, 'entreprise/frontend/suivi_demande_detail.html', {
         'demande': demande,

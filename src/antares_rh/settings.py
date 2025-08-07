@@ -64,7 +64,7 @@ INSTALLED_APPS = [
     'statistiques',
     'site_web',
     'entreprise',
-    
+    'jobs',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,32 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<h2>{{ offer.titre }}</h2>
+
+<p><strong>Référence :</strong> {{ offer.reference }}</p>
+<p><strong>Type :</strong> {{ offer.get_type_offre_display }}</p>
+<p><strong>Statut :</strong> {{ offer.get_statut_display }}</p>
+<p><strong>Mission Principale :</strong><br>{{ offer.mission_principale|linebreaks }}</p>
+<p><strong>Tâches :</strong><br>{{ offer.taches|linebreaks }}</p>
+<p><strong>Profil Recherché :</strong><br>{{ offer.profil_recherche|linebreaks }}</p>
+<p><strong>Conditions :</strong><br>{{ offer.conditions|linebreaks }}</p>
+<p><strong>Autres Infos :</strong><br>{{ offer.autres_infos|linebreaks }}</p>
+<p><strong>Date de publication :</strong> {{ offer.date_publication }}</p>
+<p><strong>Date limite :</strong> {{ offer.date_limite }}</p>
+<p><strong>Auteur :</strong> {{ offer.auteur }}</p>
+
+{% if offer.fichier_pdf %}
+<p><a href="{{ offer.fichier_pdf.url }}" target="_blank">Voir le PDF joint</a></p>
+{% endif %}
+
+<a href="{% url 'job-offer-update' offer.pk %}" class="btn btn-primary">Modifier</a>
+<a href="{% url 'job-offer-delete' offer.pk %}" class="btn btn-danger">Supprimer</a>
+
+{% if offer.statut != "publie" %}
+  <a href="{% url 'job-offer-publish' offer.pk %}" class="btn btn-success">Publier</a>
+{% else %}
+  <a href="{% url 'job-offer-unpublish' offer.pk %}" class="btn btn-warning">Dépublier</a>
+{% endif %}
+
+<a href="{% url 'job-offer-list' %}" class="btn btn-secondary">Retour à la liste</a>
+{% endblock %}

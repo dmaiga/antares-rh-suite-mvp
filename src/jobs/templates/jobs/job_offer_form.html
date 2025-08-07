@@ -1,0 +1,12 @@
+{% extends 'authentication/base.html' %}
+
+{% block content %}
+<h2>{% if form.instance.pk %}Modifier{% else %}Créer{% endif %} une Offre</h2>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Enregistrer</button>
+  <a href="{% url 'job-offer-list' %}" class="btn btn-secondary">Annuler</a>
+</form>
+{% endblock %}
