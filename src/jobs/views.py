@@ -12,6 +12,7 @@ def is_rh_or_admin(user):
 from django.core.paginator import Paginator
 from django.db.models import Q
 
+
 @login_required
 @user_passes_test(is_rh_or_admin)
 def job_offer_list(request):

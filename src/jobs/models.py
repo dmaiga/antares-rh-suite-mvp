@@ -40,16 +40,13 @@ class JobOffer(models.Model):
     
     # Informations sur la société
     societe = models.CharField(
+        default='Antares',
         max_length=255,
         verbose_name="Société/Organisation",
         help_text="Nom de l'entreprise ou organisation proposant l'offre"
     )
     
-    # Description du poste
-    description_poste = models.TextField(
-        verbose_name="Description du poste",
-        help_text="Description générale du poste"
-    )
+
     mission_principale = models.TextField(
         blank=True,
         null=True,
@@ -171,13 +168,10 @@ class JobOffer(models.Model):
         return f"{self.reference} - {self.titre}"
     
     def clean(self):
-        # Validation de la référence
-        if not self.reference.startswith('ANT/STA/'):
-            raise ValidationError("La référence doit commencer par 'ANT/STA/'")
+        
         
         # Validation des dates
-        if self.date_limite and self.date_limite < timezone.now().date():
-            raise ValidationError("La date limite ne peut pas être dans le passé")
+       
         
         if self.date_publication and self.date_limite and self.date_publication > self.date_limite:
             raise ValidationError("La date de publication ne peut pas être après la date limite")

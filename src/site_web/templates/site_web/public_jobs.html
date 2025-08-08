@@ -4,59 +4,139 @@
 {% block extra_css %}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 <style>
+    :root {
+        --primary-color: #2c7be5;  /* Bleu plus doux */
+        --secondary-color: #6e84a3;
+        --accent-color: #00d97e;   /* Vert moderne */
+        --light-bg: #f9fbfd;
+    }
+    
+    .hero-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        color: #12263f;
+    }
+    
     .job-card {
         transition: all 0.3s ease;
-        border-left: 3px solid #0D3B66;
+        border-left: 3px solid var(--primary-color);
+        background-color: white;
     }
     .job-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        border-left-color: #F46036;
+        border-left-color: var(--accent-color);
     }
+    
     .company-logo {
         width: 80px;
         height: 80px;
         object-fit: cover;
         border: 2px solid #f0f0f0;
     }
+    
     .badge-contract {
-        background-color: #F46036;
+        background-color: var(--primary-color);
         color: white;
     }
+    
     .pagination .page-item.active .page-link {
-        background-color: #0D3B66;
-        border-color: #0D3B66;
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
     }
+    
     .filter-section {
-        background-color: #F8F9FA;
+        background-color: white;
         border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    /* Nouveau style pour le filtre en haut */
+    .top-filter {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 2rem;
+    }
+    
+    /* Style pour les publicités */
+    .ad-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
+        background: white;
+    }
+    
+    .ad-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .ad-img-container {
+         width: 300px;
+        height: 300;
+       
+    }
+    
+    .ad-img {
+        width: 200px;
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .ad-body {
+        padding: 1rem;
+    }
+    
+    .ad-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+    }
+    
+    .ad-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 1rem;
+    }
+    
+    .ad-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.7rem;
+    }
+    
+    /* Grille 9-3 pour les offres et publicités */
+    .jobs-container {
+        display: grid;
+        grid-template-columns: 9fr 3fr;
+        gap: 2rem;
+    }
+    
+    @media (max-width: 992px) {
+        .jobs-container {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<section class="py-5 bg-primary text-white">
+<section class="py-5 hero-section">
   <div class="container py-4">
     <div class="row">
       <div class="col-lg-8 mx-auto text-center">
         <h1 class="display-5 fw-bold mb-4">Trouvez votre prochaine opportunité</h1>
         <p class="lead mb-4">Parcourez nos offres d'emploi et postulez en ligne</p>
-        
-        <form method="get" class="row g-3 justify-content-center">
-          <div class="col-md-8">
-            <div class="input-group">
-              <input type="text" 
-                     name="q" 
-                     class="form-control form-control-lg" 
-                     placeholder="Mots-clés, métiers..." 
-                     value="{{ search_query }}">
-              <button class="btn btn-light" type="submit">
-                <i class="bi bi-search"></i>
-              </button>
-            </div>
-          </div>
-        </form>
       </div>
     </div>
   </div>
@@ -65,59 +145,51 @@
 <!-- Main Content -->
 <section class="py-5">
   <div class="container">
-    <div class="row">
-      <!-- Filters Column -->
-      <div class="col-lg-3 mb-4">
-        <div class="filter-section p-4">
-          <h5 class="mb-4"><i class="bi bi-funnel me-2"></i>Filtrer les résultats</h5>
-          
-          <form method="get">
-            <input type="hidden" name="q" value="{{ search_query }}">
-            
-            <div class="mb-4">
-              <label class="form-label fw-bold">Localisation</label>
-              <select name="location" class="form-select">
-                <option value="">Toutes</option>
-                <option value="Bamako" {% if location == 'Bamako' %}selected{% endif %}>Bamako</option>
-                <option value="Kayes" {% if location == 'Kayes' %}selected{% endif %}>Kayes</option>
-                <option value="Sikasso" {% if location == 'Sikasso' %}selected{% endif %}>Sikasso</option>
-                <option value="Ségou" {% if location == 'Ségou' %}selected{% endif %}>Ségou</option>
-              </select>
-            </div>
-            
-            <div class="mb-4">
-              <label class="form-label fw-bold">Secteur d'activité</label>
-              <select name="sector" class="form-select">
-                <option value="">Tous</option>
-                <option value="Informatique" {% if sector == 'Informatique' %}selected{% endif %}>Informatique</option>
-                <option value="Finance" {% if sector == 'Finance' %}selected{% endif %}>Finance</option>
-                <option value="Santé" {% if sector == 'Santé' %}selected{% endif %}>Santé</option>
-                <option value="Education" {% if sector == 'Education' %}selected{% endif %}>Education</option>
-              </select>
-            </div>
-            
-            <div class="mb-4">
-              <label class="form-label fw-bold">Type de contrat</label>
-              <select name="contract_type" class="form-select">
-                <option value="">Tous</option>
-                <option value="emploi" {% if contract_type == 'emploi' %}selected{% endif %}>CDI</option>
-                <option value="appel_offre" {% if contract_type == 'appel_offre' %}selected{% endif %}>CDD</option>
-                <option value="autre" {% if contract_type == 'autre' %}selected{% endif %}>Autre</option>
-              </select>
-            </div>
-            
-            <button type="submit" class="btn btn-primary w-100">
-              <i class="bi bi-funnel me-2"></i>Appliquer
-            </button>
-            <a href="{% url 'jobs' %}" class="btn btn-outline-secondary w-100 mt-2">
-              <i class="bi bi-arrow-counterclockwise me-2"></i>Réinitialiser
-            </a>
-          </form>
+    <!-- Nouveau filtre en haut -->
+    <div class="top-filter">
+      <form method="get" class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Mots-clés</label>
+          <input type="text" 
+                 name="q" 
+                 class="form-control" 
+                 placeholder="Métier, compétence..." 
+                 value="{{ search_query }}">
         </div>
-      </div>
-      
-      <!-- Jobs Column -->
-      <div class="col-lg-9">
+        
+        <div class="col-md-3">
+          <label class="form-label">Localisation</label>
+          <select name="location" class="form-select">
+            <option value="">Toutes</option>
+            <option value="Bamako" {% if location == 'Bamako' %}selected{% endif %}>Bamako</option>
+            <option value="Kayes" {% if location == 'Kayes' %}selected{% endif %}>Kayes</option>
+            <option value="Sikasso" {% if location == 'Sikasso' %}selected{% endif %}>Sikasso</option>
+            <option value="Ségou" {% if location == 'Ségou' %}selected{% endif %}>Ségou</option>
+          </select>
+        </div>
+        
+        <div class="col-md-3">
+          <label class="form-label">Secteur</label>
+          <select name="sector" class="form-select">
+            <option value="">Tous</option>
+            <option value="Informatique" {% if sector == 'Informatique' %}selected{% endif %}>Informatique</option>
+            <option value="Finance" {% if sector == 'Finance' %}selected{% endif %}>Finance</option>
+            <option value="Santé" {% if sector == 'Santé' %}selected{% endif %}>Santé</option>
+            <option value="Education" {% if sector == 'Education' %}selected{% endif %}>Education</option>
+          </select>
+        </div>
+        
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-search me-2"></i>Filtrer
+          </button>
+        </div>
+      </form>
+    </div>
+    
+    <div class="jobs-container">
+      <!-- Colonne des offres (9 parts) -->
+      <div class="jobs-column">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h2 class="mb-0">Offres disponibles</h2>
           <small class="text-muted">{{ jobs.paginator.count }} résultats</small>
@@ -234,6 +306,49 @@
           </div>
         {% endif %}
       </div>
+      
+      <!-- Colonne des publicités (3 parts) -->
+      <div class="ads-column">
+        <h5 class="mb-4"><i class="bi bi-megaphone me-2"></i>Publicités</h5>
+        
+        <!-- Publicité 1 -->
+        <div class="ad-card">
+          <div class="ad-img-container">
+            <img src="{% static 'site_web/images/ads/ads4.avif' %}" alt="Formation professionnelle" style="height: 100px;width: 100" class="ad-img">
+            <span class="ad-badge">Sponsorisé</span>
+          </div>
+          <div class="ad-body">
+            <h5 class="ad-title">Formations Certifiantes</h5>
+            <p class="ad-text">Développez vos compétences avec nos formations professionnelles reconnues.</p>
+            <a href="#" class="btn btn-sm btn-outline-primary">Découvrir</a>
+          </div>
+        </div>
+        
+        <!-- Publicité 2 -->
+        <div class="ad-card">
+          <div class="ad-img-container">
+            <img src="{% static 'site_web/images/ads/ads2.webp' %}" alt="Services RH" class="ad-img" style="height: 100px;width: 100">
+            <span class="ad-badge">Nouveau</span>
+          </div>
+          <div class="ad-body">
+            <h5 class="ad-title">Services RH Complets</h5>
+            <p class="ad-text">Externalisez votre gestion RH avec nos solutions sur mesure.</p>
+            <a href="#" class="btn btn-sm btn-outline-primary">En savoir plus</a>
+          </div>
+        </div>
+        
+        <!-- Publicité 3 -->
+        <div class="ad-card">
+          <div class="ad-img-container">
+            <img src="{% static 'site_web/images/ads/ads3.webp' %}" alt="Outils de recrutement" class="ad-img" style="height: 100px;width: 100">
+          </div>
+          <div class="ad-body">
+            <h5 class="ad-title">Logiciel de Recrutement</h5>
+            <p class="ad-text">Optimisez votre processus de recrutement avec notre plateforme.</p>
+            <a href="#" class="btn btn-sm btn-outline-primary">Essai gratuit</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -243,7 +358,7 @@
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-6 mb-4 mb-lg-0">
-        <img src="{% static 'site_web/images/job-alerts.jpg' %}" alt="Job Alerts" class="img-fluid rounded">
+        <img src="{% static 'site_web/images/ads/ads1.jpg' %}" alt="Job Alerts" class="img-fluid rounded" style="height: 300px;width: 300">
       </div>
       <div class="col-lg-6">
         <h2 class="mb-4">Ne ratez plus aucune opportunité</h2>

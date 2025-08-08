@@ -1,47 +1,193 @@
+index.html
+
+
 {% extends 'site_web/layout.html' %}
 {% load static %}
 
 {% block content %}
 
-<!-- Hero Section -->
-<section class="hero-section " style="background-color: var(--light-gray);">
-    <div class="container py-3">
-    <div class="row align-items-center">
-      <div class="col-lg-6 order-lg-1 order-2 mt-3 mt-lg-0">
-        <h1 class="fw-bold mb-3 fs-2" style="color: var(--primary-blue);">
-          Antares : Au service des talents et des organisations
-        </h1>
-        <p class="lead mb-2" style="color: var(--secondary-blue);">
-          Cabinet spécialisé en gestion des ressources humaines et en organisation des entreprises.
-          Nous connectons les talents aux entreprises pour bâtir des équipes performantes, 
-          fondées sur la collaboration, la confiance et le respect de l’humain. <br>
-          <span style="text-decoration: underline; color: var(--accent-orange); font-weight: bold;">Notre mission</span> :
-          accompagner les entreprises, les professionnels, les chercheurs d’emploi et les partenaires tout au long 
-          de leur parcours de croissance.
-        </p>
 
-        <div class="d-flex flex-wrap gap-2">
-          <a href="{%url 'entreprise-info' %}" class="btn btn-primary btn-lg px-3" style="background-color: var(--accent-orange); border-color: var(--accent-orange);">
-            <i class="bi bi-building me-2"></i>Espace Entreprise
+<!-- Hero Image Section -->
+<!-- Hero Image Section -->
+<section class="hero-image-section">
+  <div class="hero-carousel">
+    <!-- Image 1 -->
+    <div class="carousel-item active">
+      <img src="{% static 'site_web/images/hero/hero-image-1.png' %}" 
+           alt="Équipe professionnelle" 
+           loading="eager"  
+           
+           class="img-fluid w-100">
+    </div>
+    <!-- Image 2 -->
+    <div class="carousel-item">
+      <img src="{% static 'site_web/images/hero/logo_antares.png' %}" 
+           alt="Logo Antares" 
+           loading="eager"
+           class="img-fluid w-100">
+    </div>
+    <!-- Image 3 -->
+    <div class="carousel-item">
+      <img src="{% static 'site_web/images/hero/hero-image-2.png' %}" 
+           alt="Entretien professionnel" 
+           loading="eager"
+           class="img-fluid w-100">
+    </div>
+    <!-- Image 4 -->
+    <div class="carousel-item">
+      <img src="{% static 'site_web/images/hero/hero-image-3.png' %}" 
+           alt="Entretien professionnel" 
+           loading="eager"
+           class="img-fluid w-100">
+    </div>
+    <!-- Image 5 -->
+    <div class="carousel-item">
+      <img src="{% static 'site_web/images/hero/hero-image-4.png' %}" 
+           alt="Espace de travail" 
+           loading="eager"
+           class="img-fluid w-100">
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Hero Image Section */
+  .hero-image-section {
+    height: 40vh;
+    
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .hero-carousel {
+    height: 100%;
+  }
+  
+  .hero-carousel .carousel-item {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+  
+  .hero-carousel .carousel-item.active {
+    opacity: 1;
+  }
+  
+  .hero-carousel img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  @media (max-width: 768px) {
+    .hero-image-section {
+      height: 30vh;
+      min-height: 300px;
+    }
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Carrousel Hero
+  const heroItems = document.querySelectorAll('.hero-carousel .carousel-item');
+  let heroIndex = 0;
+  
+  if (heroItems.length > 0) {
+    heroItems[0].classList.add('active');
+    
+    setInterval(() => {
+      heroItems[heroIndex].classList.remove('active');
+      heroIndex = (heroIndex + 1) % heroItems.length;
+      heroItems[heroIndex].classList.add('active');
+    }, 3000);
+  }
+});
+</script>
+
+<!-- Triple Section Layout - Version équilibrée -->
+<section class="container py-5">
+  <div class="row g-4">
+    <!-- Colonne Antares (Gauche) -->
+    <div class="col-lg-4">
+      <div class="h-100 p-4 bg-white rounded shadow-sm d-flex flex-column">
+        <div>
+          <h1 class="fw-bold mb-3" style="color: var(--primary-blue);">
+            <i class="bi bi-stars me-2"></i>Antares
+          </h1>
+          <p class="mb-4" style="color: var(--secondary-blue);">
+            Cabinet spécialisé en gestion des ressources humaines et en organisation des entreprises.
+            Nous connectons les talents aux entreprises pour bâtir des équipes performantes.
+          </p>
+          
+          <div class="p-3 rounded mb-4 border-start border-4" style="background-color: var(--light-blue); border-color: var(--accent-orange);">
+            <h4 style="color: var(--accent-orange);"><i class="bi bi-compass me-2"></i>Notre mission</h4>
+            <p class="mb-0">
+              Accompagner entreprises et candidats dans leur parcours de croissance avec des solutions RH sur mesure.
+            </p>
+          </div>
+        </div>
+        
+        <div class="mt-auto d-grid gap-2">
+          <a href="{% url 'entreprise-info' %}" class="btn btn-outline-primary" style="border-color: var(--primary-blue); color: var(--primary-blue);">
+            <i class="bi bi-building me-2"></i>Espace Entreprises
           </a>
-          <a href="{%url 'candidate-registry' %}" class="btn btn-outline-primary btn-lg px-3" style="border-color: var(--primary-blue); color: var(--primary-blue);">
-            <i class="bi bi-person-vcard me-2"></i>Espace Candidat
+          <a href="{% url 'candidate-registry' %}" class="btn btn-outline-primary" style="border-color: var(--primary-blue); color: var(--primary-blue);">
+            <i class="bi bi-person-vcard me-2"></i>Espace Candidats
           </a>
         </div>
       </div>
-
-
-      <!-- Image Hero seule -->
-      <div class="col-lg-6 order-lg-2 order-1">
-        <img src="{% static 'site_web/images/hero/hero-image-1.png' %}" 
-             alt="Équipe professionnelle" 
-             loading="eager"  
-             class="img-fluid rounded-3 shadow-lg"
-             style="max-height: 500px; width: 100%; object-fit: cover;">
+    </div>
+    
+    <!-- Colonne Entreprise (Milieu) -->
+    <div class="col-lg-4">
+      <div class="card h-100 border-0 shadow-lg d-flex flex-column">
+        <div class="card-body p-4" style="background-color: var(--primary-blue); color: white;">
+          <span class="badge mb-3" style="background-color: var(--accent-orange);"><i class="bi bi-building me-1"></i> Entreprises</span>
+          <h3 class="mb-4">Optimisez votre capital humain</h3>
+          <ul class="list-unstyled mb-4">          
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Recrutement ciblé et rapide</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Gestion du personnel intérimaire</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Externalisation RH complète</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Audit social personnalisé</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Accompagnement stratégique RH</li>
+          </ul>
+        </div>
+        <div class="p-3 mt-auto">
+          <a href="{% url 'services' %}" class="btn btn-outline-light w-100" style="border-color:var(--accent-orange); color:var(--accent-orange);">
+            <i class="bi bi-arrow-right me-2"></i>Nos services RH
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Colonne Candidat (Droite) -->
+    <div class="col-lg-4">
+      <div class="card h-100 border-0 shadow-lg d-flex flex-column">
+        <div class="card-body p-4 bg-white">
+          <span class="badge mb-3" style="background-color: var(--primary-blue); color: white;"><i class="bi bi-person me-1"></i> Candidats</span>
+          <h3 class="mb-4" style="color: var(--primary-blue);">Votre carrière boostée</h3>
+          <ul class="list-unstyled mb-4">
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Accès à des offres exclusives</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Coaching personnalisé</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Mise en relation avec nos entreprises</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Formations adaptées à votre profil</li>
+            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Suivi individualisé</li>
+          </ul>
+        </div>
+        <div class="p-3 mt-auto">
+          <a href="{% url 'jobs' %}" class="btn btn-outline-primary w-100" style="border-color: var(--primary-blue); color: var(--primary-blue);">
+            <i class="bi bi-search me-2"></i>Voir les offres
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </section>
+
 
 <!-- Section Offres -->
 <section class="py-5 bg-light">
@@ -65,39 +211,88 @@
               </span>
             </div>
             
-            <p class="card-text text-muted small mb-3">
-              <i class="bi bi-building text-primary"></i> {{ job.societe }}
-              {% if job.lieu %}
-              <span class="ms-3"><i class="bi bi-geo-alt text-primary"></i> {{ job.lieu }}</span>
-              {% endif %}
-            </p>
-            
-            <div class="card-text mb-3 text-truncate-container" style="--lines:3;">
-              {{ job.get_clean_description|striptags|truncatewords:30 }}
-            </div>
-            
-            <div class="d-flex justify-content-between align-items-center mt-auto">
+            <div class="d-flex justify-content-between align-items-center mb-3">
               <span class="badge bg-primary bg-opacity-10 text-primary">
                 {{ job.get_type_offre_display }}
               </span>
+              <span class="text-muted small">
+                <i class="bi bi-building"></i> {{ job.societe }}
+              </span>
+            </div>
+            
+            {% if job.lieu %}
+            <p class="text-muted small mb-3">
+              <i class="bi bi-geo-alt text-primary"></i> {{ job.lieu }}
+            </p>
+            {% endif %}
+           
+            <!-- Section Profil recherché -->
+            {% if job.profil_recherche %}
+            <div class="mb-3">
+              <h6 class="fw-bold text-primary">
+                 Profil recherché
+              </h6>
+              <div class="summernote-content small">
+                {{ job.get_clean_profil|safe|truncatewords_html:30 }}
+              </div>
+              <a href="#profil-{{ job.id }}" data-bs-toggle="collapse" class="small text-primary">
+                Voir plus <i class="bi bi-chevron-down"></i>
+              </a>
+              <div id="profil-{{ job.id }}" class="collapse">
+                {{ job.get_clean_profil|safe }}
+              </div>
+            </div>
+            {% endif %}
+            
+            <!-- Compétences et qualifications -->
+            {% if job.competences_qualifications or job.niveau_etude or job.experience_requise %}
+            <div class="mb-3">
+              <h6 class="fw-bold text-primary">
+                <i class="bi bi-award"></i> Exigences
+              </h6>
+              <ul class="small">
+                {% if job.competences_qualifications %}
+                  {{ job.get_competences_liste|safe }}
+                {% endif %}
+                
+                {% if job.niveau_etude %}
+                <li><strong>Niveau d'étude :</strong> {{ job.niveau_etude }}</li>
+                {% endif %}
+                
+                {% if job.experience_requise %}
+                <li><strong>Expérience :</strong> {{ job.experience_requise }}</li>
+                {% endif %}
+              </ul>
+            </div>
+            {% endif %}
+            
+            <!-- Conditions -->
+            {% if job.salaire %}
+            <div class="mb-3">
+              <h6 class="fw-bold text-primary">
+                <i class="bi bi-cash-coin"></i> Rémunération
+              </h6>
+              <p class="small mb-0">{{ job.salaire }}</p>
+            </div>
+            {% endif %}
+            
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <span class="badge bg-light text-dark small">
+                <i class="bi bi-clock text-primary"></i> {{ job.date_publication|date:"d/m/Y" }}
+              </span>
               <a href="{% url 'public-job-offer-detail' job.pk %}" class="btn btn-sm btn-primary stretched-link">
-                Voir détails
+                Postuler <i class="bi bi-arrow-right ms-1"></i>
               </a>
             </div>
           </div>
           
+          {% if job.date_limite %}
           <div class="card-footer bg-transparent border-top-0 pt-0">
-            <div class="d-flex justify-content-between align-items-center">
-              <small class="text-muted">
-                <i class="bi bi-clock text-primary"></i> Publiée {{ job.date_publication|timesince }}
-              </small>
-              {% if job.date_limite %}
-              <small class="text-muted">
-                <i class="bi bi-calendar-check text-primary"></i> Clôture {{ job.date_limite|date:"d/m/Y" }}
-              </small>
-              {% endif %}
+            <div class="alert alert-warning small mb-0 p-2">
+              <i class="bi bi-calendar-check"></i> Date limite : {{ job.date_limite|date:"d/m/Y" }}
             </div>
           </div>
+          {% endif %}
         </div>
       </div>
       {% empty %}
@@ -110,6 +305,7 @@
     </div>
   </div>
 </section>
+
 
 <style>
   /* Styles personnalisés */
@@ -148,50 +344,6 @@
     padding: 0.35em 0.65em;
   }
 </style>
-
-
-<!-- Dual Content Grid - Version enrichie -->
-<section class="dual-grid-section py-5 bg-light">
-  <div class="container">
-    <div class="row g-4">
-      <!-- Entreprise -->
-      <div class="col-lg-6" id="entreprise">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body p-4 p-lg-5" style="background-color: var(--primary-blue); color: white;">
-            <div class="badge mb-3" style="background-color: var(--accent-orange);">Pour les entreprises</div>
-            <h2 class="mb-4">Optimisez votre capital humain</h2>
-            <ul class="list-unstyled mb-4">
-              <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Recrutement ciblé et rapide</li>
-              <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Personnel intérimaire disponible</li>
-              <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Externalisation RH complète</li>
-              <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Évaluation & audit social personnalisés</li>
-              <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Réactivité, conformité & réseau local/international</li>
-            </ul>
-            <a href="{% url 'services' %}" class="btn btn-outline-light">Découvrir nos services RH</a>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Candidat -->
-      <div class="col-lg-6" id="candidat">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body p-4 p-lg-5" style="background-color: white;">
-            <div class="badge mb-3" style="background-color: var(--primary-blue); color: white;">Pour les candidats</div>
-            <h2 class="mb-4" style="color: var(--primary-blue);">Décrochez l'opportunité idéale</h2>
-            <ul class="list-unstyled mb-4">
-              <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Offres exclusives & ciblées</li>
-              <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Coaching personnalisé & suivi</li>
-              <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Accès à un large réseau d'entreprises</li>
-              <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Formations adaptées à votre profil</li>
-              <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Accompagnement administratif et social</li>
-            </ul>
-            <a href="{% url 'jobs' %}" class="btn btn-outline-primary" style="border-color: var(--primary-blue); color: var(--primary-blue);">Explorer les offres</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- Section Valeurs - Optimisée pour mobile -->
 <section class="values-section py-5" style="background-color: #FFFFFF;">

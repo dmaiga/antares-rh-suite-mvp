@@ -5,7 +5,7 @@ from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
 
 class JobOfferForm(forms.ModelForm):
     # Surcharge des champs avec Summernote
-    description_poste = forms.CharField(
+    taches = forms.CharField(
         widget=SummernoteWidget(attrs={
             'summernote': {
                 'toolbar': [
@@ -19,6 +19,35 @@ class JobOfferForm(forms.ModelForm):
         }),
         help_text="Description détaillée du poste"
     )
+    competences_qualifications=  forms.CharField(
+        widget=SummernoteWidget(attrs={
+            'summernote': {
+                'toolbar': [
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'video']],
+                ],
+                'height': '300px',
+            }
+        }),
+       
+    )
+    mission_principale=  forms.CharField(
+        widget=SummernoteWidget(attrs={
+            'summernote': {
+                'toolbar': [
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture', 'video']],
+                ],
+                'height': '300px',
+            }
+        }),
+        
+    )
+
 
     profil_recherche = forms.CharField(
         widget=SummernoteWidget(attrs={
@@ -47,19 +76,7 @@ class JobOfferForm(forms.ModelForm):
         
     )
 
-    # Champs de liste restent en Textarea simple
-    mission_principale = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 3}),
-        required=False,
-        help_text="Séparez chaque mission par un retour à la ligne"
-    )
-    
-    competences_qualifications = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 3}),
-        required=False,
-        help_text="Une compétence par ligne"
-    )
-
+  
     class Meta:
         model = JobOffer
         fields = '__all__'
@@ -87,8 +104,4 @@ class JobOfferForm(forms.ModelForm):
         self.fields['visible_sur_site'].widget.attrs.update({'class': 'form-check-input'})
         self.fields['fichier_pdf'].widget.attrs.update({'class': 'form-control-file'})
 
-    def clean_reference(self):
-        reference = self.cleaned_data['reference']
-        if not reference.startswith('ANT/STA/'):
-            raise forms.ValidationError("La référence doit commencer par 'ANT/STA/'")
-        return reference
+  

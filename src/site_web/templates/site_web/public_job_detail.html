@@ -2,376 +2,317 @@
 {% load static %}
 
 {% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css" rel="stylesheet">
 <style>
-    /* Styles spécifiques à la page d'offre */
-    .job-header {
-        background: linear-gradient(135deg, rgba(13, 59, 102, 0.03) 0%, rgba(13, 59, 102, 0.08) 100%);
-        padding: 3rem 0;
-        border-bottom: 1px solid rgba(13, 59, 102, 0.1);
+    .offer-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-left: 4px solid #3b82f6;
     }
-    
-    .job-title {
-        color: var(--primary-blue);
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-    
-    .job-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .job-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.5rem 1rem;
-        background-color: rgba(13, 59, 102, 0.08);
-        border-radius: 50px;
+    .badge-status {
         font-size: 0.9rem;
-        color: var(--primary-blue);
+        padding: 0.35rem 0.65rem;
     }
-    
-    .job-badge i {
-        margin-right: 0.5rem;
-        color: var(--secondary-blue);
+    .section-card {
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
     }
-    
-    .job-content-section {
-        margin-bottom: 3rem;
+    .section-card:hover {
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-    
-    .job-content-section h3 {
-        color: var(--primary-blue);
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 2px solid var(--accent-orange);
+    .section-title {
+        border-bottom: 2px dashed #dee2e6;
+        padding-bottom: 0.5rem;
     }
-    
-    .job-content-section ul {
-        padding-left: 1.5rem;
+    .summernote-content {
+        line-height: 1.6;
     }
-    
-    .job-content-section li {
-        margin-bottom: 0.5rem;
-    }
-    
-    .job-cta {
-        background-color: rgba(244, 96, 54, 0.05);
-        border-radius: 8px;
-        padding: 2rem;
-        border: 1px solid rgba(244, 96, 54, 0.2);
-    }
-    
-    .company-card {
-        border: none;
-        border-radius: 8px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        overflow: hidden;
-    }
-    
-    .company-logo {
-        height: 60px;
-        width: auto;
+    .summernote-content p {
         margin-bottom: 1rem;
     }
-    
-    .related-job-card {
-        transition: all 0.3s ease;
-        border-radius: 8px;
-        overflow: hidden;
+    .summernote-content ul,
+    .summernote-content ol {
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
     }
-    
-    .related-job-card:hover {
+    .summernote-content a {
+        color: #3b82f6;
+        text-decoration: underline;
+    }
+    .summernote-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.25rem;
+    }
+    .pdf-preview {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    .pdf-preview:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .action-btn {
+        min-width: 120px;
+    }
+    /* Styles pour les publicités */
+    .ad-section {
+        margin-bottom: 2rem;
+    }
+    .ad-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+    .ad-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
-    
-    .status-badge {
-        font-size: 0.8rem;
-        padding: 0.35rem 0.75rem;
-        border-radius: 50px;
+    .ad-img-container {
+        height: 180px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8fafc;
     }
-    
-    .status-publie { background-color: rgba(40, 167, 69, 0.1); color: #28a745; }
-    .status-brouillon { background-color: rgba(255, 193, 7, 0.1); color: #ffc107; }
-    .status-expire { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; }
-    .status-archive { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; }
+    .ad-img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+    .ad-body {
+        padding: 1rem;
+    }
+    .ad-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+    }
+    .ad-text {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 1rem;
+    }
+    .ad-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.7rem;
+    }
+    .sidebar-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #1e293b;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 0.5rem;
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Job Header Section -->
-<section class="job-header">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <div class="d-flex align-items-center mb-3">
-                    <h1 class="job-title me-3">{{ job.titre }}</h1>
-                    <span class="status-badge status-{{ job.statut }}">
-                        {{ job.get_statut_display }}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <div class="offer-header p-4 rounded">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h1 class="mb-0">{{ offer.titre }}</h1>
+                    <span class="badge badge-status {{ offer.get_status_badge_class }}">
+                        {{ offer.get_statut_display }}
                     </span>
                 </div>
-                
-                <div class="job-meta">
-                    <span class="job-badge">
-                        <i class="bi bi-building"></i> {{ job.societe }}
+                <div class="d-flex flex-wrap gap-2 mt-3">
+                    <span class="badge bg-primary">
+                        <i class="bi bi-tag"></i> {{ offer.get_type_offre_display }}
                     </span>
-                    {% if job.lieu %}
-                    <span class="job-badge">
-                        <i class="bi bi-geo-alt"></i> {{ job.lieu }}
+                    <span class="badge bg-info text-dark">
+                        <i class="bi bi-building"></i> {{ offer.societe }}
                     </span>
-                    {% endif %}
-                    <span class="job-badge">
-                        <i class="bi bi-briefcase"></i> {{ job.get_type_offre_display }}
-                    </span>
-                    {% if job.salaire %}
-                    <span class="job-badge">
-                        <i class="bi bi-cash-stack"></i> {{ job.salaire }}
+                    {% if offer.lieu %}
+                    <span class="badge bg-secondary">
+                        <i class="bi bi-geo-alt"></i> {{ offer.lieu }}
                     </span>
                     {% endif %}
                 </div>
-                
-                {% if job.date_limite %}
-                <div class="alert alert-light d-inline-flex align-items-center">
-                    <i class="bi bi-clock-history me-2 text-primary-blue"></i>
-                    <div>
-                        <strong>Date limite :</strong> {{ job.date_limite|date:"d/m/Y" }}
-                        {% if job.est_expire %}
-                        <span class="badge bg-danger ms-2">Expiré</span>
-                        {% else %}
-                        (dans {{ job.date_limite|timeuntil }})
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-            
-            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-                {% if job.contact and not job.est_expire %}
-                <a href="mailto:{{ job.contact }}?subject=Candidature pour {{ job.titre|urlencode }}" 
-                   class="btn btn-primary btn-lg px-4">
-                    <i class="bi bi-send me-2"></i>Postuler maintenant
-                </a>
-                {% elif job.est_expire %}
-                <button class="btn btn-secondary btn-lg px-4" disabled>
-                    <i class="bi bi-clock-history me-2"></i>Offre expirée
-                </button>
-                {% endif %}
             </div>
         </div>
     </div>
-</section>
 
-<!-- Job Content Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 pe-lg-4">
-                <!-- Description du poste -->
-                <div class="job-content-section">
-                    <h3>Description du poste</h3>
-                    <div class="rich-text-content">
-                        {{ job.get_clean_description|safe }}
-                    </div>
-                </div>
-                
-                <!-- Missions principales -->
-                {% if job.mission_principale %}
-                <div class="job-content-section">
-                    <h3>Missions principales</h3>
-                    <div class="rich-text-content">
-                        {{ job.get_missions_liste|safe }}
-                    </div>
-                </div>
-                {% endif %}
-                
-                <!-- Profil recherché -->
-                {% if job.profil_recherche %}
-                <div class="job-content-section">
-                    <h3>Profil recherché</h3>
-                    <div class="rich-text-content">
-                        {{ job.get_clean_profil|safe }}
-                        
-                        {% if job.niveau_etude or job.experience_requise %}
-                        <div class="card bg-light border-0 p-3 mt-3">
-                            {% if job.niveau_etude %}
-                            <div class="d-flex mb-2">
-                                <i class="bi bi-award text-primary-blue me-3"></i>
-                                <div>
-                                    <strong>Niveau d'étude requis :</strong>
-                                    <span>{{ job.niveau_etude }}</span>
-                                </div>
-                            </div>
-                            {% endif %}
-                            
-                            {% if job.experience_requise %}
-                            <div class="d-flex">
-                                <i class="bi bi-person-badge text-primary-blue me-3"></i>
-                                <div>
-                                    <strong>Expérience requise :</strong>
-                                    <span>{{ job.experience_requise }}</span>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
-                
-                <!-- Compétences requises -->
-                {% if job.competences_qualifications %}
-                <div class="job-content-section">
-                    <h3>Compétences requises</h3>
-                    <div class="rich-text-content">
-                        {{ job.get_competences_liste|safe }}
-                    </div>
-                </div>
-                {% endif %}
-                
-                <!-- Conditions -->
-                {% if job.conditions %}
-                <div class="job-content-section">
-                    <h3>Conditions</h3>
-                    <div class="rich-text-content">
-                        {{ job.get_conditions_liste|safe }}
-                    </div>
-                </div>
-                {% endif %}
-                
-                <!-- Comment postuler -->
-                <div class="job-content-section">
-                    <h3>Comment postuler</h3>
-                    <div class="rich-text-content">
-                        {{ job.get_clean_how_to_apply|safe }}
-                    </div>
-                    
-                    <div class="job-cta mt-4">
-                        <div class="d-grid gap-3 d-md-flex justify-content-md-between align-items-md-center">
-                            <div>
-                                <h4 class="h5 mb-1">Intéressé par cette offre ?</h4>
-                                <p class="mb-0 text-muted">Envoyez votre candidature dès maintenant</p>
-                            </div>
-                            
-                            {% if job.contact and not job.est_expire %}
-                            <a href="mailto:{{ job.contact }}?subject=Candidature pour {{ job.titre|urlencode }}" 
-                               class="btn btn-primary px-4">
-                                <i class="bi bi-envelope me-2"></i> Postuler
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    {% if job.fichier_pdf %}
-                    <div class="mt-4">
-                        <a href="{{ job.fichier_pdf.url }}" class="btn btn-outline-primary" target="_blank">
-                            <i class="bi bi-file-earmark-pdf me-2"></i> Télécharger l'offre au format PDF
-                        </a>
-                    </div>
-                    {% endif %}
+    <div class="row g-4">
+        <!-- Colonne principale -->
+        <div class="col-lg-8">
+            <!-- Section Description -->
+            <div class="section-card p-4 mb-4 bg-white">
+                <h3 class="section-title">
+                    <i class="bi bi-card-text text-primary"></i> Description du poste
+                </h3>
+                <div class="summernote-content mt-3">
+                    {{ offer.get_clean_description|safe }}
                 </div>
             </div>
-            
-            <!-- Sidebar -->
-            <div class="col-lg-4 mt-5 mt-lg-0">
-                <!-- About Company -->
-                <div class="card company-card mb-4">
-                    <div class="card-body">
-                        <div class="text-center mb-4">
-                            <div class="bg-primary-blue bg-opacity-10 p-3 rounded-circle d-inline-flex">
-                                <i class="bi bi-building text-primary-blue fs-2"></i>
-                            </div>
-                        </div>
-                        
-                        <h5 class="card-title text-center mb-3">À propos de l'entreprise</h5>
-                        
-                        <p class="card-text text-center mb-4">
-                            {% if job.societe %}
-                                <strong>{{ job.societe }}</strong> est une entreprise dynamique recherchant des profils qualifiés.
-                            {% else %}
-                                Entreprise dynamique recherchant des profils qualifiés.
-                            {% endif %}
-                        </p>
-                        
-                        <ul class="list-unstyled">
-                            {% if job.secteur %}
-                            <li class="mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-grid text-primary-blue me-3"></i>
-                                    <div>
-                                        <small class="text-muted d-block">Secteur</small>
-                                        <strong>{{ job.secteur }}</strong>
-                                    </div>
-                                </div>
-                            </li>
-                            {% endif %}
-                            
-                            {% if job.lieu %}
-                            <li class="mb-3">
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-geo-alt text-primary-blue me-3"></i>
-                                    <div>
-                                        <small class="text-muted d-block">Localisation</small>
-                                        <strong>{{ job.lieu }}</strong>
-                                    </div>
-                                </div>
-                            </li>
-                            {% endif %}
-                            
-                            <li>
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-briefcase text-primary-blue me-3"></i>
-                                    <div>
-                                        <small class="text-muted d-block">Type d'offre</small>
-                                        <strong>{{ job.get_type_offre_display }}</strong>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
+
+            <!-- Section Missions -->
+            <div class="section-card p-4 mb-4 bg-white">
+                <h3 class="section-title">
+                    <i class="bi bi-list-task text-primary"></i> Missions principales
+                </h3>
+                <div class="mt-3">
+                    {{ offer.get_missions_liste|safe }}
+                </div>
+            </div>
+
+            <!-- Section Tâches -->
+            <div class="section-card p-4 mb-4 bg-white">
+                <h3 class="section-title">
+                    <i class="bi bi-check2-square text-primary"></i> Tâches spécifiques
+                </h3>
+                <div class="mt-3">
+                    {{ offer.get_taches_liste|safe }}
+                </div>
+            </div>
+
+            <!-- Section Profil -->
+            <div class="section-card p-4 mb-4 bg-white">
+                <h3 class="section-title">
+                    <i class="bi bi-person-badge text-primary"></i> Profil recherché
+                </h3>
+                <div class="summernote-content mt-3">
+                    {{ offer.get_clean_profil|safe }}
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h5><i class="bi bi-award"></i> Compétences requises</h5>
+                        {{ offer.get_competences_liste|safe }}
+                    </div>
+                    <div class="col-md-6">
+                        <h5><i class="bi bi-book"></i> Qualifications</h5>
+                        <p><strong>Niveau d'étude :</strong> {{ offer.niveau_etude|default:"Non spécifié" }}</p>
+                        <p><strong>Expérience :</strong> {{ offer.experience_requise|default:"Non spécifiée" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne latérale -->
+        <div class="col-lg-4">
+            <!-- Section Publicités -->
+            <div class="ad-section">
+                <h3 class="sidebar-title">
+                    <i class="bi bi-megaphone text-primary"></i> Publicités
+                </h3>
+                
+                <!-- Publicité 1 -->
+                <div class="ad-card">
+                    <div class="ad-img-container">
+                        <img src="{% static 'site_web/ads/ads1.jpg' %}" alt="Formation en agriculture" class="ad-img">
+                        <span class="ad-badge">Sponsorisé</span>
+                    </div>
+                    <div class="ad-body">
+                        <h4 class="ad-title">Formation en Techniques Agricoles Modernes</h4>
+                        <p class="ad-text">Découvrez nos formations certifiantes en agriculture durable et augmentez vos compétences.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">En savoir plus</a>
                     </div>
                 </div>
                 
-                <!-- Related Jobs -->
-                {% if related_jobs %}
-                <div class="card company-card">
-                    <div class="card-body">
-                        <h5 class="card-title mb-4">Offres similaires</h5>
-                        
-                        <div class="row g-3">
-                            {% for related_job in related_jobs %}
-                            <div class="col-12">
-                                <div class="card related-job-card h-100 border-0">
-                                    <div class="card-body">
-                                        <h6 class="card-title">{{ related_job.titre }}</h6>
-                                        <p class="card-text small text-muted mb-2">
-                                            <i class="bi bi-building"></i> {{ related_job.societe }}
-                                        </p>
-                                        <div class="d-flex flex-wrap gap-2 mb-3">
-                                            {% if related_job.lieu %}
-                                            <span class="badge bg-light text-dark small">
-                                                <i class="bi bi-geo-alt"></i> {{ related_job.lieu }}
-                                            </span>
-                                            {% endif %}
-                                            <span class="badge bg-primary small">
-                                                {{ related_job.get_type_offre_display }}
-                                            </span>
-                                        </div>
-                                        <a href="{% url 'public-job-offer-detail' related_job.pk %}" class="btn btn-sm btn-outline-primary w-100">
-                                            Voir détails
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
+                <!-- Publicité 2 -->
+                <div class="ad-card">
+                    <div class="ad-img-container">
+                        <img src="{% static 'site_web/ads/ads2.jpg' %}" alt="Matériel agricole" class="ad-img">
+                        <span class="ad-badge">Promo</span>
                     </div>
+                    <div class="ad-body">
+                        <h4 class="ad-title">Matériel Agricole à Prix Réduits</h4>
+                        <p class="ad-text">Profitez de nos promotions exceptionnelles sur tout le matériel agricole jusqu'au 30 septembre.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Voir les offres</a>
+                    </div>
+                </div>
+                
+                <!-- Publicité 3 -->
+                <div class="ad-card">
+                    <div class="ad-img-container">
+                        <img src="{% static 'site_web/ads/ads3.jpg' %}" alt="Recrutement spécialisé" class="ad-img">
+                        <span class="ad-badge">Nouveau</span>
+                    </div>
+                    <div class="ad-body">
+                        <h4 class="ad-title">Service de Recrutement Spécialisé</h4>
+                        <p class="ad-text">Nous trouvons pour vous les meilleurs talents dans le secteur agricole.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Contactez-nous</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Infos rapides -->
+            <div class="section-card p-4 mb-4 bg-white">
+                <h3 class="section-title">
+                    <i class="bi bi-info-circle text-primary"></i> Informations clés
+                </h3>
+                <div class="mt-3">
+                    <p><strong><i class="bi bi-journal-text"></i> Référence :</strong> {{ offer.reference }}</p>
+                    <p><strong><i class="bi bi-calendar-event"></i> Publication :</strong> {{ offer.date_publication|date:"d/m/Y" }}</p>
+                    <p><strong><i class="bi bi-clock-history"></i> Date limite :</strong> 
+                        {% if offer.date_limite %}
+                            {{ offer.date_limite|date:"d/m/Y" }}
+                        {% else %}
+                            Non spécifiée
+                        {% endif %}
+                    </p>
+                    <p><strong><i class="bi bi-cash-coin"></i> Salaire :</strong> {{ offer.salaire }}</p>
+                </div>
+            </div>
+
+            <!-- Conditions -->
+            {% if offer.conditions %}
+            <div class="section-card p-4 mb-4 bg-white">
+                <h3 class="section-title">
+                    <i class="bi bi-file-earmark-text text-primary"></i> Conditions
+                </h3>
+                <div class="mt-3">
+                    {{ offer.get_conditions_liste|safe }}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- PDF Preview -->
+            {% if offer.fichier_pdf %}
+            <div class="section-card p-4 mb-4 bg-white">
+                <h3 class="section-title">
+                    <i class="bi bi-file-earmark-pdf text-primary"></i> Document joint
+                </h3>
+                <div class="text-center mt-3">
+                    <a href="{{ offer.fichier_pdf.url }}" target="_blank" class="d-inline-block pdf-preview p-3">
+                        <i class="bi bi-file-earmark-pdf text-danger" style="font-size: 3rem;"></i>
+                        <div class="mt-2">Voir le PDF</div>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Comment postuler -->
+            <div class="section-card p-4 mb-4 bg-white">
+                <h3 class="section-title">
+                    <i class="bi bi-send text-primary"></i> Comment postuler
+                </h3>
+                <div class="summernote-content mt-3">
+                    {{ offer.get_clean_how_to_apply|safe }}
+                </div>
+                {% if offer.contact %}
+                <div class="mt-3">
+                    <a href="mailto:{{ offer.contact }}" class="btn btn-outline-primary">
+                        <i class="bi bi-envelope"></i> {{ offer.contact }}
+                    </a>
                 </div>
                 {% endif %}
             </div>
         </div>
     </div>
-</section>
+</div>
 {% endblock %}
