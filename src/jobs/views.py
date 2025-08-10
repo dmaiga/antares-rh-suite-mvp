@@ -33,8 +33,8 @@ def job_offer_list(request):
         offers = offers.filter(
             Q(titre__icontains=search_query) |
             Q(reference__icontains=search_query) |
-            Q(societe__icontains=search_query) |
-            Q(description_poste__icontains=search_query)
+            Q(societe__icontains=search_query) 
+           
         )
     
     # Pagination - 10 éléments par page
@@ -102,7 +102,7 @@ def job_offer_delete(request, pk):
 @user_passes_test(is_rh_or_admin)
 def job_offer_publish(request, pk):
     job_offer = get_object_or_404(JobOffer, pk=pk)
-    job_offer.statut = JobOffer.JobStatus.PUBLIE if hasattr(JobOffer, 'JobStatus') else 'publie'
+    job_offer.statut = JobOffer.JobStatus.OUVERT if hasattr(JobOffer, 'JobStatus') else 'ouvert'
     job_offer.visible_sur_site = True
     job_offer.save()
     return redirect('job-offer-detail', pk=pk)

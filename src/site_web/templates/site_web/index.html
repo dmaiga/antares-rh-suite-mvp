@@ -1,6 +1,3 @@
-index.html
-
-
 {% extends 'site_web/layout.html' %}
 {% load static %}
 
@@ -187,14 +184,13 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </section>
-
-
+<!--09_08-->
 <!-- Section Offres -->
-<section class="py-5 bg-light">
+<section class="py-5 bg-light-gray">
   <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="mb-0">Nos dernières offres</h2>
-      <a href="{% url 'jobs' %}" class="btn btn-link text-decoration-none">
+      <h2 class="mb-0 text-primary-blue">Nos dernières offres</h2>
+      <a href="{% url 'jobs' %}" class="btn btn-link text-secondary-blue text-decoration-none">
         Voir toutes <i class="bi bi-arrow-right ms-2"></i>
       </a>
     </div>
@@ -202,17 +198,23 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="row g-4">
       {% for job in featured_jobs %}
       <div class="col-md-6 col-lg-4">
-        <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+        <div class="card h-100 border-0 shadow-sm hover-shadow transition-all {% if job.statut == 'expire' %}expired-card{% endif %}">
+          {% if job.statut == 'expire' %}
+          <div class="expired-badge">
+            <i class="bi bi-clock-history me-1"></i> Expirée
+          </div>
+          {% endif %}
+          
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-2">
-              <h5 class="card-title mb-0">{{ job.titre }}</h5>
-              <span class="badge rounded-pill {{ job.get_status_badge_class }} text-white ms-2">
+              <h5 class="card-title mb-0 text-primary-blue">{{ job.titre }}</h5>
+              <span class="badge rounded-pill {% if job.statut == 'expire' %}bg-secondary{% else %}bg-secondary-blue{% endif %} text-white ms-2">
                 {{ job.get_statut_display }}
               </span>
             </div>
             
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <span class="badge bg-primary bg-opacity-10 text-primary">
+              <span class="badge bg-light-blue text-secondary-blue">
                 {{ job.get_type_offre_display }}
               </span>
               <span class="text-muted small">
@@ -222,23 +224,23 @@ document.addEventListener('DOMContentLoaded', function() {
             
             {% if job.lieu %}
             <p class="text-muted small mb-3">
-              <i class="bi bi-geo-alt text-primary"></i> {{ job.lieu }}
+              <i class="bi bi-geo-alt text-secondary-blue"></i> {{ job.lieu }}
             </p>
             {% endif %}
            
             <!-- Section Profil recherché -->
             {% if job.profil_recherche %}
             <div class="mb-3">
-              <h6 class="fw-bold text-primary">
-                 Profil recherché
+              <h6 class="fw-bold text-secondary-blue">
+                <i class="bi bi-person-badge"></i> Profil recherché
               </h6>
-              <div class="summernote-content small">
-                {{ job.get_clean_profil|safe|truncatewords_html:30 }}
+              <div class="small text-dark-gray">
+                {{ job.get_clean_profil|safe|truncatewords_html:20 }}
               </div>
-              <a href="#profil-{{ job.id }}" data-bs-toggle="collapse" class="small text-primary">
+              <a href="#profil-{{ job.id }}" data-bs-toggle="collapse" class="small text-secondary-blue">
                 Voir plus <i class="bi bi-chevron-down"></i>
               </a>
-              <div id="profil-{{ job.id }}" class="collapse">
+              <div id="profil-{{ job.id }}" class="collapse text-dark-gray">
                 {{ job.get_clean_profil|safe }}
               </div>
             </div>
@@ -247,12 +249,12 @@ document.addEventListener('DOMContentLoaded', function() {
             <!-- Compétences et qualifications -->
             {% if job.competences_qualifications or job.niveau_etude or job.experience_requise %}
             <div class="mb-3">
-              <h6 class="fw-bold text-primary">
+              <h6 class="fw-bold text-secondary-blue">
                 <i class="bi bi-award"></i> Exigences
               </h6>
-              <ul class="small">
+              <ul class="small text-dark-gray">
                 {% if job.competences_qualifications %}
-                  {{ job.get_competences_liste|safe }}
+                  {{ job.get_competences_liste|safe|truncatewords_html:20 }}
                 {% endif %}
                 
                 {% if job.niveau_etude %}
@@ -269,18 +271,18 @@ document.addEventListener('DOMContentLoaded', function() {
             <!-- Conditions -->
             {% if job.salaire %}
             <div class="mb-3">
-              <h6 class="fw-bold text-primary">
+              <h6 class="fw-bold text-secondary-blue">
                 <i class="bi bi-cash-coin"></i> Rémunération
               </h6>
-              <p class="small mb-0">{{ job.salaire }}</p>
+              <p class="small mb-0 text-dark-gray">{{ job.salaire }}</p>
             </div>
             {% endif %}
             
             <div class="d-flex justify-content-between align-items-center mt-auto">
               <span class="badge bg-light text-dark small">
-                <i class="bi bi-clock text-primary"></i> {{ job.date_publication|date:"d/m/Y" }}
+                <i class="bi bi-clock text-secondary-blue"></i> {{ job.date_publication|date:"d/m/Y" }}
               </span>
-              <a href="{% url 'public-job-offer-detail' job.pk %}" class="btn btn-sm btn-primary stretched-link">
+              <a href="{% url 'public-job-offer-detail' job.pk %}" class="btn btn-sm bg-secondary-blue text-white stretched-link">
                 Postuler <i class="bi bi-arrow-right ms-1"></i>
               </a>
             </div>
@@ -288,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
           
           {% if job.date_limite %}
           <div class="card-footer bg-transparent border-top-0 pt-0">
-            <div class="alert alert-warning small mb-0 p-2">
+            <div class="alert small mb-0 p-2 {% if job.statut == 'expire' %}bg-light-blue{% else %}bg-light-gray{% endif %} text-dark-gray">
               <i class="bi bi-calendar-check"></i> Date limite : {{ job.date_limite|date:"d/m/Y" }}
             </div>
           </div>
@@ -305,45 +307,62 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 </section>
-
-
 <style>
-  /* Styles personnalisés */
-  :root {
-    --secondary-blue: #2D76B6;
-    --light-gray: #F4F4F9;
-    --dark-gray: #333333;
-    --light-blue: #E6F0FA; 
-    --accent-orange: #E04B1A;
-    --primary-blue: #0A2E4E;
-  }
+  /* Classes pour la palette de couleurs */
+.bg-primary-blue { background-color: var(--primary-blue); }
+.text-primary-blue { color: var(--primary-blue); }
+.bg-secondary-blue { background-color: var(--secondary-blue); }
+.text-secondary-blue { color: var(--secondary-blue); }
+.bg-light-gray { background-color: var(--light-gray); }
+.text-light-gray { color: var(--light-gray); }
+.bg-dark-gray { background-color: var(--dark-gray); }
+.text-dark-gray { color: var(--dark-gray); }
+.bg-light-blue { background-color: var(--light-blue); }
+.text-light-blue { color: var(--light-blue); }
+.bg-accent-orange { background-color: var(--accent-orange); }
+.text-accent-orange { color: var(--accent-orange); }
+
+/* Styles spécifiques pour les offres */
+.expired-card {
+    position: relative;
+    opacity: 0.9;
+}
   
-  .hover-shadow {
-    transition: box-shadow 0.3s ease;
-  }
+.expired-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(244, 244, 249, 0.7);
+    z-index: 1;
+}
   
-  .hover-shadow:hover {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  }
+.expired-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background-color: var(--accent-orange);
+    color: white;
+    font-weight: bold;
+    z-index: 2;
+    font-size: 0.8rem;
+}
   
-  .text-truncate-container {
-    display: -webkit-box;
-    -webkit-line-clamp: var(--lines, 3);
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.hover-shadow {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
   
-  .card {
-    border-radius: 0.5rem;
-    overflow: hidden;
-  }
-  
-  .badge {
-    font-weight: 500;
-    padding: 0.35em 0.65em;
-  }
+.hover-shadow:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
 </style>
+
+<!--09_08-->
 
 <!-- Section Valeurs - Optimisée pour mobile -->
 <section class="values-section py-5" style="background-color: #FFFFFF;">

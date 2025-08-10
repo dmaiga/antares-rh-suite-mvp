@@ -113,7 +113,7 @@
                                 </span>
                             </td>
                             <td>
-                                <span class="badge status-badge bg-{% if offer.statut == 'publie' %}success{% elif offer.statut == 'brouillon' %}warning{% elif offer.statut == 'expire' %}danger{% else %}secondary{% endif %}">
+                                <span class="badge status-badge bg-{% if offer.statut == 'ouvert' %}success{% elif offer.statut == 'brouillon' %}warning{% elif offer.statut == 'expire' %}danger{% else %}secondary{% endif %}">
                                     {{ offer.get_statut_display }}
                                 </span>
                             </td>

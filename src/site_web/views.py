@@ -11,25 +11,37 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
 
+
+#09_08
+from django.db.models import Q
+from django.core.paginator import Paginator
+from jobs.models import JobOffer, JobStatus
+
 def jobs(request):
     # Récupération des paramètres
     search_query = request.GET.get('q', '')
     location = request.GET.get('location', '')
     sector = request.GET.get('sector', '')
     contract_type = request.GET.get('contract_type', '')
+    hide_expired = request.GET.get('hide_expired', 'false') == 'true'
     page_number = request.GET.get('page', 1)
     
     # Filtrage de base
     jobs = JobOffer.objects.filter(
         visible_sur_site=True,
-        statut='publie'
+        statut__in=[JobStatus.OUVERT, JobStatus.EXPIRE]
+    ).exclude(
+        statut=JobStatus.BROUILLON
     ).order_by('-date_publication')
+    #pour masque les offres expirées
+    if hide_expired:
+        jobs = jobs.exclude(statut=JobStatus.EXPIRE)
     
     # Filtres supplémentaires
     if search_query:
         jobs = jobs.filter(
             Q(titre__icontains=search_query) |
-            Q(description_poste__icontains=search_query) |
+            Q(mission_principale__icontains=search_query) |
             Q(profil_recherche__icontains=search_query) |
             Q(societe__icontains=search_query)
         )
@@ -53,44 +65,55 @@ def jobs(request):
         'location': location,
         'sector': sector,
         'contract_type': contract_type,
+        'hide_expired': hide_expired,
+        'status_choices': JobStatus.choices 
     }
     
     return render(request, 'site_web/public_jobs.html', context)
+
+#
+#_________________________________________________________________________________________________________________________
+#
 
 def public_job_offer_detail(request, pk):
     job = get_object_or_404(
         JobOffer, 
         pk=pk, 
         visible_sur_site=True,
-        statut='publie'
+        statut__in=['ouvert', 'expire'] 
     )
     
     # Suggestions d'autres offres
     related_jobs = JobOffer.objects.filter(
         visible_sur_site=True,
-        statut='publie',
+        statut='ouvert',
         secteur=job.secteur
-    ).exclude(pk=pk).order_by('-date_publication')[:3]
+    ).exclude(pk=pk).order_by('-date_publication')[:5]
     
     context = {
         'job': job,
-        'related_jobs': related_jobs
+        'related_jobs': related_jobs,
+        'is_expired': job.statut == 'expire'
     }
     
     return render(request, 'site_web/public_job_detail.html', context)
 
+#
+#_________________________________________________________________________________________________________________________
+#
 def home(request):
     featured_jobs = JobOffer.objects.filter(
         visible_sur_site=True,
-        statut='publie'
-    ).order_by('-date_publication')[:5]
+        statut__in=['ouvert', 'expire']
+    ).order_by('-date_publication')[:6]
     
     context = {
         'featured_jobs': featured_jobs
     }
     
     return render(request, 'site_web/index.html', context)
-   
+
+#09_08 
 #07_08
 #______________________________________________________________________________
 def about(request):

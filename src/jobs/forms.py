@@ -1,107 +1,65 @@
 from django import forms
 from django.forms import DateInput
 from .models import JobOffer
-from django_summernote.widgets import SummernoteWidget, SummernoteInplaceWidget
+from django_summernote.widgets import SummernoteWidget
 
 class JobOfferForm(forms.ModelForm):
-    # Surcharge des champs avec Summernote
-    taches = forms.CharField(
-        widget=SummernoteWidget(attrs={
-            'summernote': {
-                'toolbar': [
-                    ['style', ['bold', 'italic', 'underline', 'clear']],
-                    ['font', ['strikethrough']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture', 'video']],
-                ],
-                'height': '300px',
-            }
-        }),
-        help_text="Description détaillée du poste"
-    )
-    competences_qualifications=  forms.CharField(
-        widget=SummernoteWidget(attrs={
-            'summernote': {
-                'toolbar': [
-                    ['style', ['bold', 'italic', 'underline', 'clear']],
-                    ['font', ['strikethrough']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture', 'video']],
-                ],
-                'height': '300px',
-            }
-        }),
-       
-    )
-    mission_principale=  forms.CharField(
-        widget=SummernoteWidget(attrs={
-            'summernote': {
-                'toolbar': [
-                    ['style', ['bold', 'italic', 'underline', 'clear']],
-                    ['font', ['strikethrough']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture', 'video']],
-                ],
-                'height': '300px',
-            }
-        }),
+    # Common settings for list fields
+    LIST_FIELD_CONFIG = {
+        'mission_principale': {'rows': 3, 'label': "Missions principales"},
+        'taches': {'rows': 5, 'label': "Tâches"},
+        'competences_qualifications': {'rows': 5, 'label': "Compétences requises"},
+        'conditions': {'rows': 3, 'label': "Conditions"},
+        'profil_recherche': {'rows': 5, 'label': "Profil recherché"}
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         
-    )
-
-
-    profil_recherche = forms.CharField(
-        widget=SummernoteWidget(attrs={
+        # Configure list fields
+        for field_name, config in self.LIST_FIELD_CONFIG.items():
+            self.fields[field_name] = forms.CharField(
+                widget=forms.Textarea(attrs={
+                    'rows': config['rows'],
+                    'placeholder': f"Une entrée par ligne\nExemple:\n- Première {config['label'].lower()}\n- Deuxième {config['label'].lower()}"
+                }),
+                label=config['label'],
+                required=False
+            )
+        
+        # Special fields
+        self.fields['comment_postuler'].widget = SummernoteWidget(attrs={
             'summernote': {
                 'toolbar': [
-                    ['style', ['bold', 'italic']],
+                    ['style', ['bold', 'italic', 'underline']],
                     ['para', ['ul', 'ol']],
+                    ['insert', ['link']]
                 ],
                 'height': '250px',
             }
         })
-    )
-
-    comment_postuler = forms.CharField(
-        widget=SummernoteWidget(attrs={
-            'summernote': {
-                'toolbar': [
-                    ['style', ['bold', 'italic', 'underline', 'clear']],
-                    ['font', ['strikethrough']],
-                    ['para', ['ul', 'ol', 'paragraph']],
-                    ['insert', ['link', 'picture', 'video']],
-                ],
-                'height': '250px',
-            }
-        }),
         
-    )
+        # Common attributes
+        for field in self.fields.values():
+            field.required = False
+            if not isinstance(field.widget, (forms.CheckboxInput, forms.FileInput, SummernoteWidget)):
+                field.widget.attrs.setdefault('class', 'form-control')
+        
+        # Specific attributes
+        self.fields['visible_sur_site'].widget.attrs['class'] = 'form-check-input'
+        self.fields['date_publication'].widget = DateInput(attrs={'type': 'date', 'class': 'form-control'})
+        self.fields['date_limite'].widget = DateInput(attrs={'type': 'date', 'class': 'form-control'})
 
-  
     class Meta:
         model = JobOffer
         fields = '__all__'
-        exclude = ['auteur', 'date_creation', 'date_mise_a_jour']
-        widgets = {
-            'date_publication': DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
-            'date_limite': DateInput(attrs={'type': 'date', 'class': 'datepicker'}),
-            'conditions': forms.Textarea(attrs={'rows': 2}),
-            'type_offre': forms.Select(attrs={'class': 'select2'}),
-            'statut': forms.Select(attrs={'class': 'select2'}),
-            'secteur': forms.TextInput(attrs={'list': 'secteurs-list'}),
-        }
+        exclude = ['auteur', 'date_creation', 'date_mise_a_jour', 'statut']
         help_texts = {
             'reference': "Format: ANT/STA/00002025",
-            'fichier_pdf': "Téléversez un PDF descriptif si disponible",
+            'fichier_pdf': "PDF optionnel (max. 5MB)",
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Style uniforme
-        for field_name, field in self.fields.items():
-            if not isinstance(field.widget, (forms.CheckboxInput, forms.FileInput, SummernoteWidget)):
-                field.widget.attrs.update({'class': 'form-control'})
-        
-        self.fields['visible_sur_site'].widget.attrs.update({'class': 'form-check-input'})
-        self.fields['fichier_pdf'].widget.attrs.update({'class': 'form-control-file'})
-
-  
+    def clean(self):
+        cleaned_data = super().clean()
+        # Additional custom validation can be added here 
+        return cleaned_data
