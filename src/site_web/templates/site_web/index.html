@@ -4,180 +4,188 @@
 {% block content %}
 
 
-<!-- Hero Image Section -->
-<!-- Hero Image Section -->
-<section class="hero-image-section">
-  <div class="hero-carousel">
-    <!-- Image 1 -->
-    <div class="carousel-item active">
-      <img src="{% static 'site_web/images/hero/hero-image-1.png' %}" 
-           alt="Équipe professionnelle" 
-           loading="eager"  
-           
-           class="img-fluid w-100">
-    </div>
-    <!-- Image 2 -->
-    <div class="carousel-item">
-      <img src="{% static 'site_web/images/hero/logo_antares.png' %}" 
-           alt="Logo Antares" 
-           loading="eager"
-           class="img-fluid w-100">
-    </div>
-    <!-- Image 3 -->
-    <div class="carousel-item">
-      <img src="{% static 'site_web/images/hero/hero-image-2.png' %}" 
-           alt="Entretien professionnel" 
-           loading="eager"
-           class="img-fluid w-100">
-    </div>
-    <!-- Image 4 -->
-    <div class="carousel-item">
-      <img src="{% static 'site_web/images/hero/hero-image-3.png' %}" 
-           alt="Entretien professionnel" 
-           loading="eager"
-           class="img-fluid w-100">
-    </div>
-    <!-- Image 5 -->
-    <div class="carousel-item">
-      <img src="{% static 'site_web/images/hero/hero-image-4.png' %}" 
-           alt="Espace de travail" 
-           loading="eager"
-           class="img-fluid w-100">
+<!-- Hero Section Professionnelle avec palette logo -->
+<section class="hero-section py-5" style="background: linear-gradient(135deg, rgba(0, 128, 255, 0.05) 0%, rgba(249, 131, 1, 0.03) 100%);">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <!-- Texte à gauche -->
+      <div class="col-lg-6">
+        <span class="badge mb-3 px-3 py-2" style="background-color: #F98301; color: white; font-size: 1rem;">
+          <i class="bi bi-stars me-1"></i> Expert RH depuis +15 ans
+        </span>
+        
+        <h1 class="display-5 fw-bold mb-4" style="color: #0080FF;">
+          ANTARES <br>
+          <span style="color: #F98301;">Votre partenaire en talents</span>
+        </h1>
+        
+        <p class="lead mb-4" style="color: #333; font-size: 1.15rem; line-height: 1.6;">
+          Cabinet spécialisé en <strong>gestion des Ressources Humaines</strong> et <strong>Organisation d'Entreprise</strong>.
+          Nous créons des synergies durables entre talents et organisations grâce à notre approche humaine et personnalisée.
+        </p>
+        
+        <div class="d-flex flex-wrap gap-3 mb-4">
+          <a href="{% url 'entreprise-info' %}" class="btn btn-lg px-4 py-3 fw-bold shadow-sm" 
+             style="background-color: #F98301; color: white; border: none;">
+            <i class="bi bi-building me-2"></i>Espace Entreprises
+          </a>
+          <a href="{% url 'candidate-registry' %}" class="btn btn-lg px-4 py-3 fw-bold shadow-sm" 
+             style="background-color: white; color: #0080FF; border: 2px solid #0080FF;">
+            <i class="bi bi-person-vcard me-2"></i>Espace Candidats
+          </a>
+        </div>
+        
+        <div class="d-flex align-items-center">
+          <div class="me-3">
+            <i class="bi bi-check-circle-fill fs-4" style="color: #F98301;"></i>
+          </div>
+          <p class="mb-0" style="color: #555;">
+            <strong>Approche sur-mesure</strong> adaptée à chaque besoin spécifique
+          </p>
+        </div>
+      </div>
+      
+      <!-- Image à droite -->
+      <div class="col-lg-6">
+        <div class="position-relative rounded-4 overflow-hidden shadow-lg">
+          <img src="{% static 'site_web/images/hero/hero-image-1.png' %}" 
+               alt="Équipe Antares RH" 
+               class="img-fluid" 
+               loading="eager"
+               width="600"
+               height="400">
+          <div class="position-absolute bottom-0 start-0 end-0 p-3 text-center" 
+               style="background: rgba(0, 128, 255, 0.9); color: white;">
+            <p class="mb-0 fw-bold">Connecter les talents aux opportunités</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<style>
-  /* Hero Image Section */
-  .hero-image-section {
-    height: 40vh;
-    
-    overflow: hidden;
-    position: relative;
-  }
+<!-- Triple Section Layout avec palette -->
+<section class="container py-1 my-1">
+  <div class="text-center mb-1">
+    <h2 class="fw-bold" style="color: #0080FF;">Nos solutions dédiées</h2>
+    <p class="lead mx-auto" style="max-width: 700px; color: #555;">
+      Des services adaptés à chaque acteur du marché pour une performance optimale
+    </p>
+  </div>
   
-  .hero-carousel {
-    height: 100%;
-  }
-  
-  .hero-carousel .carousel-item {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    transition: opacity 1s ease-in-out;
-  }
-  
-  .hero-carousel .carousel-item.active {
-    opacity: 1;
-  }
-  
-  .hero-carousel img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-  }
-
-  @media (max-width: 768px) {
-    .hero-image-section {
-      height: 30vh;
-      min-height: 300px;
-    }
-  }
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Carrousel Hero
-  const heroItems = document.querySelectorAll('.hero-carousel .carousel-item');
-  let heroIndex = 0;
-  
-  if (heroItems.length > 0) {
-    heroItems[0].classList.add('active');
-    
-    setInterval(() => {
-      heroItems[heroIndex].classList.remove('active');
-      heroIndex = (heroIndex + 1) % heroItems.length;
-      heroItems[heroIndex].classList.add('active');
-    }, 3000);
-  }
-});
-</script>
-
-<!-- Triple Section Layout - Version équilibrée -->
-<section class="container py-5">
   <div class="row g-4">
-    <!-- Colonne Antares (Gauche) -->
-    <div class="col-lg-4">
-      <div class="h-100 p-4 bg-white rounded shadow-sm d-flex flex-column">
-        <div>
-          <h1 class="fw-bold mb-3" style="color: var(--primary-blue);">
-            <i class="bi bi-stars me-2"></i>Antares
-          </h1>
-          <p class="mb-4" style="color: var(--secondary-blue);">
-            Cabinet spécialisé en gestion des ressources humaines et en organisation des entreprises.
-            Nous connectons les talents aux entreprises pour bâtir des équipes performantes.
-          </p>
-          
-          <div class="p-3 rounded mb-4 border-start border-4" style="background-color: var(--light-blue); border-color: var(--accent-orange);">
-            <h4 style="color: var(--accent-orange);"><i class="bi bi-compass me-2"></i>Notre mission</h4>
-            <p class="mb-0">
-              Accompagner entreprises et candidats dans leur parcours de croissance avec des solutions RH sur mesure.
-            </p>
+    <!-- Candidats -->
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm overflow-hidden">
+        <div class="card-header border-0" style="background-color: #0080FF; color: white;">
+         <div class="d-flex flex-column align-items-center text-center ">
+            <span class="fs-4 fw-bold"><i class="bi bi-person-workspace me-2"></i>Candidats</span>
+           
           </div>
         </div>
-        
-        <div class="mt-auto d-grid gap-2">
-          <a href="{% url 'entreprise-info' %}" class="btn btn-outline-primary" style="border-color: var(--primary-blue); color: var(--primary-blue);">
-            <i class="bi bi-building me-2"></i>Espace Entreprises
-          </a>
-          <a href="{% url 'candidate-registry' %}" class="btn btn-outline-primary" style="border-color: var(--primary-blue); color: var(--primary-blue);">
-            <i class="bi bi-person-vcard me-2"></i>Espace Candidats
-          </a>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Colonne Entreprise (Milieu) -->
-    <div class="col-lg-4">
-      <div class="card h-100 border-0 shadow-lg d-flex flex-column">
-        <div class="card-body p-4" style="background-color: var(--primary-blue); color: white;">
-          <span class="badge mb-3" style="background-color: var(--accent-orange);"><i class="bi bi-building me-1"></i> Entreprises</span>
-          <h3 class="mb-4">Optimisez votre capital humain</h3>
-          <ul class="list-unstyled mb-4">          
-            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Recrutement ciblé et rapide</li>
-            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Gestion du personnel intérimaire</li>
-            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Externalisation RH complète</li>
-            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Audit social personnalisé</li>
-            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Accompagnement stratégique RH</li>
-          </ul>
-        </div>
-        <div class="p-3 mt-auto">
-          <a href="{% url 'services' %}" class="btn btn-outline-light w-100" style="border-color:var(--accent-orange); color:var(--accent-orange);">
-            <i class="bi bi-arrow-right me-2"></i>Nos services RH
-          </a>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Colonne Candidat (Droite) -->
-    <div class="col-lg-4">
-      <div class="card h-100 border-0 shadow-lg d-flex flex-column">
-        <div class="card-body p-4 bg-white">
-          <span class="badge mb-3" style="background-color: var(--primary-blue); color: white;"><i class="bi bi-person me-1"></i> Candidats</span>
-          <h3 class="mb-4" style="color: var(--primary-blue);">Votre carrière boostée</h3>
+        <div class="card-body">
+          <h3 class="fs-3 mb-4" style="color: #0080FF;">Boostez votre carrière</h3>
           <ul class="list-unstyled mb-4">
-            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Accès à des offres exclusives</li>
-            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Coaching personnalisé</li>
-            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Mise en relation avec nos entreprises</li>
-            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Formations adaptées à votre profil</li>
-            <li class="mb-3"><i class="bi bi-check-circle-fill me-2" style="color: var(--accent-orange);"></i> Suivi individualisé</li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #F98301;"></i>
+              <span>Accès à des offres exclusives</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #F98301;"></i>
+              <span>Coaching personnalisé</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #F98301;"></i>
+              <span>Préparation aux entretiens</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #F98301;"></i>
+              <span>Suivi individualisé</span>
+            </li>
           </ul>
         </div>
-        <div class="p-3 mt-auto">
-          <a href="{% url 'jobs' %}" class="btn btn-outline-primary w-100" style="border-color: var(--primary-blue); color: var(--primary-blue);">
+        <div class="card-footer bg-white border-0 pt-0">
+          <a href="{% url 'jobs' %}" class="btn w-100 py-3" 
+             style="background-color: #0080FF; color: white; border: none;">
             <i class="bi bi-search me-2"></i>Voir les offres
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Entreprises -->
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm overflow-hidden">
+        <div class="card-header border-0" style="background-color: #F98301; color: white;">
+<div class="d-flex flex-column align-items-center text-center ">            
+  <span class="fs-4 fw-bold"><i class="bi bi-building me-2"></i>Entreprises</span>
+            
+          </div>
+        </div>
+        <div class="card-body">
+          <h3 class="fs-3 mb-4" style="color: #F98301;">Optimisez vos RH</h3>
+          <ul class="list-unstyled mb-4">
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #0080FF;"></i>
+              <span>Recrutement sur mesure</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #0080FF;"></i>
+              <span>Gestion de l'intérim</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #0080FF;"></i>
+              <span>Externalisation RH</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #0080FF;"></i>
+              <span>Stratégie talent</span>
+            </li>
+          </ul>
+        </div>
+        <div class="card-footer bg-white border-0 pt-0">
+          <a href="{% url 'services' %}" class="btn w-100 py-3" 
+             style="background-color: #F98301; color: white; border: none;">
+            <i class="bi bi-arrow-right me-2"></i>Nos services
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Consultants -->
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm overflow-hidden">
+        <div class="card-header border-0" style="background-color: #0080FF; color: white;">
+          <div class="d-flex flex-column align-items-center text-center ">
+            <span class="fs-4 fw-bold"><i class="bi bi-people me-2"></i>Consultants</span>
+            
+          </div>
+        </div>
+        <div class="card-body">
+          <h3 class="fs-3 mb-4" style="color: #0080FF;">Développez votre activité</h3>
+          <ul class="list-unstyled mb-4">
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #F98301;"></i>
+              <span>Portefeuille clients qualifiés</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #F98301;"></i>
+              <span>Missions premium</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #F98301;"></i>
+              <span>Support administratif</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="bi bi-check-circle-fill me-2 mt-1" style="color: #F98301;"></i>
+              <span>Visibilité accrue</span>
+            </li>
+          </ul>
+        </div>
+        <div class="card-footer bg-white border-0 pt-0">
+          <a href="#" class="btn w-100 py-3" 
+             style="background-color: #0080FF; color: white; border: none;">
+            <i class="bi bi-person-plus me-2"></i>Rejoindre notre réseau
           </a>
         </div>
       </div>
@@ -185,6 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
   </div>
 </section>
 <!--09_08-->
+<!--10_08-->
 <!-- Section Offres -->
 <section class="py-5 bg-light-gray">
   <div class="container">
@@ -363,62 +372,106 @@ document.addEventListener('DOMContentLoaded', function() {
 </style>
 
 <!--09_08-->
-
-<!-- Section Valeurs - Optimisée pour mobile -->
-<section class="values-section py-5" style="background-color: #FFFFFF;">
+<!--10_08-->
+<!-- Section Valeurs RH Complètes -->
+<section class="rh-values-section" style="background-color: #F8F9FA;">
   <div class="container">
-    <h2 class="text-center mb-5" style="color: #0D3B66;">Nos Valeurs à Antares</h2>
+    <h2 class="text-center mb-4" style="color: #0D3B66; font-weight: 600;">Nos Valeurs </h2>
+    <p class="text-center mb-5 mx-auto" style="max-width: 700px; color: #495057;">
+     Nous bâtissons des ponts durables entre les Entreprises et les Talents, en combinant expertise RH et innovation digitale.
+    </p>
+    
     <div class="row g-4">
-      <!-- Carte Valeur 1 -->
-      <div class="col-6 col-md-6 col-lg-3">
-        <div class="value-card text-center p-3 h-100 border-0 shadow-sm rounded-3">
+      <!-- Intégrité -->
+      <div class="col-md-6 col-lg-3">
+        <div class="rh-value-card text-center p-4 h-100 border-0 rounded-3" style="background-color: #FFFFFF;">
           <div class="icon-circle mb-3 mx-auto d-flex align-items-center justify-content-center" 
-               style="background-color: rgba(13,59,102,0.1); width: 60px; height: 60px;">
-            <i class="bi bi-shield-check fs-4" style="color: #0D3B66;"></i>
+               style="background-color: #EFF8FF; width: 70px; height: 70px;">
+            <i class="bi bi-shield-lock fs-3" style="color: #0D3B66;"></i>
           </div>
-          <h3 class="h5 mb-3" style="color: #0D3B66;">Fiabilité</h3>
-          <p class="small text-muted mb-0">Engagements contractuels strictement respectés</p>
+          <h3 class="h5 mb-3" style="color: #0080FF; font-weight: 600;">Intégrité</h3>
+          <p class="text-muted mb-0">Éthique irréprochable dans toutes nos relations entreprises-talents</p>
         </div>
       </div>
       
-      <!-- Carte Valeur 2 -->
-      <div class="col-6 col-md-6 col-lg-3">
-        <div class="value-card text-center p-3 h-100 border-0 shadow-sm rounded-3">
+      
+      
+      <!-- Agilité -->
+      <div class="col-md-6 col-lg-3">
+        <div class="rh-value-card text-center p-4 h-100 border-0 rounded-3" style="background-color: #FFFFFF;">
           <div class="icon-circle mb-3 mx-auto d-flex align-items-center justify-content-center" 
-               style="background-color: rgba(13,59,102,0.1); width: 60px; height: 60px;">
-            <i class="bi bi-geo-alt fs-4" style="color: #0D3B66;"></i>
+               style="background-color: #EFF8FF; width: 70px; height: 70px;">
+            <i class="bi bi-lightning-charge fs-3" style="color: #0D3B66;"></i>
           </div>
-          <h3 class="h5 mb-3" style="color: #0D3B66;">Expertise locale</h3>
-          <p class="small text-muted mb-0">Connaissance approfondie des marchés africains</p>
+          <h3 class="h5 mb-3" style="color: #0080FF; font-weight: 600;">Agilité RH</h3>
+          <p class="text-muted mb-0">Réponses rapides et solutions flexibles pour vos défis RH</p>
         </div>
       </div>
       
-      <!-- Carte Valeur 3 -->
-      <div class="col-6 col-md-6 col-lg-3">
-        <div class="value-card text-center p-3 h-100 border-0 shadow-sm rounded-3">
+      <!-- Fiabilité -->
+      <div class="col-md-6 col-lg-3">
+        <div class="rh-value-card text-center p-4 h-100 border-0 rounded-3" style="background-color: #FFFFFF;">
           <div class="icon-circle mb-3 mx-auto d-flex align-items-center justify-content-center" 
-               style="background-color: rgba(13,59,102,0.1); width: 60px; height: 60px;">
-            <i class="bi bi-lightbulb fs-4" style="color: #0D3B66;"></i>
+               style="background-color: #EFF8FF; width: 70px; height: 70px;">
+            <i class="bi bi-check-circle-fill fs-3" style="color: #0D3B66;"></i>
           </div>
-          <h3 class="h5 mb-3" style="color: #0D3B66;">Innovation</h3>
-          <p class="small text-muted mb-0">Solutions digitales pour une gestion RH moderne</p>
+          <h3 class="h5 mb-3" style="color: #0080FF; font-weight: 600;">Fiabilité</h3>
+          <p class="text-muted mb-0">Engagements tenus, résultats mesurables pour tous les partenaires</p>
         </div>
       </div>
       
-      <!-- Carte Valeur 4 -->
-      <div class="col-6 col-md-6 col-lg-3">
-        <div class="value-card text-center p-3 h-100 border-0 shadow-sm rounded-3">
+
+      <!-- Innovation -->
+      <div class="col-md-6 col-lg-3">
+        <div class="rh-value-card text-center p-4 h-100 border-0 rounded-3" style="background-color: #FFFFFF;">
           <div class="icon-circle mb-3 mx-auto d-flex align-items-center justify-content-center" 
-               style="background-color: rgba(13,59,102,0.1); width: 60px; height: 60px;">
-            <i class="bi bi-people fs-4" style="color: #0D3B66;"></i>
+               style="background-color: #EFF8FF; width: 70px; height: 70px;">
+            <i class="bi bi-cpu-fill fs-3" style="color: #0D3B66;"></i>
           </div>
-          <h3 class="h5 mb-3" style="color: #0D3B66;">Proximité</h3>
-          <p class="small text-muted mb-0">Relation personnalisée avec chaque client</p>
+          <h3 class="h5 mb-3" style="color: #0080FF; font-weight: 600;">Innovation</h3>
+          <p class="text-muted mb-0">Outils digitaux pour fluidifier le matching entreprises-talents</p>
         </div>
       </div>
+      
+      
+      
     </div>
   </div>
 </section>
+
+<style>
+  .rh-values-section {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  .rh-value-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(13, 59, 102, 0.1);
+    box-shadow: 0 4px 6px rgba(13, 59, 102, 0.05);
+  }
+  
+  .rh-value-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(13, 59, 102, 0.15);
+  }
+  
+  .icon-circle {
+    transition: all 0.3s ease;
+    border-radius: 50%;
+  }
+  
+  .rh-value-card:hover .icon-circle {
+    transform: rotate(5deg) scale(1.1);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .rh-value-card {
+      margin-bottom: 15px;
+    }
+  }
+</style>
+<!--10_08-->
 
 <!-- Carrousel Partenaires -->
 <section class="partners-section py-5" style="background-color: #F4F4F9;">
@@ -518,28 +571,17 @@ document.addEventListener('DOMContentLoaded', function() {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100px;
+    height: 25vh;
   }
   
   .partner-item img {
-    max-height: 60px;
+    max-height: 30vh;
     width: auto;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
   
   
-  
-  /* Valeurs */
-  .values-section .value-card {
-    transition: all 0.3s ease;
-    border: 1px solid rgba(0,0,0,0.05);
-  }
-  
-  .values-section .value-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-  }
-  
+ 
   /* Responsive */
   @media (max-width: 768px) {
     .hero-section h1 {
@@ -551,9 +593,7 @@ document.addEventListener('DOMContentLoaded', function() {
       margin-bottom: 0.5rem;
     }
     
-    .values-section .col-6 {
-      padding: 0.5rem;
-    }
+    
   }
 </style>
 

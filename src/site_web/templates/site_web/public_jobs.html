@@ -58,6 +58,19 @@
         margin-bottom: 0;
         padding-bottom: 0;
     }
+    .taches-content ul {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.taches-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.taches-content li:last-child {
+    margin-bottom: 0;
+}
     
     /* Responsive */
     @media (max-width: 991.98px) {
@@ -89,22 +102,54 @@
             <div class="col-md-4">
                 <input type="text" name="q" class="form-control" placeholder="Mots-clés..." value="{{ search_query }}">
             </div>
-            <div class="col-md-3">
-                <select name="location" class="form-select">
-                    <option value="">Tous lieux</option>
-                    <option value="Bamako" {% if location == 'Bamako' %}selected{% endif %}>Bamako</option>
-                    <option value="Kayes" {% if location == 'Kayes' %}selected{% endif %}>Kayes</option>
-                    <option value="Sikasso" {% if location == 'Sikasso' %}selected{% endif %}>Sikasso</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <select name="sector" class="form-select">
-                    <option value="">Tous secteurs</option>
-                    <option value="Agriculture" {% if sector == 'Agriculture' %}selected{% endif %}>Agriculture</option>
-                    <option value="Informatique" {% if sector == 'Informatique' %}selected{% endif %}>Informatique</option>
-                    <option value="Santé" {% if sector == 'Santé' %}selected{% endif %}>Santé</option>
-                </select>
-            </div>
+         <div class="col-md-3">
+    <select name="location" class="form-select">
+        <option value="">Tous lieux</option>
+        <option value="Bamako" {% if location == 'Bamako' %}selected{% endif %}>Bamako</option>
+        <option value="Kayes" {% if location == 'Kayes' %}selected{% endif %}>Kayes</option>
+        <option value="Koulikoro" {% if location == 'Koulikoro' %}selected{% endif %}>Koulikoro</option>
+        <option value="Sikasso" {% if location == 'Sikasso' %}selected{% endif %}>Sikasso</option>
+        <option value="Ségou" {% if location == 'Ségou' %}selected{% endif %}>Ségou</option>
+        <option value="Mopti" {% if location == 'Mopti' %}selected{% endif %}>Mopti</option>
+        <option value="Tombouctou" {% if location == 'Tombouctou' %}selected{% endif %}>Tombouctou</option>
+        <option value="Gao" {% if location == 'Gao' %}selected{% endif %}>Gao</option>
+        <option value="Kidal" {% if location == 'Kidal' %}selected{% endif %}>Kidal</option>
+        <option value="Taoudénit" {% if location == 'Taoudénit' %}selected{% endif %}>Taoudénit</option>
+        <option value="Ménaka" {% if location == 'Ménaka' %}selected{% endif %}>Ménaka</option>
+        <option value="Bougouni" {% if location == 'Bougouni' %}selected{% endif %}>Bougouni</option>
+        <option value="Koutiala" {% if location == 'Koutiala' %}selected{% endif %}>Koutiala</option>
+        <option value="Dioïla" {% if location == 'Dioïla' %}selected{% endif %}>Dioïla</option>
+        <option value="Nioro" {% if location == 'Nioro' %}selected{% endif %}>Nioro</option>
+        <option value="Kita" {% if location == 'Kita' %}selected{% endif %}>Kita</option>
+        <option value="Bandiagara" {% if location == 'Bandiagara' %}selected{% endif %}>Bandiagara</option>
+        <option value="San" {% if location == 'San' %}selected{% endif %}>San</option>
+        <option value="Douentza" {% if location == 'Douentza' %}selected{% endif %}>Douentza</option>
+    </select>
+</div>
+
+<div class="col-md-3">
+    <select name="sector" class="form-select">
+        <option value="">Tous secteurs</option>
+        <option value="Achats" {% if sector == 'Achats' %}selected{% endif %}>Achats</option>
+        <option value="Commercial, vente" {% if sector == 'Commercial, vente' %}selected{% endif %}>Commercial, vente</option>
+        <option value="Gestion, comptabilité, finance" {% if sector == 'Gestion, comptabilité, finance' %}selected{% endif %}>Gestion, comptabilité, finance</option>
+        <option value="Informatique, nouvelles technologies" {% if sector == 'Informatique, nouvelles technologies' %}selected{% endif %}>Informatique, nouvelles technologies</option>
+        <option value="Juridique" {% if sector == 'Juridique' %}selected{% endif %}>Juridique</option>
+        <option value="Management, direction générale" {% if sector == 'Management, direction générale' %}selected{% endif %}>Management, direction générale</option>
+        <option value="Marketing, communication" {% if sector == 'Marketing, communication' %}selected{% endif %}>Marketing, communication</option>
+        <option value="Métiers de la santé et du social" {% if sector == 'Métiers de la santé et du social' %}selected{% endif %}>Métiers de la santé et du social</option>
+        <option value="Métiers des services" {% if sector == 'Métiers des services' %}selected{% endif %}>Métiers des services</option>
+        <option value="Métiers du BTP" {% if sector == 'Métiers du BTP' %}selected{% endif %}>Métiers du BTP</option>
+        <option value="Production, maintenance, qualité" {% if sector == 'Production, maintenance, qualité' %}selected{% endif %}>Production, maintenance, qualité</option>
+        <option value="R&D, gestion de projets" {% if sector == 'R&D, gestion de projets' %}selected{% endif %}>R&D, gestion de projets</option>
+        <option value="RH, formation" {% if sector == 'RH, formation' %}selected{% endif %}>RH, formation</option>
+        <option value="Secrétariat, assistanat" {% if sector == 'Secrétariat, assistanat' %}selected{% endif %}>Secrétariat, assistanat</option>
+        <option value="Télémarketing, téléassistance" {% if sector == 'Télémarketing, téléassistance' %}selected{% endif %}>Télémarketing, téléassistance</option>
+        <option value="Tourisme, hôtellerie, restauration" {% if sector == 'Tourisme, hôtellerie, restauration' %}selected{% endif %}>Tourisme, hôtellerie, restauration</option>
+        <option value="Transport, logistique" {% if sector == 'Transport, logistique' %}selected{% endif %}>Transport, logistique</option>
+    </select>
+</div>
+
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
                     <i class="bi bi-search"></i> Filtrer
@@ -132,130 +177,155 @@
     </div>
 
     <div class="row g-4">
-        <!-- Colonne Offres -->
-        <div class="col-lg-8">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="h4" style="color: var(--primary-blue);">Offres disponibles</h2>
-                <span class="badge bg-primary">{{ jobs.paginator.count }} résultats</span>
-            </div>
+<!-- Colonne Offres - Version améliorée -->
+<div class="col-lg-8">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4" style="color: var(--primary-blue);">Offres disponibles</h2>
+        <span class="badge bg-primary rounded-pill">{{ jobs.paginator.count }} résultats</span>
+    </div>
 
-            {% if jobs %}
-                {% for job in jobs %}
-                <div class="card job-card mb-4">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div>
-                                <h3 class="h5 mb-2">{{ job.titre }}</h3>
-                                <p class="text-muted mb-0">
-                                    <i class="bi bi-building"></i> {{ job.societe }}
-                                </p>
-                            </div>
-                            <span class="badge status-badge bg-{% if job.statut == 'ouvert' %}success{% elif job.statut == 'expire' %}danger{% else %}secondary{% endif %}">
-                                      {{ job.get_statut_display }}
-                             
-                            </span>
-                        </div>
-
-                        <div class="d-flex flex-wrap gap-2 mb-3">
-                            {% if job.lieu %}
-                            <span class="badge bg-light text-dark">
-                                <i class="bi bi-geo-alt"></i> {{ job.lieu }}
-                            </span>
-                            {% endif %}
-                            <span class="badge rounded-pill 
-    {% if job.type_offre == 'emploi' %}
-        bg-success bg-opacity-10 text-success border border-success
-    {% elif job.type_offre == 'appel_offre' %}
-        bg-warning bg-opacity-10 text-warning border border-warning
-            bg-primary bg-opacity-10 text-primary border border-primary
-    {% else %}
-        bg-secondary bg-opacity-10 text-secondary border border-secondary
-    {% endif %}">
-    <i class="bi 
-        {% if job.type_offre == 'emploi' %}bi-briefcase
-        {% elif job.type_offre == 'appel_offre' %}bi-file-earmark-text
-                {% else %}bi-question-circle
-        {% endif %} me-1"></i>
-    {% if job.type_offre == 'emploi' %}Offre d'emploi
-    {% elif job.type_offre == 'appel_offre' %}Appel d'offres
-        {% else %}{{ job.get_type_offre_display }}
-    {% endif %}
-</span>
-                            {% if job.salaire %}
-                            <span class="badge bg-light text-dark">
-                                <i class="bi bi-cash"></i> {{ job.salaire }}
-                            </span>
-                            {% endif %}
-                        </div>
-
-                        {% if job.mission_principale %}
-
-                        <div class="summernote-content mt-3">
-                             <h5 class="h6 text-muted mb-2"><i class="bi bi-list-task"></i> Missions principales</h5>
-                                {{ job.mission_principale|safe|truncatewords_html:30|striptags}}
-                        </div>
-                        {% endif %}
-
-                        {% if job.taches %}
-                        <div class="job-content-section">
-                            <h5 class="h6 text-muted mb-2"><i class="bi bi-check2-square"></i> Tâches</h5>
-                            <p class="mb-0">{{ job.taches|truncatewords_html:30|striptags }}</p>
-                        </div>
-                        {% endif %}
-
-                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2">
-                            <small class="text-muted">
-                                <i class="bi bi-clock"></i> Publiée {{ job.date_publication|timesince }}
-                            </small>
-                            <a href="{% url 'public-job-offer-detail' job.pk %}" class="btn btn-sm btn-outline-primary">
-                                Voir détails <i class="bi bi-arrow-right"></i>
-                            </a>
-                        </div>
+    {% if jobs %}
+        {% for job in jobs %}
+        <div class="card job-card mb-2 border-start-4 
+            {% if job.statut == 'ouvert' %}border-success
+            {% elif job.statut == 'expire' %}border-danger
+            {% else %}border-secondary{% endif %}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start ">
+                    <div>
+                        <h3 class="h5 mb-2 fw-bold" >{{ job.titre }} </h3>
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-building"></i> <strong style="color: #F98301;">{{ job.societe }}</strong>
+                        </p>
                     </div>
+                    <span class="badge rounded-pill py-2 px-3 
+                        {% if job.statut == 'ouvert' %}bg-success
+                        {% elif job.statut == 'expire' %}bg-danger
+                        {% else %}bg-secondary{% endif %}">
+                        {{ job.get_statut_display|upper }}
+                    </span>
                 </div>
-                {% endfor %}
 
-                <!-- Pagination -->
-                {% if jobs.has_other_pages %}
-                <nav class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        {% if jobs.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ jobs.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if sector %}&sector={{ sector }}{% endif %}">&laquo;</a>
-                        </li>
-                        {% endif %}
-
-                        {% for num in jobs.paginator.page_range %}
-                            {% if jobs.number == num %}
-                            <li class="page-item active">
-                                <span class="page-link">{{ num }}</span>
-                            </li>
-                            {% else %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if sector %}&sector={{ sector }}{% endif %}">{{ num }}</a>
-                            </li>
+                <!-- Ligne d'informations clés -->
+                <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
+                    {% if job.lieu %}
+                    <span class="badge bg-light text-dark border py-2">
+                        <i class="bi bi-geo-alt-fill text-primary"></i> <strong>{{ job.lieu }}</strong>
+                    </span>
+                    {% endif %}
+                    
+                    <span class="badge rounded-pill py-2 px-3 
+                        {% if job.type_offre == 'emploi' %}
+                            bg-success bg-opacity-10 text-success border border-success
+                        {% elif job.type_offre == 'appel_offre' %}
+                            bg-warning bg-opacity-10 text-warning border border-warning
+                        {% else %}
+                            bg-primary bg-opacity-10 text-primary border border-primary
+                        {% endif %}">
+                        <i class="bi 
+                            {% if job.type_offre == 'emploi' %}bi-briefcase-fill
+                            {% elif job.type_offre == 'appel_offre' %}bi-file-earmark-text-fill
+                            {% else %}bi-question-circle-fill
+                            {% endif %} me-1"></i>
+                        <strong>
+                            {% if job.type_offre == 'emploi' %}EMPLOI
+                            {% elif job.type_offre == 'appel_offre' %}APPEL D'OFFRES
+                            {% else %}{{ job.get_type_offre_display|upper }}
                             {% endif %}
-                        {% endfor %}
+                        </strong>
+                    </span>
+                    
+                    {% if job.salaire %}
+                    <span class="badge bg-light text-dark border py-2">
+                        <i class="bi bi-cash-stack text-success"></i> <strong>{{ job.salaire }}</strong>
+                    </span>
+                    {% endif %}
+                    
+                    <span class="ms-auto small text-muted">
+                      Publiée il y'a : {{ job.date_publication|timesince }}
+                    </span>
+                </div>
 
-                        {% if jobs.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ jobs.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if sector %}&sector={{ sector }}{% endif %}">&raquo;</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </nav>
+                <!-- Contenu principal -->
+                {% if job.mission_principale %}
+                <div class="job-content">
+                            <h5 class="d-flex align-items-center">
+                               <strong style="color: #0080FF;" > MISSIONS PRINCIPALES</strong>
+                            </h5>
+                            <div>{{ job.mission_principale|safe|truncatewords_html:30|striptags }}</div>
+                        </div>
+                {% endif %}
+                
+                {% if job.taches %}
+                       <div class="job-content-section">
+                            <h5 class="h6 text-muted mb-2">
+                                <strong style="color: #0080FF;">Tâches</strong>
+                            </h5>
+                            <div class="taches-content mb-0">
+                                {{ job.taches|safe|truncatewords_html:25 }}
+                            </div>
+                        </div>
+                {% endif %}
+                <!-- Bouton d'action -->
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                    
+                    <a href="{% url 'public-job-offer-detail' job.pk %}" 
+                       class="btn btn-sm btn-primary px-3 fw-bold">
+                         VOIR L'OFFRE
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Pagination -->
+        {% if jobs.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if jobs.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ jobs.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if sector %}&sector={{ sector }}{% endif %}">&laquo;</a>
+                </li>
                 {% endif %}
 
-            {% else %}
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> Aucune offre ne correspond à vos critères de recherche.
-                </div>
-            {% endif %}
-        </div>
+                {% for num in jobs.paginator.page_range %}
+                    {% if jobs.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if sector %}&sector={{ sector }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
 
+                {% if jobs.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ jobs.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if sector %}&sector={{ sector }}{% endif %}">&raquo;</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    {% else %}
+        <div class="alert alert-info d-flex align-items-center">
+            <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+            <div>
+                <strong>Aucune offre disponible</strong>
+                <p class="mb-0">Aucune offre ne correspond à vos critères de recherche.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
         <!-- Colonne Publicités -->
         <div class="col-lg-4">
-            <h3 class="h5 mb-4 text-muted"><i class="bi bi-megaphone"></i> Publicités</h3>
+          
+            <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4" >Publicités</h2>
+       
+    </div>
 
             <!-- Publicité 1 -->
             <div class="card mb-4 border-light">
@@ -317,6 +387,7 @@
                             <option>Agriculture</option>
                             <option>Informatique</option>
                             <option>Santé</option>
+                            <option>Autre</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary">

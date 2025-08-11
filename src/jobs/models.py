@@ -70,7 +70,7 @@ class JobOffer(models.Model):
         return f"{self.reference} - {self.titre}"
     
     def save(self, *args, **kwargs):
-        # Auto-convert text fields to HTML lists
+        # Auto-convert text fields to HTML lists with better formatting
         list_fields = [
             'mission_principale', 
             'taches',
@@ -83,7 +83,10 @@ class JobOffer(models.Model):
             text = getattr(self, field, '')
             if text and not text.strip().startswith('<ul>'):
                 lines = [line.strip() for line in text.split('\n') if line.strip()]
-                setattr(self, field, "<ul>" + "".join(f"<li>{line}</li>" for line in lines) + "</ul>")
+                html_content = "<ul style='margin-bottom: 1rem; padding-left: 1.5rem;'>"
+                html_content += "".join(f"<li style='margin-bottom: 0.5rem; line-height: 1.5;'>{line}</li>" for line in lines)
+                html_content += "</ul>"
+                setattr(self, field, html_content)
         
         # Auto-set status
         today = timezone.now().date()
